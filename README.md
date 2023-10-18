@@ -44,6 +44,41 @@ The project is planned to be completed in approximately six months, with ongoing
 ## Conclusion:
 The "Found and Adoption Pets" API Development project aims to provide a seamless and user-friendly experience for individuals looking to adopt pets or find their lost furry companions. By implementing a comprehensive set of features and adhering to best practices in API development, the project strives to make a positive impact on the pet adoption community.
 
+## Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/tuandangvan/found-and-adoption-pet-api-be.git
+```
+
+Go to the project directory
+
+```bash
+  cd found-and-adoption-pet-api-be
+```
+
+Install dependencies
+
+```bash
+  npm install yarn
+```
+
+Create the `.env` file from folder src with content
+```bash
+MONGODB_URI="mongodb+srv://vantuan:12345@cluster0.pvrmqmz.mongodb.net/?retryWrites=true&w=majority"
+DATABASE_NAME='API_PET_TEST'
+APP_HOST='localhost'
+APP_PORT=8050
+AUTHOR="Tuan Dang"
+JWT_SECRET="tuandang"
+```
+
+Start the server
+
+```bash
+  yarn dev
+```
 
 # Description API
 
