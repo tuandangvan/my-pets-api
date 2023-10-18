@@ -43,3 +43,149 @@ The project is planned to be completed in approximately six months, with ongoing
 
 ## Conclusion:
 The "Found and Adoption Pets" API Development project aims to provide a seamless and user-friendly experience for individuals looking to adopt pets or find their lost furry companions. By implementing a comprehensive set of features and adhering to best practices in API development, the project strives to make a positive impact on the pet adoption community.
+
+
+# Description API
+
+
+
+## API for Account
+#### Sign up Account
+
+```http
+  POST /api/v1/auth/sign-up
+```
+
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `emmail` | `string` | **Required**   |
+| `password` | `string` | **Required**       |
+| `role` | `string` | **Required, default:** user     |
+
+#### POST Sign in
+
+```http
+  POST /api/v1/auth/sign-in
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `email`   | `string` | **Required**                      |
+| `password`| `string` | **Required**                      |
+
+#### POST Send code otp to email
+
+```http
+  POST /api/v1/auth/send-code-authencation
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `email`   | `string` | **Required**                      |
+
+#### POST verify code otp to email
+
+```http
+  POST /api/v1/auth/verify-code-authencation
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `email`   | `string` | **Required**                      |
+| `code`   | `string` | **Required**                      |
+
+#### POST forgot password
+
+```http
+  POST /api/v1/auth/forgot-password
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `email`   | `string` | **Required**                      |
+
+#### POST change password
+
+```http
+  POST /api/v1/auth/change-password
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `email`   | `string` | **Required**                      |
+| `password`   | `string` | **Required**                      |
+| `newPassword`   | `string` | **Required**                      |
+
+## API for user
+
+#### POST Create user for role user
+
+```http
+  POST /api/v1/user/add-information
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `email`   | `string` | **Required**                      |
+| `firsName`   | `string` | **Required**                      |
+| `lastName`| `string` | **Required**                      |
+| `phoneNumber`| `string` | **Required**                      |
+| `address`| `string` |    Not Required                  |
+| `experience`| `number` | **Required, value: 0 or 1**     |
+
+## API for center
+
+
+```http
+  POST /api/v1/center/add
+```
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `email`   | `string` | **Required**                      |
+| `name`   | `string` | **Required**                      |
+| `phoneNumber`| `string` | **Required**                      |
+| `address`| `string` |    Not Required                  |
+
+```http
+  POST /api/v1/center/update
+```
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `email`   | `string` | **Required**                      |
+| `name`   | `string` | **Required**                      |
+| `phoneNumber`| `string` | **Required**                      |
+| `address`| `string` |    Not Required                  |
+
+## API for pet 
+
+```http
+  POST /api/v1/pet/add
+```
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `centerId`   | `string` | **Required**                      |
+| `namePet`   | `string` | **Required**                      |
+| `species`| `string` | **Required**                      |
+| `breed`| `string` |    Not Required                  |
+| `gender`| `string` |    **Required**                  |
+| `color`| `string` |    **Required**                  |
+| `description`| `string` |    Not Required                  |
+| `level`| `string` |   **Required, value: Bình thường or Khẩn cấp** |
+| `healthInfo`| `string` |    Not Required                  |
+
+
+```http
+  POST /api/v1/pet/update/:id
+```
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `centerId`   | `string` | **Required**                      |
+| `namePet`   | `string` | **Required**                      |
+| `species`| `string` | **Required**                      |
+| `breed`| `string` |    Not Required                  |
+| `gender`| `string` |    **Required**                  |
+| `color`| `string` |    **Required**                  |
+| `description`| `string` |    Not Required                  |
+| `level`| `string` |   **Required, value: Bình thường or Khẩn cấp** |
+| `healthInfo`| `string` |    Not Required                  |
+| `foundOwner`| `string` |    Not Required                  |
