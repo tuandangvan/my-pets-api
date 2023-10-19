@@ -224,3 +224,95 @@ Start the server
 | `level`| `string` |   **Required, value: Bình thường or Khẩn cấp** |
 | `healthInfo`| `string` |    Not Required                  |
 | `foundOwner`| `string` |    Not Required                  |
+
+#### Delete Pet
+
+```http
+  POST api/v1/pet/delete/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of pet to fetch |
+| `centerId`| `string` | **Required**. Id of center to fetch |
+
+
+## API for ARTICLE
+
+#### Add a article
+
+```http
+  POST /api/v1/post/add
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `userId`  | `string` | **Required**. Id of user to fetch |
+| `title`| `string` | **Required**. Title of an article |
+| `content`| `string` | **Required**. Content of an article |
+| `images`| `string` | **Not Required**. Images of an article |
+
+#### Add a article
+
+```http
+  POST /api/v1/post/change-status/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of article to fetch |
+| `status`  | `string` | **Required**. Status of an article |
+
+#### Find an article
+
+```http
+  GET /api/v1/post/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of article to fetch |
+
+
+#### Add a comment for article
+
+```http
+  POST /api/v1/post/comment/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of article to fetch |
+| `userId`  | `string` | **Required**. Id of user to fetch |
+| `content`| `string` | **Required**. Content of an comment |
+
+#### Find comment an article
+
+```http
+  GET /api/v1/post/comment/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of article to fetch |
+
+#### Reaction article
+
+```http
+  POST /api/v1/post/reaction/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of article to fetch |
+| `userId`  | `string` | **Required**. Id of user to fetch |
+
+#### Get Reaction article
+
+```http
+  GET /api/v1/post/reaction/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of article to fetch |
