@@ -1,4 +1,3 @@
-import { id } from "@hapi/joi/lib/base";
 import mongoose from "mongoose";
 import Post from "~/models/postModel";
 
@@ -12,11 +11,38 @@ const createPost = async function ({ data, userId }) {
 };
 
 const createComment = async function ({ data, postId }) {
+  const newData = {
+    _id: new mongoose.Types.ObjectId(),
+    content: data.content,
+    userId: data.userId
+  };
   const comment = await Post.updateOne(
     { id: postId },
-    { $push: { comments: data } }
+    { $push: { comments: newData } }
   );
   return comment;
+};
+
+const deleteComment = async function ({ post, userId, commentId }) {
+  const index = post.comments.findIndex(
+    (element) => element.userId == userId && element._id == commentId
+  );
+  console.log(commentId)
+  console.log(post.id)
+  if (index >= 0) {
+    const commentNeedDel = post.comments[index];  
+    const postDelete = await Post.updateOne(
+      { _id: post.id },
+      { $pull: { comments: {_id: commentId} } }
+    );
+    //hoặc
+    // const postDelete = await Post.updateOne(
+    //   { _id: post.id },
+    //   { $pull: { comments: commentNeedDel } }
+    // );
+    return postDelete;
+  }
+  return null;
 };
 
 const reaction = async function ({ userId, postId }) {
@@ -50,7 +76,7 @@ const updateStatusPost = async function ({ post, newStatus }) {
 };
 
 const getPost = async function (postId) {
-  const post = await Post.findOne({_id: postId});
+  const post = await Post.findOne({ _id: postId });
   return post;
 };
 
@@ -59,5 +85,6 @@ export const postService = {
   createComment,
   reaction,
   updateStatusPost,
-  getPost
+  getPost,
+  deleteComment
 };

@@ -53,6 +53,33 @@ const postComment = async (req, res, next) => {
     next(customError);
   }
 };
+const deleteComment = async (req, res, next) => {
+  try {
+    const userId = req.body.userId;
+    const postId = req.params.id;
+    const commentId = req.params.commentId;
+    const post = await postService.getPost(postId);
+    if (!post) {
+      throw new ApiError(StatusCodes.NOT_FOUND, "Not found post!");
+    }
+    const deleteCommentResult = await postService.deleteComment({
+      post: post,
+      userId: userId,
+      commentId: commentId
+    });
+    if (deleteCommentResult == null) {
+      throw new ApiError(StatusCodes.NOT_FOUND, "Delete fail");
+    }
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: `Delete comment ${commentId} success!`,
+      deleteData: deleteCommentResult
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
+};
 
 const addReaction = async (req, res, next) => {
   try {
@@ -121,11 +148,15 @@ const getPost = async (req, res, next) => {
     if (!post) {
       throw new ApiError(StatusCodes.NOT_FOUND, "Not found post!");
     }
-    res.status(StatusCodes.OK).json({
-      success: true,
-      status: StatusCodes.OK,
-      data: post
-    });
+    if (post.status == enumStatus.statusPost.ACTIVE) {
+      res.status(StatusCodes.OK).json({
+        success: true,
+        status: StatusCodes.OK,
+        data: post
+      });
+    } else {
+      throw new ApiError(StatusCodes.NOT_FOUND, "Not found post!");
+    }
   } catch (error) {
     const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
     next(customError);
@@ -175,5 +206,6 @@ export const postController = {
   getPost,
   changeStatusPost,
   getComment,
-  getReaction
+  getReaction,
+  deleteComment
 };
