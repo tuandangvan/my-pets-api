@@ -4,6 +4,7 @@ import { authRoute } from "./authRoute";
 import { userRoute } from "./userRoute";
 import { petRoute } from "./petRoute";
 import { centerRoute } from "./centerRoute";
+import { postRoute } from "./postRoute";
 
 const router = express.Router();
 
@@ -19,5 +20,6 @@ router.use("/auth", authRoute);
 router.use("/user", userRoute);
 router.use("/pet", petRoute);
 router.use("/center", centerRoute);
+router.use("/post", postRoute);
 
 export const APIs_V1 = router;
