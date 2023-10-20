@@ -12,35 +12,6 @@ const createOTP = async function (data) {
   return otp.save();
 };
 
-function StopedInterval(intervalId) {
-  clearInterval(intervalId);
-  console.log("Stoped Interval!");
-  check = 0;
-}
-
-// Hàm xóa các mã OTP đã quá hạn (ví dụ: sau 5 phút)
-const deleteExpiredOTP = async function () {
-  if (check == 0 && intervalId != null) {
-    console.log("Interval running!");
-    check += 1;
-  }
-
-  if (intervalId != null) {
-    clearInterval(intervalId);
-  }
-
-  intervalId = setInterval(async () => {
-    const hasData = await OTPModel.find({});
-    if (hasData[0] == null) {
-      StopedInterval(intervalId);
-      return;
-    }
-    const expirationTime = new Date();
-    expirationTime.setMinutes(expirationTime.getMinutes() - 5); // 5 phút trước
-    await OTPModel.deleteMany({ createdAt: { $lt: expirationTime } });
-  }, intervalTime); // 1 giây
-};
-
 const checkOPTExited = async function (data) {
   try {
     // Tìm dòng dữ liệu chứa email tương ứng
@@ -79,7 +50,6 @@ const checkVerifyOTP = async function (data) {
 
 export const codeOTPService = {
   createOTP,
-  deleteExpiredOTP,
   checkVerifyOTP,
   checkOPTExited
 };
