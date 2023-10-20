@@ -17,11 +17,11 @@ const createAccount = async function (data) {
 const findByCredentials = async function ({ email, password }) {
   const account = await Account.findOne({ email });
   if (!account) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, "Tài khoản chưa được đăng kí");
+    throw new ApiError(StatusCodes.UNAUTHORIZED, "Not found account!");
   }
   const isPasswordMatch = await compareSync(password, account.password);
   if (!isPasswordMatch) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, "Mật khẩu không chính xác");
+    throw new ApiError(StatusCodes.UNAUTHORIZED, "Password incorrect!");
   }
   return account;
 };
@@ -30,15 +30,27 @@ const updatePassword = async function ({ email, newPassword }) {
   const account = await Account.findOne({ email });
 
   if (!account) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, "Tài khoản chưa được đăng kí");
+    throw new ApiError(StatusCodes.UNAUTHORIZED, "Not found account!");
   }
   account.password = hashSync(newPassword, 8);
   await account.save();
   return true;
 };
 
+const findAccountByEmail = async function (email) {
+  const account = await Account.findOne({ email });
+  return account;
+};
+
+const findAccountById = async function (email) {
+  const account = await Account.findOne({ _id });
+  return account;
+};
+
 export const accountService = {
   createAccount,
   findByCredentials,
-  updatePassword
+  updatePassword,
+  findAccountByEmail,
+  findAccountById
 };

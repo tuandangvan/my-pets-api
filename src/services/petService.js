@@ -24,8 +24,13 @@ const deletePet = async function (id) {
   return petDelete;
 };
 
-const getAll = async function () {
+const findAll = async function () {
   const pet = Pet.find();
+  return pet;
+};
+
+const findPetById = async function (id) {
+  const pet = Pet.findOne({_id: id});
   return pet;
 };
 
@@ -33,5 +38,6 @@ export const petService = {
   createPet,
   updatePet,
   deletePet,
-  getAll
+  findAll,
+  findPetById
 };
