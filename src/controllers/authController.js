@@ -102,7 +102,6 @@ const sendEmailAuthencation = async (req, res, next) => {
     if (!checkExits) {
       await codeOTPService.createOTP({ email: email, code: code });
     }
-    await codeOTPService.deleteExpiredOTP();
 
     const sendEmail = await sendMail.sendMailAuthencation({
       toMail: email,

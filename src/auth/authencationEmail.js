@@ -5,8 +5,8 @@ const sendMailAuthencation = async function ({ toMail, subject, text }) {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "foundandadoptionpets@gmail.com",
-        pass: "pvjufslocexnscob"
+        user: process.env.USER_EMAIL,
+        pass: process.env.PASSWORD_EMAIL
       }
     });
 

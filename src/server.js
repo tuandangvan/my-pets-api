@@ -26,9 +26,6 @@ const START_SERVER = () => {
     console.log(
       `3. Hello ${env.AUTHOR} Back-end Server is running successfully at http://${env.APP_HOST}:${env.APP_PORT}/`
     );
-    // xóa OPT cũ khi khởi động server
-    codeOTPService.deleteExpiredOTP();
-    console.log("Interval running!");
   });
 
   // Thực hiện các tác vụ clean up trước khi dừng server
