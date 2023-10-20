@@ -12,15 +12,14 @@ import { codeOTPService } from "~/services/codeOTPService";
 const signUp = async (req, res, next) => {
   try {
     const email = req.body.email;
-    const oldAccount = await Account.findOne({ email });
+    const oldAccount = await accountService.findAccountByEmail(email);
     if (oldAccount) {
       throw new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, Constant.userExist);
     }
     const newAccount = await accountService.createAccount(req.body);
     res.status(StatusCodes.CREATED).json({
       success: true,
-      message: "Đăng kí tài khoản thành công",
-      data: newAccount
+      message: "Register success!"
     });
   } catch (error) {
     const customError = new ApiError(
@@ -85,20 +84,18 @@ const refreshToken = async (req, res, next) => {
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
+
 const sendEmailAuthencation = async (req, res, next) => {
   try {
     const email = req.body.email;
 
-    const oldAccount = await Account.findOne({ email });
+    const oldAccount = await accountService.findAccountByEmail(email);
     if (!oldAccount) {
-      throw new ApiError(StatusCodes.BAD_REQUEST, "Email không tồn tại!");
+      throw new ApiError(StatusCodes.BAD_REQUEST, "Email not exist!");
     }
     const code = generateOTP();
 
-    const checkExits = await codeOTPService.checkOPTExited({
-      email: email,
-      code: code
-    });
+    const checkExits = await codeOTPService.checkOPTExited({ email: email, code: code });
     if (!checkExits) {
       await codeOTPService.createOTP({ email: email, code: code });
     }
@@ -110,7 +107,7 @@ const sendEmailAuthencation = async (req, res, next) => {
     });
     res.status(StatusCodes.OK).json({
       success: true,
-      message: "Gửi mã xác thực thành công!"
+      message: "Seen otp success!"
     });
   } catch (error) {
     const customError = new ApiError(
@@ -124,11 +121,11 @@ const sendEmailAuthencation = async (req, res, next) => {
 const verifyOTP = async (req, res, next) => {
   const email = req.body.email;
   const code = req.body.code;
-  const oldAccount = await Account.findOne({ email });
+  const oldAccount = await accountService.findAccountByEmail(email);
   if (!oldAccount) {
     res.status(StatusCodes.UNAUTHORIZED).json({
       success: false,
-      message: "Email không tồn tại!"
+      message: "Email not exist!"
     });
     return;
   }
@@ -158,14 +155,13 @@ function generateRandomPassword(length) {
     const randomIndex = Math.floor(Math.random() * charset.length);
     password += charset[randomIndex];
   }
-
   return password;
 }
 
 const forgotPassword = async (req, res, next) => {
   try {
     const email = req.body.email;
-    const account = await Account.findOne({ email });
+    const account = await accountService.findAccountByEmail(email);
     if (!account) {
       throw new ApiError(
         StatusCodes.UNAUTHORIZED,

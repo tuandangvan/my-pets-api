@@ -34,8 +34,14 @@ const addPetForCenter = async function ({ centerId, petId }) {
   return center;
 };
 
+const findCenterById = async function (id) {
+  const center = await Center.findOne({_id: id});
+  return center;
+};
+
 export const centerService = {
   createCenter,
   updateCenter,
-  addPetForCenter
+  addPetForCenter,
+  findCenterById
 };

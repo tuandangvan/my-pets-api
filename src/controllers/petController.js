@@ -38,15 +38,22 @@ const createPet = async (req, res, next) => {
 const updatePet = async (req, res, next) => {
   try {
     const role = req.body.role;
-    if (role == "user") {
+    if (role != "center") {
       throw new ApiError(StatusCodes.UNAUTHORIZED, "Bạn không có quyền này!");
     }
-
+    
+    const pet = await petService.findPetById(req.params.id);
+    if(!pet){
+      throw new ApiError(StatusCodes.NOT_FOUND, "Not found pet!");
+    }
+    const center = await centerService.findCenterById(req.body.centerId);
+    if(!center){
+      throw new ApiError(StatusCodes.NOT_FOUND, "Not found center!");
+    }
     const pets = await petService.updatePet({data: req.body, id: req.params.id});
     res.status(StatusCodes.OK).json({
       success: true,
-      message: "Cập nhật thú cưng thành công!",
-      data: pets
+      message: "Update pet success!"
     });
   } catch (error) {
     const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
@@ -57,15 +64,21 @@ const updatePet = async (req, res, next) => {
 const deletePet = async (req, res, next) => {
   try {
     const role = req.body.role;
-    if (role == "user") {
+    if (role != "center") {
       throw new ApiError(StatusCodes.UNAUTHORIZED, "Bạn không có quyền này!");
     }
-
-    const pets = await petService.deletePet(req.params.id);
+    const pet = await petService.findPetById(req.params.id);
+    if(!pet){
+      throw new ApiError(StatusCodes.NOT_FOUND, "Not found pet!");
+    }
+    const center = await centerService.findCenterById(req.body.centerId);
+    if(!center){
+      throw new ApiError(StatusCodes.NOT_FOUND, "Not found center!");
+    }
+    await petService.deletePet(req.params.id);
     res.status(StatusCodes.OK).json({
       success: true,
-      message: "Xóa thú cưng thành công!",
-      data: pets
+      message: "Delete pet success!"
     });
   } catch (error) {
     const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
@@ -75,7 +88,7 @@ const deletePet = async (req, res, next) => {
 
 const getAllPets = async (req, res, next) => {
   try {
-    const pets = await petService.getAll();
+    const pets = await petService.findAll();
     res.status(StatusCodes.OK).json({
       success: true,
       data: pets
