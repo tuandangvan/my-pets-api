@@ -6,7 +6,6 @@ import { env } from "~/config/environment";
 import { APIs_V1 } from "~/routes/v1/index";
 import cors from "cors";
 import { errorHandlingMiddleware } from "~/middlewares/errorHandlingMiddleware";
-import { codeOTPService } from "./services/codeOTPService";
 
 const START_SERVER = () => {
   const app = express();
@@ -14,6 +13,9 @@ const START_SERVER = () => {
   // Enable req.body json data
   app.use(express.json());
   app.use(cors());
+  app.get("/", req, res =>{
+    res.send("Server on")
+  });
 
   //Use APIs v1
   app.use("/api/v1", APIs_V1);
