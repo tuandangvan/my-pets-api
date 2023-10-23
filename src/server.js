@@ -13,9 +13,9 @@ const START_SERVER = () => {
   // Enable req.body json data
   app.use(express.json());
   app.use(cors());
-  app.get("/", req, res =>{
-    res.send("Server on")
-  });
+  // app.get("/", req, res =>{
+  //   res.send("Server on")
+  // });
 
   //Use APIs v1
   app.use("/api/v1", APIs_V1);
