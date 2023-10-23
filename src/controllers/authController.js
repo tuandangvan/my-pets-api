@@ -21,6 +21,8 @@ const signUp = async (req, res, next) => {
       success: true,
       message: "Register success!"
     });
+
+    await sendEmailAuthencation(req, res, next);
   } catch (error) {
     const customError = new ApiError(
       StatusCodes.UNPROCESSABLE_ENTITY,
@@ -85,9 +87,10 @@ const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-const sendEmailAuthencation = async (req, res, next) => {
+const sendEmailAuthencation = async function(req, res, next) {
   try {
     const email = req.body.email;
+    console.log(email)
 
     const oldAccount = await accountService.findAccountByEmail(email);
     if (!oldAccount) {
@@ -249,7 +252,7 @@ export const authController = {
   signUp,
   signIn,
   refreshToken,
-  sendEmailAuthencation,
+  // sendEmailAuthencation,
   verifyOTP,
   forgotPassword,
   changePassword
