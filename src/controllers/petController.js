@@ -1,5 +1,4 @@
 import { StatusCodes } from "http-status-codes";
-import accountModel from "~/models/accountModel";
 import centerModel from "~/models/centerModel";
 import { centerService } from "~/services/centerService";
 import { petService } from "~/services/petService";
