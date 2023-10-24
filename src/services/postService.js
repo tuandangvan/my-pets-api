@@ -2,11 +2,15 @@ import mongoose from "mongoose";
 import Post from "~/models/postModel";
 
 const createPost = async function ({ data, userId }) {
+  console.log(data)
+  console.log(userId)
   const post = new Post({
     _id: new mongoose.Types.ObjectId(),
     ...data,
+    reaction: [],
     userId: userId
   });
+  console.log(post)
   return post.save();
 };
 

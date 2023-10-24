@@ -23,6 +23,10 @@ const accountSchema = mongoose.Schema(
       type: Boolean,
       default: true //true: isActive, false: noActive
     },
+    refreshToken: {
+      type: String,
+      default: ""
+    }
   },
   {
     timestamps: true
