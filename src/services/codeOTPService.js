@@ -33,18 +33,22 @@ const checkOPTExited = async function (data) {
 };
 
 const checkVerifyOTP = async function (data) {
-  const otp = await OTPModel.findOne({
-    email: data.email,
-    code: data.code,
-    used: false
-  });
-  if (otp) {
-    otp.used = true;
-    await otp.save();
-    return "verifySuccess";
-  } else {
-    // Mã OTP không hợp lệ hoặc đã được sử dụng
-    return "verifyFail";
+  try {
+    const otp = await OTPModel.findOne({
+      email: data.email,
+      code: data.code,
+      used: false
+    });
+    if (otp) {
+      otp.used = true;
+      await otp.save();
+      return "verifySuccess";
+    } else {
+      // Mã OTP không hợp lệ hoặc đã được sử dụng
+      return "verifyFail";
+    }
+  } catch (error) {
+    return error;
   }
 };
 

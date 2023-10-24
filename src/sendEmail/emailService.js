@@ -1,27 +1,26 @@
 const nodemailer = require("nodemailer");
 
-const sendMailAuthencation = async function ({ toMail, subject, text }) {
+const sendMailAuthencation = async function ({ receiver, subject, text }) {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.USER_EMAIL,
-        pass: process.env.PASSWORD_EMAIL
+        user: "foundandadoptionpets@gmail.com",
+        pass: "mjgfghhzhvwoxolm"
       }
     });
 
     const mailOptions = {
       from: "foundandadoptionpets@gmail.com",
-      to: `${toMail}`,
+      to: `${receiver}`,
       subject: `${subject}`,
       text: `${text}`
     };
-
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        return false;
+        console.log(error);
       } else {
-        console.log("Email sent: " + info.response);        
+        console.log("Email sent: " + info.response);
         return true;
       }
     });
@@ -29,6 +28,6 @@ const sendMailAuthencation = async function ({ toMail, subject, text }) {
   } catch (error) {}
 };
 
-export const sendMail = {
+export const emailService = {
   sendMailAuthencation
 };
