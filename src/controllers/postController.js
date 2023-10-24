@@ -1,26 +1,35 @@
 import { StatusCodes } from "http-status-codes";
+import { authencationToken } from "~/auth/authenticationToken";
 import { enumStatus } from "~/enums/enum";
 import userModel from "~/models/userModel";
 import { postService } from "~/services/postService";
 import ApiError from "~/utils/ApiError";
+import Constant from "~/utils/contants";
 
 const addPost = async (req, res, next) => {
   try {
-    const { userId, title, content, images } = req.body;
-
-    const user = await userModel.findOne({ _id: userId });
-
-    if (!user) {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Not found user!");
+    
+    const userToken = await authencationToken.checkExpireAccessToken(
+      req.headers["accesstoken"]
+    );
+    // console.log(userToken.statusCode);
+    if (userToken.statusCode==422) {
+      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.tokenExpired);
     }
 
-    await postService.createPost({ data: req.body, userId: userId });
+    // const user = await userModel.findOne({ _id: userToken.id });
+
+    // if (!user) {
+    //   throw new ApiError(StatusCodes.NOT_FOUND, "Not found user!");
+    // }
+
+    await postService.createPost({ data: req.body, userId: userToken.userId });
     res.status(StatusCodes.CREATED).json({
       success: true,
       message: "Post success!"
     });
   } catch (error) {
-    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
     next(customError);
   }
 };

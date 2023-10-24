@@ -21,8 +21,7 @@ const postSchema = mongoose.Schema(
     },
     reaction: [{
         type: Schema.Types.ObjectId,
-        ref: "Users",
-        unique: true
+        ref: "Users"
     }],
     images: [{
       type: String

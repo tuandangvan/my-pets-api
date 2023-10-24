@@ -6,8 +6,10 @@ import { jwtUtils } from "~/utils/jwtUtils";
 import { verify } from "jsonwebtoken";
 import { env } from "~/config/environment";
 import { accountService } from "~/services/accountService";
-import { sendMail } from "~/auth/authencationEmail";
+import { emailService } from "~/sendEmail/emailService";
 import { codeOTPService } from "~/services/codeOTPService";
+import { userService } from "~/services/userService";
+import { generate, generatePassword } from "~/utils/generate";
 
 const signUp = async (req, res, next) => {
   try {
@@ -17,12 +19,21 @@ const signUp = async (req, res, next) => {
       throw new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, Constant.userExist);
     }
     const newAccount = await accountService.createAccount(req.body);
-    res.status(StatusCodes.CREATED).json({
-      success: true,
-      message: "Register success!"
-    });
 
-    await sendEmailAuthencation(req, res, next);
+    //send email
+    const code = await generate.generateOTP();
+    await codeOTPService.createOTP({ email: email, code: code });
+    const sendEmail = await emailService.sendMailAuthencation({
+      receiver: email,
+      subject: "Verify email address",
+      text: `This is authentic security notification from Found and Adoption Pets App.\nThis is your code authencation: ${code}.\nWill expire within 5 minutes!`
+    });
+    if (newAccount && sendEmail) {
+      res.status(StatusCodes.CREATED).json({
+        success: true,
+        message: "Register success!"
+      });
+    }
   } catch (error) {
     const customError = new ApiError(
       StatusCodes.UNPROCESSABLE_ENTITY,
@@ -32,14 +43,42 @@ const signUp = async (req, res, next) => {
   }
 };
 
+const checkExpireToken = async (req, res, next) => {
+  //check refresh Token by email
+  const tokenHeader = req.headers["refreshtoken"];
+  if (tokenHeader) {
+    const checkRefreshTokenSignIn = await verify(tokenHeader, env.JWT_SECRET);
+    if (checkRefreshTokenSignIn) {
+      const accountTemp = await accountService.findAccountByEmail(
+        checkRefreshTokenSignIn.email
+      );
+      if (accountTemp.refreshToken == tokenHeader) {
+        //nếu token còn hạn thì không gọi đăng nhập
+        res.status(StatusCodes.OK).json({ success: true, message: "Logged!" });
+        return;
+      }
+    }
+  }
+  res
+    .status(StatusCodes.NOT_FOUND)
+    .json({ success: false, message: "Please login!" });
+};
+
 const signIn = async (req, res, next) => {
   try {
     const account = await accountService.findByCredentials(req.body);
+    const user1 = await userService.findUserByAccountId(account.id);
 
-    const token = await jwtUtils.generateAuthToken(account);
+    const accessToken = await jwtUtils.generateAuthToken({
+      account: account,
+      userId: user1.id
+    });
 
-    const refreshToken = await jwtUtils.generateRefreshToken(account);
-    const updateAccount = await Account.findByIdAndUpdate(
+    const refreshToken = await jwtUtils.generateRefreshToken({
+      account: account,
+      userId: user1.id
+    });
+    await Account.findByIdAndUpdate(
       account._id,
       {
         refreshToken: refreshToken
@@ -48,7 +87,21 @@ const signIn = async (req, res, next) => {
         new: true
       }
     );
-    res.status(StatusCodes.OK).json({ account: updateAccount, token });
+    const user = await userService.findUserByAccountId(account._id);
+    const userData = {
+      _id: user._id,
+      accountId: user.accountId._id,
+      email: user.accountId.email,
+      role: user.accountId.role,
+      isActive: user.accountId.isActive,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phoneNumber: user.phoneNumber,
+      address: user.address,
+      refreshToken: user.accountId.refreshToken
+    };
+
+    res.status(StatusCodes.OK).json({ data: userData, accessToken });
   } catch (error) {
     const customError = new ApiError(
       StatusCodes.INTERNAL_SERVER_ERROR,
@@ -57,60 +110,87 @@ const signIn = async (req, res, next) => {
     next(customError);
   }
 };
+
+const signOut = async (req, res, next) => {
+  try {
+    //kiem tra han cua token
+    const checkRefreshTokenSignIn = await verify(
+      req.headers["refreshtoken"],
+      env.JWT_SECRET
+    );
+    //con han
+    if (checkRefreshTokenSignIn) {
+      await Account.findByIdAndUpdate(
+        checkRefreshTokenSignIn._id,
+        {
+          refreshToken: ""
+        },
+        {
+          new: true
+        }
+      );
+    }
+    res.status(StatusCodes.OK).json({ message: "Signed out successfully!" });
+    return;
+  } catch (error) {
+    const customError = new ApiError(
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      error.message
+    );
+    next(customError);
+  }
+};
+
 const refreshToken = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
     const account = await Account.findOne({ refreshToken });
     if (!account) {
-      throw new ApiError(
-        StatusCodes.UNAUTHORIZED,
-        "Refresh token không hợp lệ"
-      );
+      throw new ApiError(StatusCodes.UNAUTHORIZED, "Refresh invalid token!");
     }
+
     await verify(refreshToken, env.JWT_SECRET);
-    const accessToken = await jwtUtils.generateAuthToken(
-      account._id,
-      account.role
-    );
+    const user1 = await userService.findUserByAccountId(account._id);
+    const accessToken = await jwtUtils.generateAuthToken({
+      account: account,
+      userId: user1.id
+    });
     res.status(StatusCodes.OK).json({ accessToken });
   } catch (error) {
-    next(
-      new ApiError(StatusCodes.INTERNAL_SERVER_ERROR).message(
-        "Đã có lỗi, không thể cấp access token"
-      )
+    const customError = new ApiError(
+      StatusCodes.UNPROCESSABLE_ENTITY,
+      error.message
     );
+    next(customError);
   }
 };
 
-// Tạo mã OTP ngẫu nhiên
-const generateOTP = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-};
-
-const sendEmailAuthencation = async function(req, res, next) {
+const reSendEmailAuthencation = async function (req, res, next) {
   try {
     const email = req.body.email;
-    console.log(email)
-
     const oldAccount = await accountService.findAccountByEmail(email);
-    if (!oldAccount) {
-      throw new ApiError(StatusCodes.BAD_REQUEST, "Email not exist!");
-    }
-    const code = generateOTP();
 
-    const checkExits = await codeOTPService.checkOPTExited({ email: email, code: code });
+    if (!oldAccount) {
+      throw new ApiError(StatusCodes.UNAUTHORIZED, "Email does not exist!");
+    }
+
+    const code = await generate.generateOTP();
+    const checkExits = await codeOTPService.checkOPTExited({
+      email: email,
+      code: code
+    });
     if (!checkExits) {
       await codeOTPService.createOTP({ email: email, code: code });
     }
 
-    const sendEmail = await sendMail.sendMailAuthencation({
-      toMail: email,
+    const sendEmail = await emailService.sendMailAuthencation({
+      receiver: email,
       subject: "Verify email address",
       text: `This is authentic security notification from Found and Adoption Pets App.\nThis is your code authencation: ${code}.\nWill expire within 5 minutes!`
     });
     res.status(StatusCodes.OK).json({
       success: true,
-      message: "Seen otp success!"
+      message: "Resend successfully!"
     });
   } catch (error) {
     const customError = new ApiError(
@@ -122,44 +202,39 @@ const sendEmailAuthencation = async function(req, res, next) {
 };
 
 const verifyOTP = async (req, res, next) => {
-  const email = req.body.email;
-  const code = req.body.code;
-  const oldAccount = await accountService.findAccountByEmail(email);
-  if (!oldAccount) {
-    res.status(StatusCodes.UNAUTHORIZED).json({
-      success: false,
-      message: "Email not exist!"
-    });
-    return;
-  }
+  try {
+    const email = req.body.email;
+    const code = req.body.code;
+    const oldAccount = await accountService.findAccountByEmail(email);
+    if (!oldAccount) {
+      throw new ApiError(StatusCodes.UNAUTHORIZED, "Email does not exits!");
+    }
 
-  const check = await codeOTPService.checkVerifyOTP({
-    email: email,
-    code: code
-  });
-  if (check == "verifyFail") {
-    res.status(StatusCodes.BAD_REQUEST).json({
-      success: false,
-      message: "Mã xác thực không hợp lệ hoặc đã hết hạn!"
+    const check = await codeOTPService.checkVerifyOTP({
+      email: email,
+      code: code
     });
-  } else {
-    res.status(StatusCodes.OK).json({
-      success: true,
-      message: "Xác thực tài khoản thành công!"
-    });
+    if (check == "verifyFail") {
+      res.status(StatusCodes.UNAUTHORIZED).json({
+        success: false,
+        message: "The authentication code is invalid or has expired!"
+      });
+    } else if (check == "verifySuccess") {
+      res.status(StatusCodes.OK).json({
+        success: true,
+        message: "Successfully authenticated account!"
+      });
+    } else {
+      throw new ApiError(StatusCodes.UNAUTHORIZED, check.message);
+    }
+  } catch (error) {
+    const customError = new ApiError(
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      error.message
+    );
+    next(customError);
   }
 };
-function generateRandomPassword(length) {
-  const charset =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+";
-  let password = "";
-
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * charset.length);
-    password += charset[randomIndex];
-  }
-  return password;
-}
 
 const forgotPassword = async (req, res, next) => {
   try {
@@ -171,9 +246,9 @@ const forgotPassword = async (req, res, next) => {
         "Tài khoản chưa được đăng kí"
       );
     }
-    const newPassword = generateRandomPassword(8);
-    const sendEmail = await sendMail.sendMailAuthencation({
-      toMail: email,
+    const newPassword = generatePassword.generateRandomPassword(8);
+    const sendEmail = await emailService.sendMailAuthencation({
+      receiver: email,
       subject: "Reset Password Found and Adoption Pets App",
       text: `Hello,
 
@@ -223,8 +298,8 @@ const changePassword = async (req, res, next) => {
       email: email,
       newPassword: newPassword
     });
-    const sendEmail = await sendMail.sendMailAuthencation({
-      toMail: email,
+    const sendEmail = await emailService.sendMailAuthencation({
+      receiver: email,
       subject: "Your Password Has Been Changed",
       text: `Dear [${email}],
 
@@ -252,8 +327,10 @@ export const authController = {
   signUp,
   signIn,
   refreshToken,
-  // sendEmailAuthencation,
+  reSendEmailAuthencation,
   verifyOTP,
   forgotPassword,
-  changePassword
+  changePassword,
+  signOut,
+  checkExpireToken
 };
