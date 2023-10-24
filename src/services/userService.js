@@ -10,11 +10,15 @@ const createUser = async function ({data, id}) {
   return user.save();
 };
 
-const getAll = async function () {
-  const user = await User.findOne({_id: "652709069659dedef8c0addf"})
-  .populate("accountId").select("_id accountId name phone");
+const getAll = async function (accountId) {
+  const user = await User.findOne({_id: accountId})
+  .populate("accountId");
+  return user;
+};
 
-  console.log(user.accountId.email);
+const findUserByAccountId = async function (accountId) {
+  const user = await User.findOne({accountId: accountId})
+  .populate("accountId");
   return user;
 };
 
@@ -42,5 +46,6 @@ export const userService = {
   createUser,
   getAll,
   getUsers,
-  updateUser
+  updateUser,
+  findUserByAccountId
 };

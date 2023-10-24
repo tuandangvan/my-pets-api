@@ -8,6 +8,7 @@ import { env } from "~/config/environment";
 import { accountService } from "~/services/accountService";
 import { sendMail } from "~/auth/authencationEmail";
 import { codeOTPService } from "~/services/codeOTPService";
+import { userService } from "~/services/userService";
 
 const signUp = async (req, res, next) => {
   try {
@@ -32,14 +33,43 @@ const signUp = async (req, res, next) => {
   }
 };
 
+const checkExpireToken = async (req, res, next) => {
+  //check refresh Token by email
+  const tokenHeader = req.headers["refreshtoken"];
+  if (tokenHeader) {
+    const checkRefreshTokenSignIn = await verify(tokenHeader, env.JWT_SECRET);
+    if (checkRefreshTokenSignIn) {
+      const accountTemp = await accountService.findAccountByEmail(
+        checkRefreshTokenSignIn.email
+      );
+      if (accountTemp.refreshToken == tokenHeader) {
+        //nếu token còn hạn thì không gọi đăng nhập
+        res.status(StatusCodes.OK).json({ success: true, message: "Logged!" });
+        return;
+      }
+    }
+  }
+  res
+    .status(StatusCodes.NOT_FOUND)
+    .json({ success: false, message: "Please sign in!" });
+};
+
 const signIn = async (req, res, next) => {
   try {
+    //nếu token hết hạn thì tiến hành đăng nhập lại
     const account = await accountService.findByCredentials(req.body);
+    const user1 = await userService.findUserByAccountId(account.id);
 
-    const token = await jwtUtils.generateAuthToken(account);
+    const accessToken = await jwtUtils.generateAuthToken({
+      account: account,
+      userId: user1.id
+    });
 
-    const refreshToken = await jwtUtils.generateRefreshToken(account);
-    const updateAccount = await Account.findByIdAndUpdate(
+    const refreshToken = await jwtUtils.generateRefreshToken({
+      account: account,
+      userId: user1.id
+    });
+    await Account.findByIdAndUpdate(
       account._id,
       {
         refreshToken: refreshToken
@@ -48,7 +78,21 @@ const signIn = async (req, res, next) => {
         new: true
       }
     );
-    res.status(StatusCodes.OK).json({ account: updateAccount, token });
+    const user = await userService.findUserByAccountId(account._id);
+    const userData = {
+      _id: user._id,
+      accountId: user.accountId._id,
+      email: user.accountId.email,
+      role: user.accountId.role,
+      isActive: user.accountId.isActive,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phoneNumber: user.phoneNumber,
+      address: user.address,
+      refreshToken: user.accountId.refreshToken
+    };
+
+    res.status(StatusCodes.OK).json({ data: userData, accessToken });
   } catch (error) {
     const customError = new ApiError(
       StatusCodes.INTERNAL_SERVER_ERROR,
@@ -57,6 +101,29 @@ const signIn = async (req, res, next) => {
     next(customError);
   }
 };
+
+const signOut = async (req, res, next) => {
+  //kiem tra han cua token
+  const checkRefreshTokenSignIn = await verify(
+    req.headers["refreshtoken"],
+    env.JWT_SECRET
+  );
+  //con han
+  if (checkRefreshTokenSignIn) {
+    await Account.findByIdAndUpdate(
+      checkRefreshTokenSignIn._id,
+      {
+        refreshToken: ""
+      },
+      {
+        new: true
+      }
+    );
+  }
+  res.status(StatusCodes.OK).json({ message: "Logout success!" });
+  return;
+};
+
 const refreshToken = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
@@ -67,18 +134,20 @@ const refreshToken = async (req, res, next) => {
         "Refresh token không hợp lệ"
       );
     }
+
     await verify(refreshToken, env.JWT_SECRET);
-    const accessToken = await jwtUtils.generateAuthToken(
-      account._id,
-      account.role
-    );
+    const user1 = await userService.findUserByAccountId(account._id);
+    const accessToken = await jwtUtils.generateAuthToken({
+      account: account,
+      userId: user1.id
+    });
     res.status(StatusCodes.OK).json({ accessToken });
   } catch (error) {
-    next(
-      new ApiError(StatusCodes.INTERNAL_SERVER_ERROR).message(
-        "Đã có lỗi, không thể cấp access token"
-      )
+    const customError = new ApiError(
+      StatusCodes.UNPROCESSABLE_ENTITY,
+      error.message
     );
+    next(customError);
   }
 };
 
@@ -87,10 +156,10 @@ const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-const sendEmailAuthencation = async function(req, res, next) {
+const sendEmailAuthencation = async function (req, res, next) {
   try {
     const email = req.body.email;
-    console.log(email)
+    console.log(email);
 
     const oldAccount = await accountService.findAccountByEmail(email);
     if (!oldAccount) {
@@ -98,7 +167,10 @@ const sendEmailAuthencation = async function(req, res, next) {
     }
     const code = generateOTP();
 
-    const checkExits = await codeOTPService.checkOPTExited({ email: email, code: code });
+    const checkExits = await codeOTPService.checkOPTExited({
+      email: email,
+      code: code
+    });
     if (!checkExits) {
       await codeOTPService.createOTP({ email: email, code: code });
     }
@@ -255,5 +327,7 @@ export const authController = {
   // sendEmailAuthencation,
   verifyOTP,
   forgotPassword,
-  changePassword
+  changePassword,
+  signOut,
+  checkExpireToken
 };
