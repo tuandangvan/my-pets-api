@@ -10,6 +10,7 @@ import { emailService } from "~/sendEmail/emailService";
 import { codeOTPService } from "~/services/codeOTPService";
 import { userService } from "~/services/userService";
 import { generate, generatePassword } from "~/utils/generate";
+import { authencationToken } from "~/auth/authenticationToken";
 
 const signUp = async (req, res, next) => {
   try {
@@ -44,24 +45,34 @@ const signUp = async (req, res, next) => {
 };
 
 const checkExpireToken = async (req, res, next) => {
-  //check refresh Token by email
-  const tokenHeader = req.headers["refreshtoken"];
-  if (tokenHeader) {
-    const checkRefreshTokenSignIn = await verify(tokenHeader, env.JWT_SECRET);
-    if (checkRefreshTokenSignIn) {
-      const accountTemp = await accountService.findAccountByEmail(
-        checkRefreshTokenSignIn.email
-      );
-      if (accountTemp.refreshToken == tokenHeader) {
-        //nếu token còn hạn thì không gọi đăng nhập
-        res.status(StatusCodes.OK).json({ success: true, message: "Logged!" });
-        return;
+  try {
+    //check refresh Token by email
+    const tokenHeader = req.headers["refreshtoken"];
+    if (tokenHeader) {
+      const checkRefreshTokenSignIn = verify(tokenHeader, env.JWT_SECRET);
+      if (checkRefreshTokenSignIn) {
+        const accountTemp = await accountService.findAccountByEmail(
+          checkRefreshTokenSignIn.email
+        );
+        if (accountTemp.refreshToken == tokenHeader) {
+          //nếu token còn hạn thì không gọi đăng nhập
+          res
+            .status(StatusCodes.OK)
+            .json({ success: true, message: "Logged!" });
+          return;
+        }
       }
     }
+    res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ success: false, message: "Please login!" });
+  } catch (error) {
+    const customError = new ApiError(
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      error.message
+    );
+    next(customError);
   }
-  res
-    .status(StatusCodes.NOT_FOUND)
-    .json({ success: false, message: "Please login!" });
 };
 
 const signIn = async (req, res, next) => {
@@ -114,7 +125,7 @@ const signIn = async (req, res, next) => {
 const signOut = async (req, res, next) => {
   try {
     //kiem tra han cua token
-    const checkRefreshTokenSignIn = await verify(
+    const checkRefreshTokenSignIn = verify(
       req.headers["refreshtoken"],
       env.JWT_SECRET
     );
@@ -143,13 +154,13 @@ const signOut = async (req, res, next) => {
 
 const refreshToken = async (req, res, next) => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.headers["refreshtoken"];
     const account = await Account.findOne({ refreshToken });
     if (!account) {
       throw new ApiError(StatusCodes.UNAUTHORIZED, "Refresh invalid token!");
     }
 
-    await verify(refreshToken, env.JWT_SECRET);
+    verify(refreshToken, env.JWT_SECRET);
     const user1 = await userService.findUserByAccountId(account._id);
     const accessToken = await jwtUtils.generateAuthToken({
       account: account,
@@ -171,7 +182,7 @@ const reSendEmailAuthencation = async function (req, res, next) {
     const oldAccount = await accountService.findAccountByEmail(email);
 
     if (!oldAccount) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, "Email does not exist!");
+      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.emailNotExist);
     }
 
     const code = await generate.generateOTP();
@@ -207,7 +218,7 @@ const verifyOTP = async (req, res, next) => {
     const code = req.body.code;
     const oldAccount = await accountService.findAccountByEmail(email);
     if (!oldAccount) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, "Email does not exits!");
+      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.emailNotExist);
     }
 
     const check = await codeOTPService.checkVerifyOTP({
@@ -241,10 +252,7 @@ const forgotPassword = async (req, res, next) => {
     const email = req.body.email;
     const account = await accountService.findAccountByEmail(email);
     if (!account) {
-      throw new ApiError(
-        StatusCodes.UNAUTHORIZED,
-        "Tài khoản chưa được đăng kí"
-      );
+      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.emailNotExist);
     }
     const newPassword = generatePassword.generateRandomPassword(8);
     const sendEmail = await emailService.sendMailAuthencation({
@@ -252,7 +260,7 @@ const forgotPassword = async (req, res, next) => {
       subject: "Reset Password Found and Adoption Pets App",
       text: `Hello,
 
-      You have requested to reset your password for your account. Please follow the link below to reset your password:
+      You have requested to reset your password for your account. Please follow the code below to reset your password:
       
       Reset Password: ${newPassword}
       
@@ -270,7 +278,7 @@ const forgotPassword = async (req, res, next) => {
     if (sendEmail) {
       res.status(StatusCodes.OK).json({
         success: true,
-        message: "Yêu cầu reset password đã được thực hiện!"
+        message: "The password reset request has been made!"
       });
     }
   } catch (error) {
@@ -284,35 +292,44 @@ const forgotPassword = async (req, res, next) => {
 
 const changePassword = async (req, res, next) => {
   try {
-    const email = req.body.email;
+    // const email = req.body.email;
+
+    const accessToken = req.headers["accesstoken"];
+    const token = await authencationToken.checkExpireAccessToken(accessToken);
+    if (!token) {
+      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.tokenExpired);
+    }
+
     const password = req.body.password;
     const newPassword = req.body.newPassword;
     const account = await accountService.findByCredentials({
-      email: email,
+      email: token.email,
       password: password
     });
     if (!account) {
-      return;
+      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.wrongPassword);
     }
     await accountService.updatePassword({
-      email: email,
+      email: token.email,
       newPassword: newPassword
     });
-    const sendEmail = await emailService.sendMailAuthencation({
-      receiver: email,
-      subject: "Your Password Has Been Changed",
-      text: `Dear [${email}],
 
-      This is to inform you that your password for your account at Found and Adoption Pets App has been successfully changed. If you did not make this change, please contact our support team immediately.
-      If you did change your password, you can ignore this message.
-      Thank you for using our services.
-      Sincerely,
-      Found and Adoption Pets`
+    const user = await userService.findUserByAccountId(account.id);
+
+    const sendEmail = await emailService.sendMailAuthencation({
+      receiver: token.email,
+      subject: "Password changed successfully",
+      text: ` Dear [${user.lastName}],
+  This is to inform you that your password for your account at Found and Adoption Pets App has been successfully changed. If you did not make this change, please contact our support team immediately.
+  If you did change your password, you can ignore this message.
+  Thank you for using our services.
+  Sincerely,
+  Found and Adoption Pets`
     });
 
     res.status(StatusCodes.OK).json({
       success: true,
-      message: "Đổi mật khẩu thành công!"
+      message: "Password changed successfully!"
     });
   } catch (error) {
     const customError = new ApiError(
