@@ -9,7 +9,7 @@ import { accountService } from "~/services/accountService";
 import { emailService } from "~/sendEmail/emailService";
 import { codeOTPService } from "~/services/codeOTPService";
 import { userService } from "~/services/userService";
-import { generate, generatePassword } from "~/utils/generate";
+import { generate } from "~/utils/generate";
 import { authencationToken } from "~/auth/authenticationToken";
 
 const signUp = async (req, res, next) => {
@@ -27,8 +27,14 @@ const signUp = async (req, res, next) => {
     const sendEmail = await emailService.sendMailAuthencation({
       receiver: email,
       subject: "Verify email address",
-      text: `This is authentic security notification from Found and Adoption Pets App.\nThis is your code authencation: ${code}.\nWill expire within 5 minutes!`
+      purpose: "VERIFY EMAIL ADDRESS!",
+      firstName: email,
+      lastName: "",
+      require: "A request has been made to verify your email address!",
+      success: "Here is your authentication code:",
+      text: code
     });
+
     if (newAccount && sendEmail) {
       res.status(StatusCodes.CREATED).json({
         success: true,
@@ -196,8 +202,13 @@ const reSendEmailAuthencation = async function (req, res, next) {
 
     const sendEmail = await emailService.sendMailAuthencation({
       receiver: email,
-      subject: "Verify email address",
-      text: `This is authentic security notification from Found and Adoption Pets App.\nThis is your code authencation: ${code}.\nWill expire within 5 minutes!`
+      subject: "Resend verify email address",
+      purpose: "VERIFY EMAIL ADDRESS!",
+      firstName: email,
+      lastName: "",
+      require: "A request has been made to verify your email address!",
+      success: "Here is your authentication code:",
+      text: code
     });
     res.status(StatusCodes.OK).json({
       success: true,
@@ -254,20 +265,18 @@ const forgotPassword = async (req, res, next) => {
     if (!account) {
       throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.emailNotExist);
     }
-    const newPassword = generatePassword.generateRandomPassword(8);
+
+    const user = await userService.findUserByAccountId(account.id);
+    const newPassword = await generate.generateRandomPassword(8);
     const sendEmail = await emailService.sendMailAuthencation({
       receiver: email,
       subject: "Reset Password Found and Adoption Pets App",
-      text: `Hello,
-
-      You have requested to reset your password for your account. Please follow the code below to reset your password:
-      
-      Reset Password: ${newPassword}
-      
-      If you did not request this password reset, please ignore this email.
-      
-      Best regards,
-      Found and Adoption Pets`
+      purpose: "FORGOT YOUR\nPASSWORD?",
+      firstName: user.firstName,
+      lastName: user.lastName,
+      require: "There was a request to change your password!",
+      success: "Your password has been changed successfully. Below is your new password:",
+      text: newPassword
     });
 
     await accountService.updatePassword({
@@ -292,8 +301,6 @@ const forgotPassword = async (req, res, next) => {
 
 const changePassword = async (req, res, next) => {
   try {
-    // const email = req.body.email;
-
     const accessToken = req.headers["accesstoken"];
     const token = await authencationToken.checkExpireAccessToken(accessToken);
     if (!token) {
@@ -318,13 +325,13 @@ const changePassword = async (req, res, next) => {
 
     const sendEmail = await emailService.sendMailAuthencation({
       receiver: token.email,
-      subject: "Password changed successfully",
-      text: ` Dear [${user.lastName}],
-  This is to inform you that your password for your account at Found and Adoption Pets App has been successfully changed. If you did not make this change, please contact our support team immediately.
-  If you did change your password, you can ignore this message.
-  Thank you for using our services.
-  Sincerely,
-  Found and Adoption Pets`
+      subject: "Change password",
+      purpose: "CHANGE PASSWORD!",
+      firstName: user.firstName,
+      lastName: user.lastName,
+      require: "",
+      success: "",
+      text: null
     });
 
     res.status(StatusCodes.OK).json({
