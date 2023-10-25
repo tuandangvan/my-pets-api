@@ -1,21 +1,27 @@
 import { sign } from "jsonwebtoken";
 import { env } from "~/config/environment";
-const generateAuthToken = async function ({ _id, name }) {
+const generateAuthToken = async function ({account, userId}) {
   const token = await sign(
     {
-      _id: _id,
-      name: name
+      id: account.id,
+      email: account.email,
+      role: account.role,
+      isActive: account.isActive,
+      userId: userId
     },
     env.JWT_SECRET,
-    { expiresIn: "60000" }
+    { expiresIn: "10m" }
   );
   return token;
 };
-const generateRefreshToken = async function ({ _id, name }) {
+const generateRefreshToken = async function ({account, userId}) {
   const token = await sign(
     {
-      _id: _id,
-      name: name
+      id: account.id,
+      email: account.email,
+      role: account.role,
+      isActive: account.isActive,
+      userId: userId
     },
     env.JWT_SECRET,
     { expiresIn: "3d" }

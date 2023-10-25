@@ -49,7 +49,7 @@ const findUserByNamePhoneEmail = async (req, res, next) => {
 
 const updateUserForUser = async(req, res, next) => {
   try {
-    const users = await userService.getUsers(req.body.search);
+    const users = await userService.updateUser(req.body.search);
     res.status(StatusCodes.OK).json({
       success: true,
       data: users
