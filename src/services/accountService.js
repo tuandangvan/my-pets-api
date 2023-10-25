@@ -4,7 +4,6 @@ import { hashSync } from "bcrypt";
 import ApiError from "~/utils/ApiError";
 import { StatusCodes } from "http-status-codes";
 import { compareSync } from "bcrypt";
-import userModel from "~/models/userModel";
 
 const createAccount = async function (data) {
   const account = new Account({
@@ -16,7 +15,6 @@ const createAccount = async function (data) {
 };
 
 const findByCredentials = async function ({ email, password }) {
-
   const account = await Account.findOne({ email });
   if (!account) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, "Not found account!");
