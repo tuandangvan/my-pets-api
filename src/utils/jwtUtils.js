@@ -10,7 +10,7 @@ const generateAuthToken = async function ({account, userId}) {
       userId: userId
     },
     env.JWT_SECRET,
-    { expiresIn: "10m" }
+    { expiresIn: "3d" }
   );
   return token;
 };
@@ -24,7 +24,7 @@ const generateRefreshToken = async function ({account, userId}) {
       userId: userId
     },
     env.JWT_SECRET,
-    { expiresIn: "3d" }
+    { expiresIn: "7d" }
   );
   return token;
 };
