@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { enums } from "~/enums/enums";
 
 const accountSchema = mongoose.Schema(
   {
@@ -16,8 +17,8 @@ const accountSchema = mongoose.Schema(
     role: {
       type: String,
       required: true,
-      enum: ["user", "center", "admin"],
-      default: "user"
+      enum: [enums.roles.USER, enums.roles.CENTER, enums.roles.ADMIN],
+      default: enums.roles.USER
     },
     isActive: {
       type: Boolean,

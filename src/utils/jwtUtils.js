@@ -10,7 +10,7 @@ const generateAuthToken = async function ({account, userId}) {
       userId: userId
     },
     env.JWT_SECRET,
-    { expiresIn: "3d" }
+    { expiresIn: "5m" }
   );
   return token;
 };
