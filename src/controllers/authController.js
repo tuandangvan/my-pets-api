@@ -10,7 +10,6 @@ import { emailService } from "~/sendEmail/emailService";
 import { codeOTPService } from "~/services/codeOTPService";
 import { userService } from "~/services/userService";
 import { generate } from "~/utils/generate";
-import { authencationToken } from "~/auth/authenticationToken";
 
 const signUp = async (req, res, next) => {
   try {
@@ -115,10 +114,11 @@ const signIn = async (req, res, next) => {
       lastName: user.lastName,
       phoneNumber: user.phoneNumber,
       address: user.address,
-      refreshToken: user.accountId.refreshToken
+      refreshToken: user.accountId.refreshToken,
+      accessToken: accessToken
     };
 
-    res.status(StatusCodes.OK).json({ data: userData, accessToken });
+    res.status(StatusCodes.OK).json({ data: userData});
   } catch (error) {
     const customError = new ApiError(
       StatusCodes.INTERNAL_SERVER_ERROR,
@@ -301,11 +301,11 @@ const forgotPassword = async (req, res, next) => {
 
 const changePassword = async (req, res, next) => {
   try {
-    const accessToken = req.headers["accesstoken"];
-    const token = await authencationToken.checkExpireAccessToken(accessToken);
-    if (!token) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.tokenExpired);
-    }
+    const accessToken = req.header("Authorization").replace("Bearer ", "");
+    const token = verify(accessToken, process.env.JWT_SECRET);
+    // if (!token) {
+    //   throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.tokenExpired);
+    // }
 
     const password = req.body.password;
     const newPassword = req.body.newPassword;

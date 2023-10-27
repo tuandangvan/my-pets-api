@@ -1,17 +1,24 @@
 import { StatusCodes } from "http-status-codes";
 import { verify } from "jsonwebtoken";
 import { env } from "~/config/environment";
-import User from "~/models/userModel";
 import ApiError from "~/utils/ApiError";
-const auth = async (req, res, next) => {
+import Contants from "~/utils/contants";
+const authencation = async (req, res, next) => {
   try {
     const token = req.header("Authorization").replace("Bearer ", "");
-    const data = await verify(token, env.JWT_SECRET);
-    const user = User.findOne({ _id: data._id });
-    if (!user) {
+    const data = verify(token, env.JWT_SECRET);
+    console.log(data)
+    if(!data){
       throw new ApiError(
         StatusCodes.UNAUTHORIZED,
-        "Xác thực người dùng thất bại"
+        Contants.tokenExpired
+      );
+    }
+  
+    if (!data.id) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        Contants.userNotExist
       );
     }
     next();
@@ -19,9 +26,9 @@ const auth = async (req, res, next) => {
     next(
       new ApiError(
         StatusCodes.UNAUTHORIZED,
-        "Không có thông tin xác thực người dùng"
+        error.message
       )
     );
   }
 };
-export default auth;
+export default authencation;
