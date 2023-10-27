@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { enumStatus } from "~/enums/enum";
+import { enumStatus, enums } from "~/enums/enums";
 
 const postSchema = mongoose.Schema(
   {
@@ -45,8 +45,8 @@ const postSchema = mongoose.Schema(
     ],
     status:{
         type: String,
-        enum: enumStatus.statusPost,
-        default: enumStatus.statusPost.ACTIVE
+        enum: [enums.statusPost.ACTIVE, enums.statusPost.HIDDEN, enums.statusPost.LOCKED],
+        default: enums.statusPost.ACTIVE
     }
   },
   {

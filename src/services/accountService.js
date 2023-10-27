@@ -4,12 +4,16 @@ import { hashSync } from "bcrypt";
 import ApiError from "~/utils/ApiError";
 import { StatusCodes } from "http-status-codes";
 import { compareSync } from "bcrypt";
+import { enums } from "~/enums/enums";
 
 const createAccount = async function (data) {
+  if (data.role == "CENTER") data.role = enums.roles.CENTER;
+  else data.role = enums.roles.USER;
+  data.password = hashSync(data.password, 8);
+
   const account = new Account({
     _id: new mongoose.Types.ObjectId(),
-    ...data,
-    password: hashSync(data.password, 8)
+    ...data
   });
   return account.save();
 };
@@ -19,7 +23,7 @@ const findByCredentials = async function ({ email, password }) {
   if (!account) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, "Not found account!");
   }
-  const isPasswordMatch = await compareSync(password, account.password);
+  const isPasswordMatch = compareSync(password, account.password);
   if (!isPasswordMatch) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, "Password incorrect!");
   }

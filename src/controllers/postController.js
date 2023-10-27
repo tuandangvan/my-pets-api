@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { authencationToken } from "~/auth/authenticationToken";
-import { enumStatus } from "~/enums/enum";
+import { enumStatus } from "~/enums/enums";
 import userModel from "~/models/userModel";
 import { postService } from "~/services/postService";
 import ApiError from "~/utils/ApiError";

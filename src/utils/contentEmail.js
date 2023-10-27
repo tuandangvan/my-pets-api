@@ -510,7 +510,6 @@ const htmlSendAccount = async function ({firstName, lastName}) {
     <td valign="top" align="center" style="padding:0;Margin:0;width:560px">
     <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
     <tr style="border-collapse:collapse">
-    <td class="es-infoblock made_with" align="center" style="padding:0;Margin:0;line-height:14px;font-size:0;color:#CCCCCC"><a target="_blank" href="https://viewstripo.email/?utm_source=templates&utm_medium=email&utm_campaign=education&utm_content=trigger_newsletter2" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:none;color:#CCCCCC;font-size:12px"><img src="https://fchvcln.stripocdn.email/content/guids/cab_pub_7cbbc409ec990f19c78c75bd1e06f215/images/78411525331495932.png" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="125"></a></td>
     </tr>
     </table></td>
     </tr>
@@ -521,9 +520,6 @@ const htmlSendAccount = async function ({firstName, lastName}) {
     </table></td>
     </tr>
     </table>
-    </div>
-    <div class="ddict_btn" style="top:828.4px;left:722.9px">
-    <img src="chrome-extension://bpggmmljdiliancllaapiggllnkbjocb/logo/48.png" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic">
     </div>
     </body>
     </html>`;
