@@ -1,6 +1,6 @@
 import { sign } from "jsonwebtoken";
 import { env } from "~/config/environment";
-const generateAuthToken = async function ({account, userId}) {
+const generateAuthToken = async function ({account, userId, centerId}) {
   const token = await sign(
     {
       id: account.id,
@@ -8,6 +8,7 @@ const generateAuthToken = async function ({account, userId}) {
       role: account.role,
       isActive: account.isActive,
       userId: userId,
+      centerId: centerId,
       access: true
     },
     env.JWT_SECRET,
@@ -15,7 +16,7 @@ const generateAuthToken = async function ({account, userId}) {
   );
   return token;
 };
-const generateRefreshToken = async function ({account, userId}) {
+const generateRefreshToken = async function ({account, userId, centerId}) {
   const token = await sign(
     {
       id: account.id,
@@ -23,6 +24,7 @@ const generateRefreshToken = async function ({account, userId}) {
       role: account.role,
       isActive: account.isActive,
       userId: userId,
+      centerId: centerId,
       access: false
     },
     env.JWT_SECRET,

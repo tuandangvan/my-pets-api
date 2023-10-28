@@ -37,7 +37,6 @@ const createInformation = async (req, res, next) => {
 
 const findUser = async (req, res, next) => {
   try{
-    console.log(req.params.userId)
     const userId = req.params.userId;
     const user = await userService.findInfoUserByUserId(userId);
    
@@ -82,10 +81,9 @@ const findUserByNamePhoneEmail = async (req, res, next) => {
 const changeInfomation = async (req, res, next) => {
   try {
     const userId = req.params.userId;
-    console.log(userId)
     const user = await userService.findUserById(userId);
     if(!user){
-      throw new ApiError(StatusCodes.NOT_FOUND, Contants.userNotExist);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErorrUser.userNotExist);
     }
     const users = await userService.updateUser({data: req.body, userId: userId});
     res.status(StatusCodes.OK).json({
