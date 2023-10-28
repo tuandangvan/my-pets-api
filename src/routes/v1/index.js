@@ -2,7 +2,7 @@ import express from "express";
 import { StatusCodes } from "http-status-codes";
 import { authRoute } from "./authRoute";
 import { userRoute } from "./user/userRoute";
-import { petRoute } from "./petRoute";
+import { petRoute } from "./center/petRoute";
 import { centerRoute } from "./center/centerRoute";
 import { postRoute } from "./postRoute";
 import { uploadRoute } from "./uploadRoute";
