@@ -8,7 +8,7 @@ import PermissionRoles from "~/utils/rolePermission";
 
 
 const router = express.Router();
-router.post("/single", authencation, authorizationMiddelware.permission(PermissionRoles.permissionAll), fileImage.single('file') , uploadController.uploadSingle);
-router.post("/multi-image", authencation, authorizationMiddelware.permission(enums.roles.CENTER), fileImage.array('file', 5) , uploadController.uploadMulti);
+router.post("/single", authencation, authorizationMiddelware.permission(PermissionRoles.All), fileImage.single('file') , uploadController.uploadSingle);
+router.post("/multi-image", authencation, authorizationMiddelware.permission(PermissionRoles.onlyCenter), fileImage.array('file', 5) , uploadController.uploadMulti);
 
 export const uploadRoute = router;

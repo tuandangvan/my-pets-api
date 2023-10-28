@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { enums } from "~/enums/enums";
+import ErorrUser from "~/messageError/erorrUser";
 import ErorrAccount from "~/messageError/errorAccount";
 import { accountService } from "~/services/accountService";
 import { userService } from "~/services/userService";
@@ -34,16 +35,34 @@ const createInformation = async (req, res, next) => {
   }
 };
 
-const getAllUser = async (req, res, next) => {
-  try {
-    const users = await userService.getAll();
+const findUser = async (req, res, next) => {
+  try{
+    console.log(req.params.userId)
+    const userId = req.params.userId;
+    const user = await userService.findInfoUserByUserId(userId);
+   
+    if(!user.accountId.isActive){
+      throw new ApiError(StatusCodes.NOT_FOUND, ErorrUser.userInfoNotFound);
+    }
+
+    const userData = {
+      _id: user._id,
+      accountId: user.accountId._id,
+      email: user.accountId.email,
+      role: user.accountId.role,
+      isActive: user.accountId.isActive,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phoneNumber: user.phoneNumber,
+      address: user.address
+    };
+
     res.status(StatusCodes.OK).json({
       success: true,
-      data: users
-    });
-  } catch (error) {
-    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
-    next(customError);
+      user: userData
+    })
+  } catch(error){
+    next(new ApiError(StatusCodes.NOT_FOUND, error.message));
   }
 };
 
@@ -80,7 +99,7 @@ const changeInfomation = async (req, res, next) => {
 };
 export const userController = {
   createInformation,
-  getAllUser,
+  findUser,
   findUserByNamePhoneEmail,
   changeInfomation
 };
