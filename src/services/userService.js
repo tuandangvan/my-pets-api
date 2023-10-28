@@ -45,8 +45,6 @@ const getUsers = async function (data) {
 };
 
 const updateUser = async function ({data, userId}) {
-  console.log(data)
-  console.log(userId)
   const users = User.updateOne(
     { _id: userId }, 
     { $set: { ...data }
