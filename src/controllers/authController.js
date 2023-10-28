@@ -13,6 +13,9 @@ import { token } from "~/utils/token";
 import ErorrUser from "~/messageError/erorrUser";
 import ErorrToken from "~/messageError/erorrToken";
 import ErorrAccount from "~/messageError/errorAccount";
+import { enums } from "~/enums/enums";
+import { centerService } from "~/services/centerService";
+import ErorrCenter from "~/messageError/erorrCenter";
 
 const signUp = async (req, res, next) => {
   try {
@@ -86,44 +89,84 @@ const checkExpireToken = async (req, res, next) => {
 const signIn = async (req, res, next) => {
   try {
     const account = await accountService.findByCredentials(req.body);
-    const user1 = await userService.findUserByAccountId(account.id);
-    if(!user1){
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrUser.userInfoNotFound)
-    }
-    const accessToken = await jwtUtils.generateAuthToken({
-      account: account,
-      userId: user1.id
-    });
-
-    const refreshToken = await jwtUtils.generateRefreshToken({
-      account: account,
-      userId: user1.id
-    });
-    await Account.findByIdAndUpdate(
-      account._id,
-      {
-        refreshToken: refreshToken
-      },
-      {
-        new: true
+    if (account.role == enums.roles.USER) {
+      const user = await userService.findUserByAccountId(account.id);
+      if (!user) {
+        throw new ApiError(StatusCodes.NOT_FOUND, ErorrUser.userInfoNotFound);
       }
-    );
-    const user = await userService.findUserByAccountId(account._id);
-    const userData = {
-      _id: user._id,
-      accountId: user.accountId._id,
-      email: user.accountId.email,
-      role: user.accountId.role,
-      isActive: user.accountId.isActive,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phoneNumber: user.phoneNumber,
-      address: user.address,
-      refreshToken: user.accountId.refreshToken,
-      accessToken: accessToken
-    };
+      const accessToken = await jwtUtils.generateAuthToken({
+        account: account,
+        userId: user.id,
+        centerId: null
+      });
 
-    res.status(StatusCodes.OK).json({ data: userData });
+      const refreshToken = await jwtUtils.generateRefreshToken({
+        account: account,
+        userId: user.id,
+        centerId: null
+      });
+      await Account.findByIdAndUpdate(
+        account._id,
+        {
+          refreshToken: refreshToken
+        },
+        {
+          new: true
+        }
+      );
+      const userData = {
+        _id: user._id,
+        accountId: user.accountId._id,
+        email: user.accountId.email,
+        role: user.accountId.role,
+        isActive: user.accountId.isActive,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber,
+        address: user.address,
+        refreshToken: refreshToken,
+        accessToken: accessToken
+      };
+      res.status(StatusCodes.OK).json({ data: userData });
+    } else if (account.role == enums.roles.CENTER) {
+      const center = await centerService.findCenterByAccountId(account.id);
+      if (!center) {
+        throw new ApiError(StatusCodes.NOT_FOUND, ErorrCenter.centerInfoNotFound);
+      }
+      const accessToken = await jwtUtils.generateAuthToken({
+        account: account,
+        userId: null,
+        centerId: center.id
+      });
+
+      const refreshToken = await jwtUtils.generateRefreshToken({
+        account: account,
+        userId: null,
+        centerId: center.id
+      });
+      await Account.findByIdAndUpdate(
+        account._id,
+        {
+          refreshToken: refreshToken
+        },
+        {
+          new: true
+        }
+      );
+      const centerData = {
+        _id: center._id,
+        accountId: center.accountId._id,
+        email: center.accountId.email,
+        role: center.accountId.role,
+        isActive: center.accountId.isActive,
+        name: center.name,
+        phoneNumber: center.phoneNumber,
+        address: center.address,
+        refreshToken: refreshToken,
+        accessToken: accessToken
+      };
+      res.status(StatusCodes.OK).json({ data: centerData });
+    }
   } catch (error) {
     const customError = new ApiError(
       StatusCodes.INTERNAL_SERVER_ERROR,
@@ -166,9 +209,11 @@ const refreshToken = async (req, res, next) => {
     const refreshToken = await token.getTokenHeader(req);
     const decodeToken = verify(refreshToken, env.JWT_SECRET);
 
-    const accountTemp = await accountService.findAccountByRefreshToken(refreshToken);
-    if(!accountTemp){
-      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrToken.tokenNotFound)
+    const accountTemp = await accountService.findAccountByRefreshToken(
+      refreshToken
+    );
+    if (!accountTemp) {
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrToken.tokenNotFound);
     }
     const account = await accountService.findAccountById(decodeToken.id);
     const accessToken = await jwtUtils.generateAuthToken({

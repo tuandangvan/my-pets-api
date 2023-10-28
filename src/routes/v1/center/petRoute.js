@@ -1,5 +1,5 @@
 import express from "express";
-import { petController } from "~/controllers/petController";
+import { petController } from "~/controllers/center/petController";
 
 
 const router = express.Router();

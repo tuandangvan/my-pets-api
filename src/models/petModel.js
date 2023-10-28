@@ -56,9 +56,9 @@ const petSchema = mongoose.Schema(
       default: enums.statusPet.NORMAL
     },
     foundOwner: {
-      type: Boolean,
-      required: true,
-      default: false
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null
     }
   },
   {

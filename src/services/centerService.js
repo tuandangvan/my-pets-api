@@ -24,6 +24,11 @@ const updateCenter = async function ({ data, id }) {
   return center;
 };
 
+const findCenterByAccountId = async function(accountId){
+    const center = await Center.findOne({accountId: accountId}).populate("accountId");
+    return center;
+};
+
 const addPetForCenter = async function ({ centerId, petId }) {
   const center = await Center.updateOne(
     { _id: centerId },
@@ -43,5 +48,6 @@ export const centerService = {
   createCenter,
   updateCenter,
   addPetForCenter,
-  findCenterById
+  findCenterById,
+  findCenterByAccountId
 };
