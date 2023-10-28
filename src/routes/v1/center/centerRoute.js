@@ -1,8 +1,12 @@
 import express from "express";
 import { centerController } from "~/controllers/center/centerController";
+import authencation from "~/middlewares/authencationHandingMiddleware";
+import { authorizationMiddelware } from "~/middlewares/authorizationHandlingMiddelware";
+import PermissionRoles from "~/utils/rolePermission";
 
 
 const router = express.Router();
 router.post("/:accountId", centerController.createInfoForCenter);
-router.post("/update", centerController.updateCenter);
+router.put("/:centerId", authencation, authorizationMiddelware.permission(PermissionRoles.onlyCenter), 
+centerController.updateCenter);
 export const centerRoute = router;

@@ -218,7 +218,8 @@ const refreshToken = async (req, res, next) => {
     const account = await accountService.findAccountById(decodeToken.id);
     const accessToken = await jwtUtils.generateAuthToken({
       account: account,
-      userId: decodeToken.userId
+      userId: decodeToken.userId,
+      centerId: decodeToken.centerId
     });
     res.status(StatusCodes.OK).json({ accessToken });
   } catch (error) {

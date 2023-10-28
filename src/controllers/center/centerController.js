@@ -1,8 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { enums } from "~/enums/enums";
+import ErorrCenter from "~/messageError/erorrCenter";
 import ErorrAccount from "~/messageError/errorAccount";
-import accountModel from "~/models/accountModel";
-import centerModel from "~/models/centerModel";
 import { accountService } from "~/services/accountService";
 import { centerService } from "~/services/centerService";
 import ApiError from "~/utils/ApiError";
@@ -38,30 +37,16 @@ const createInfoForCenter = async (req, res, next) => {
 
 const updateCenter = async (req, res, next) => {
   try {
-    const account = await accountModel.findOne({ email: req.body.email });
+    const centerId = req.params.centerId;
+    const center = await centerService.findCenterById(centerId);
 
-    if (account.role == "user") {
-      throw new ApiError(
-        StatusCodes.UNAUTHORIZED,
-        "Bạn không có quyền tạo trung tâm!"
-      );
+    if(!center){
+      throw new ApiError(StatusCodes.NOT_FOUND, ErorrCenter.centerNotExist);
     }
-    const center = await centerModel.findOne({ accountId: account.id });
-    const centerUpdate = await centerService.updateCenter({
-      data: req.body,
-      id: center.id
-    });
-    if (!centerUpdate) {
-      throw new ApiError(
-        StatusCodes.BAD_REQUEST,
-        "Cập nhật thông tin không thành công!"
-      );
-    }
-
+    const centers = await centerService.updateCenter({data: req.body, centerId: centerId});
     res.status(StatusCodes.OK).json({
       success: true,
-      message: "Cập nhật thông tin trung tâm thành công!",
-      data: centerUpdate
+      data: centers
     });
   } catch (error) {
     const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);

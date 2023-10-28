@@ -1,13 +1,14 @@
 import express from "express";
 import { petController } from "~/controllers/center/petController";
+import authencation from "~/middlewares/authencationHandingMiddleware";
+import { authorizationMiddelware } from "~/middlewares/authorizationHandlingMiddelware";
+import PermissionRoles from "~/utils/rolePermission";
 
 
 const router = express.Router();
-router.post("", petController.createPet);
-router.put("/:id", petController.updatePet);
-router.delete("/:id", petController.deletePet);
+router.post("/", authencation, authorizationMiddelware.permission(PermissionRoles.onlyCenter), petController.createPet);
+router.put("/:petId",authencation, authorizationMiddelware.permission(PermissionRoles.onlyCenter), petController.updatePet);
+router.delete("/:petId",authencation, authorizationMiddelware.permission(PermissionRoles.onlyCenter), petController.deletePet);
 router.get("/", petController.getAllPets);
-// router.post("/get-users", userController.findUserByNamePhoneEmail); //find user by name or phone or email
-// router.post("/change-infomation", userController.findUserByNamePhoneEmail); //find user by name or phone or email
 
 export const petRoute = router;
