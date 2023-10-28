@@ -10,7 +10,7 @@ const getTokenHeader = async function(req) {
       StatusCodes.UNPROCESSABLE_ENTITY,
       error.message
     );
-    next(customError);
+    // return customError;
   }
 };
 

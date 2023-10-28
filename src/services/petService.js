@@ -28,9 +28,9 @@ const deletePet = async function (id) {
   return petDelete;
 };
 
-const findAll = async function () {
-  const pet = Pet.find();
-  return pet;
+const findAllOfCenter = async function (centerId) {
+  const pets = Pet.find({centerId: centerId});
+  return pets;
 };
 
 const findPetById = async function (id) {
@@ -42,6 +42,6 @@ export const petService = {
   createPet,
   updatePet,
   deletePet,
-  findAll,
+  findAllOfCenter,
   findPetById
 };

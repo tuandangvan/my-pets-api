@@ -92,9 +92,24 @@ const deletePet = async (req, res, next) => {
   }
 };
 
-const getAllPets = async (req, res, next) => {
+const getAllPetOfCenter = async (req, res, next) => {
   try {
-    const pets = await petService.findAll();
+    const getToken = await token.getTokenHeader(req);
+    const decodeToken = verify(getToken, env.JWT_SECRET);
+    const pets = await petService.findAllOfCenter(decodeToken.centerId);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: pets
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
+};
+
+const getAllPetOfCenterPermission = async (req, res, next) => {
+  try {
+    const pets = await petService.findAllOfCenter(req.params.centerId);
     res.status(StatusCodes.OK).json({
       success: true,
       data: pets
@@ -107,7 +122,8 @@ const getAllPets = async (req, res, next) => {
 
 export const petController = {
   createPet,
-  getAllPets,
+  getAllPetOfCenter,
   updatePet,
-  deletePet
+  deletePet,
+  getAllPetOfCenterPermission
 };
