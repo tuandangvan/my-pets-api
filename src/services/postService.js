@@ -2,15 +2,11 @@ import mongoose from "mongoose";
 import Post from "~/models/postModel";
 
 const createPost = async function ({ data, userId }) {
-  console.log(data)
-  console.log(userId)
   const post = new Post({
     _id: new mongoose.Types.ObjectId(),
     ...data,
-    reaction: [],
     userId: userId
   });
-  console.log(post)
   return post.save();
 };
 
@@ -79,7 +75,7 @@ const updateStatusPost = async function ({ post, newStatus }) {
   return postNew;
 };
 
-const getPost = async function (postId) {
+const findPostById = async function (postId) {
   const post = await Post.findOne({ _id: postId });
   return post;
 };
@@ -89,6 +85,6 @@ export const postService = {
   createComment,
   reaction,
   updateStatusPost,
-  getPost,
+  findPostById,
   deleteComment
 };

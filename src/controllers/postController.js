@@ -1,37 +1,45 @@
 import { StatusCodes } from "http-status-codes";
-import { authencationToken } from "~/auth/authenticationToken";
+import { verify } from "jsonwebtoken";
+import { env } from "~/config/environment";
 import { enumStatus } from "~/enums/enums";
-import ErorrToken from "~/messageError/erorrToken";
 import userModel from "~/models/userModel";
 import { postService } from "~/services/postService";
 import ApiError from "~/utils/ApiError";
+import { token } from "~/utils/token";
 
 const addPost = async (req, res, next) => {
   try {
-    
-    const userToken = await authencationToken.checkExpireAccessToken(
-      req.headers["accesstoken"]
-    );
-    // console.log(userToken.statusCode);
-    if (userToken.statusCode==422) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrToken.tokenExpired);
-    }
-
-    // const user = await userModel.findOne({ _id: userToken.id });
-
-    // if (!user) {
-    //   throw new ApiError(StatusCodes.NOT_FOUND, "Not found user!");
-    // }
-
-    await postService.createPost({ data: req.body, userId: userToken.userId });
-    res.status(StatusCodes.CREATED).json({
-      success: true,
-      message: "Post success!"
+    const post = req.body;
+    const getToken = await token.getTokenHeader(req);
+    const decodeToken = verify(getToken, env.JWT_SECRET);
+    const newPost = await postService.createPost({
+      data: post,
+      userId: decodeToken.userId
     });
+    if (newPost) {
+      res.status(StatusCodes.CREATED).json({
+        success: true,
+        message: "Posted successfully!"
+      });
+    } else {
+      res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
+        success: false,
+        message: "Posting failed!"
+      });
+    }
   } catch (error) {
     const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
     next(customError);
   }
+};
+
+const updatePost = async (req, res, next) => {
+  // const post = req.body;
+  // const 
+  // const getToken = await token.getTokenHeader(req);
+  // const decodeToken = verify(getToken, env.JWT_SECRET);
+
+  // const
 };
 
 const postComment = async (req, res, next) => {

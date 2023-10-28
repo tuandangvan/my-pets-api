@@ -3,7 +3,6 @@ import { verify } from "jsonwebtoken";
 import { env } from "~/config/environment";
 import ApiError from "~/utils/ApiError";
 import ErorrToken from "~/messageError/erorrToken";
-import ErorrUser from "~/messageError/erorrUser";
 import ErorrAccount from "~/messageError/errorAccount";
 const authencation = async (req, res, next) => {
   try {

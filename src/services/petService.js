@@ -29,7 +29,7 @@ const deletePet = async function (id) {
 };
 
 const findAllOfCenter = async function (centerId) {
-  const pets = Pet.find({centerId: centerId});
+  const pets = await Pet.find({centerId: centerId});
   return pets;
 };
 
