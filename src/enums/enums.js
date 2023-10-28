@@ -9,7 +9,22 @@ const roles = {
   USER: "USER",
   CENTER: "CENTER"
 };
+
+const genders = {
+  MALE: "Male",
+  FEMALE: "Female",
+  ORTHER: "Orther"
+};
+
+const statusPet = {
+  NORMAL: "NORMAL",
+  URGENT: "URGENT"
+};
+
+
 export const enums = {
     statusPost,
-    roles
+    roles,
+    genders,
+    statusPet
 };
