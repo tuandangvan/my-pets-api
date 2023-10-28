@@ -1,11 +1,10 @@
-import { enums } from "~/enums/enums";
 import ApiError from "~/utils/ApiError";
 import { StatusCodes } from "http-status-codes";
 
-const checkRoleUser = async function (role) {
+const getTokenHeader = async function(req) {
   try {
-    if (role == "CENTER") return enums.roles.CENTER;
-    else return enums.roles.USER;
+    const token = req.header("Authorization").replace("Bearer ", "");
+    return token;
   } catch (error) {
     const customError = new ApiError(
       StatusCodes.UNPROCESSABLE_ENTITY,
@@ -15,6 +14,6 @@ const checkRoleUser = async function (role) {
   }
 };
 
-export const checkRole = {
-  checkRoleUser
+export const token = {
+    getTokenHeader
 };

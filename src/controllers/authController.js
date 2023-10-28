@@ -1,7 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import ApiError from "~/utils/ApiError";
 import Account from "~/models/accountModel";
-import Constant from "~/utils/contants";
 import { jwtUtils } from "~/utils/jwtUtils";
 import { verify } from "jsonwebtoken";
 import { env } from "~/config/environment";
@@ -10,34 +9,38 @@ import { emailService } from "~/sendEmail/emailService";
 import { codeOTPService } from "~/services/codeOTPService";
 import { userService } from "~/services/userService";
 import { generate } from "~/utils/generate";
+import { token } from "~/utils/token";
+import ErorrUser from "~/messageError/erorrUser";
+import ErorrToken from "~/messageError/erorrToken";
+import ErorrAccount from "~/messageError/errorAccount";
 
 const signUp = async (req, res, next) => {
   try {
     const email = req.body.email;
     const oldAccount = await accountService.findAccountByEmail(email);
     if (oldAccount) {
-      throw new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, Constant.userExist);
+      throw new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, ErorrUser.userExist);
     }
     const newAccount = await accountService.createAccount(req.body);
 
-    //send email
-    const code = await generate.generateOTP();
-    await codeOTPService.createOTP({ email: email, code: code });
-    const sendEmail = await emailService.sendMailAuthencation({
-      receiver: email,
-      subject: "Verify email address",
-      purpose: "VERIFY EMAIL ADDRESS!",
-      firstName: email,
-      lastName: "",
-      require: "A request has been made to verify your email address!",
-      success: "Here is your authentication code:",
-      text: code
-    });
-
-    if (newAccount && sendEmail) {
+    if (newAccount) {
       res.status(StatusCodes.CREATED).json({
         success: true,
-        message: "Register success!"
+        message: "Register success!",
+        account: newAccount.id
+      });
+      //send email
+      const code = await generate.generateOTP();
+      await codeOTPService.createOTP({ email: email, code: code });
+      await emailService.sendMailAuthencation({
+        receiver: email,
+        subject: "Verify email address",
+        purpose: "VERIFY EMAIL ADDRESS!",
+        firstName: email,
+        lastName: "",
+        require: "A request has been made to verify your email address!",
+        success: "Here is your authentication code:",
+        text: code
       });
     }
   } catch (error) {
@@ -52,7 +55,7 @@ const signUp = async (req, res, next) => {
 const checkExpireToken = async (req, res, next) => {
   try {
     //check refresh Token by email
-    const tokenHeader = req.headers["refreshtoken"];
+    const tokenHeader = await token.getTokenHeader(req);
     if (tokenHeader) {
       const checkRefreshTokenSignIn = verify(tokenHeader, env.JWT_SECRET);
       if (checkRefreshTokenSignIn) {
@@ -84,7 +87,9 @@ const signIn = async (req, res, next) => {
   try {
     const account = await accountService.findByCredentials(req.body);
     const user1 = await userService.findUserByAccountId(account.id);
-
+    if(!user1){
+      throw new ApiError(StatusCodes.NOT_FOUND, ErorrUser.userInfoNotFound)
+    }
     const accessToken = await jwtUtils.generateAuthToken({
       account: account,
       userId: user1.id
@@ -118,7 +123,7 @@ const signIn = async (req, res, next) => {
       accessToken: accessToken
     };
 
-    res.status(StatusCodes.OK).json({ data: userData});
+    res.status(StatusCodes.OK).json({ data: userData });
   } catch (error) {
     const customError = new ApiError(
       StatusCodes.INTERNAL_SERVER_ERROR,
@@ -130,11 +135,9 @@ const signIn = async (req, res, next) => {
 
 const signOut = async (req, res, next) => {
   try {
+    const gettoken = await token.getTokenHeader(req);
     //kiem tra han cua token
-    const checkRefreshTokenSignIn = verify(
-      req.headers["refreshtoken"],
-      env.JWT_SECRET
-    );
+    const checkRefreshTokenSignIn = verify(gettoken, env.JWT_SECRET);
     //con han
     if (checkRefreshTokenSignIn) {
       await Account.findByIdAndUpdate(
@@ -160,17 +163,17 @@ const signOut = async (req, res, next) => {
 
 const refreshToken = async (req, res, next) => {
   try {
-    const refreshToken = req.headers["refreshtoken"];
-    const account = await Account.findOne({ refreshToken });
-    if (!account) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, "Refresh invalid token!");
-    }
+    const refreshToken = await token.getTokenHeader(req);
+    const decodeToken = verify(refreshToken, env.JWT_SECRET);
 
-    verify(refreshToken, env.JWT_SECRET);
-    const user1 = await userService.findUserByAccountId(account._id);
+    const accountTemp = await accountService.findAccountByRefreshToken(refreshToken);
+    if(!accountTemp){
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrToken.tokenNotFound)
+    }
+    const account = await accountService.findAccountById(decodeToken.id);
     const accessToken = await jwtUtils.generateAuthToken({
       account: account,
-      userId: user1.id
+      userId: decodeToken.userId
     });
     res.status(StatusCodes.OK).json({ accessToken });
   } catch (error) {
@@ -188,7 +191,7 @@ const reSendEmailAuthencation = async function (req, res, next) {
     const oldAccount = await accountService.findAccountByEmail(email);
 
     if (!oldAccount) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.emailNotExist);
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrAccount.emailNotExist);
     }
 
     const code = await generate.generateOTP();
@@ -229,7 +232,7 @@ const verifyOTP = async (req, res, next) => {
     const code = req.body.code;
     const oldAccount = await accountService.findAccountByEmail(email);
     if (!oldAccount) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.emailNotExist);
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrAccount.emailNotExist);
     }
 
     const check = await codeOTPService.checkVerifyOTP({
@@ -263,7 +266,7 @@ const forgotPassword = async (req, res, next) => {
     const email = req.body.email;
     const account = await accountService.findAccountByEmail(email);
     if (!account) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.emailNotExist);
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrAccount.emailNotExist);
     }
 
     const user = await userService.findUserByAccountId(account.id);
@@ -275,7 +278,8 @@ const forgotPassword = async (req, res, next) => {
       firstName: user.firstName,
       lastName: user.lastName,
       require: "There was a request to change your password!",
-      success: "Your password has been changed successfully. Below is your new password:",
+      success:
+        "Your password has been changed successfully. Below is your new password:",
       text: newPassword
     });
 
@@ -301,30 +305,23 @@ const forgotPassword = async (req, res, next) => {
 
 const changePassword = async (req, res, next) => {
   try {
-    const accessToken = req.header("Authorization").replace("Bearer ", "");
-    const token = verify(accessToken, process.env.JWT_SECRET);
-    // if (!token) {
-    //   throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.tokenExpired);
-    // }
-
+    const accessToken = await token.getTokenHeader(req);
+    const decodeToken = verify(accessToken, process.env.JWT_SECRET);
     const password = req.body.password;
     const newPassword = req.body.newPassword;
     const account = await accountService.findByCredentials({
-      email: token.email,
+      email: decodeToken.email,
       password: password
     });
-    if (!account) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.wrongPassword);
-    }
     await accountService.updatePassword({
-      email: token.email,
+      account: account,
       newPassword: newPassword
     });
 
     const user = await userService.findUserByAccountId(account.id);
 
     const sendEmail = await emailService.sendMailAuthencation({
-      receiver: token.email,
+      receiver: decodeToken.email,
       subject: "Change password",
       purpose: "CHANGE PASSWORD!",
       firstName: user.firstName,

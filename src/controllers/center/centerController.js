@@ -29,7 +29,6 @@ const updateCenter = async(req, res, next) => {
           throw new ApiError(StatusCodes.UNAUTHORIZED, "Bạn không có quyền tạo trung tâm!");
         }
         const center = await centerModel.findOne({accountId: account.id});
-        console.log(center.id);
         const centerUpdate = await centerService.updateCenter({data: req.body, id: center.id});
         if(!centerUpdate){
             throw new ApiError(StatusCodes.BAD_REQUEST, "Cập nhật thông tin không thành công!");

@@ -1,10 +1,10 @@
 import { StatusCodes } from "http-status-codes";
 import { authencationToken } from "~/auth/authenticationToken";
 import { enumStatus } from "~/enums/enums";
+import ErorrToken from "~/messageError/erorrToken";
 import userModel from "~/models/userModel";
 import { postService } from "~/services/postService";
 import ApiError from "~/utils/ApiError";
-import Constant from "~/utils/contants";
 
 const addPost = async (req, res, next) => {
   try {
@@ -14,7 +14,7 @@ const addPost = async (req, res, next) => {
     );
     // console.log(userToken.statusCode);
     if (userToken.statusCode==422) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.tokenExpired);
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrToken.tokenExpired);
     }
 
     // const user = await userModel.findOne({ _id: userToken.id });

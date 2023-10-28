@@ -10,15 +10,26 @@ const createUser = async function ({data, id}) {
   return user.save();
 };
 
-const getAll = async function (accountId) {
-  const user = await User.findOne({_id: accountId})
+const getAll = async function () {
+  const user = await User.find()
   .populate("accountId");
   return user;
 };
 
 const findUserByAccountId = async function (accountId) {
-  const user = await User.findOne({accountId: accountId})
-  .populate("accountId");
+  const user = await User.findOne({accountId: accountId}).populate("accountId");
+  return user;
+};
+
+const findInfoUserByUserId = async function (userId) {
+  const user = await User.findOne({_id: userId}).populate("accountId");
+  console.log(user)
+  return user;
+};
+
+const findUserById = async function (_id) {
+  const user = await User.findOne({_id})
+
   return user;
 };
 
@@ -33,9 +44,11 @@ const getUsers = async function (data) {
   return users;
 };
 
-const updateUser = async function (data) {
+const updateUser = async function ({data, userId}) {
+  console.log(data)
+  console.log(userId)
   const users = User.updateOne(
-    { email: data.email }, 
+    { _id: userId }, 
     { $set: { ...data }
   });
   return users;
@@ -44,8 +57,10 @@ const updateUser = async function (data) {
 
 export const userService = {
   createUser,
+  findUserById,
   getAll,
   getUsers,
   updateUser,
-  findUserByAccountId
+  findUserByAccountId,
+  findInfoUserByUserId
 };
