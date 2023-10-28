@@ -132,7 +132,7 @@ const signOut = async (req, res, next) => {
   try {
     //kiem tra han cua token
     const checkRefreshTokenSignIn = verify(
-      req.headers["refreshtoken"],
+      req.header("Authorization").replace("Bearer ", ""),
       env.JWT_SECRET
     );
     //con han
@@ -303,10 +303,6 @@ const changePassword = async (req, res, next) => {
   try {
     const accessToken = req.header("Authorization").replace("Bearer ", "");
     const token = verify(accessToken, process.env.JWT_SECRET);
-    // if (!token) {
-    //   throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.tokenExpired);
-    // }
-
     const password = req.body.password;
     const newPassword = req.body.newPassword;
     const account = await accountService.findByCredentials({
