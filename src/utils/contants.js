@@ -1,4 +1,7 @@
 export default class Contants {
+  static get accountNotFound() {
+    return "Account not found !";
+  }
   static get userExist() {
     return "User is exist !";
   }

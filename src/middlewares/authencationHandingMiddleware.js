@@ -2,37 +2,36 @@ import { StatusCodes } from "http-status-codes";
 import { verify } from "jsonwebtoken";
 import { env } from "~/config/environment";
 import ApiError from "~/utils/ApiError";
-import Contants from "~/utils/contants";
+import ErorrToken from "~/messageError/erorrToken";
+import ErorrUser from "~/messageError/erorrUser";
 const authencation = async (req, res, next) => {
   try {
-    const token = req.header("Authorization").replace("Bearer ", "");
-    const data = verify(token, env.JWT_SECRET);
-    if(!data){
-      throw new ApiError(
-        StatusCodes.UNAUTHORIZED,
-        Contants.tokenExpired
-      );
-    }
-  
-    if (!data.id) {
-      throw new ApiError(
-        StatusCodes.NOT_FOUND,
-        Contants.userNotExist
-      );
+    if (!req.header("Authorization")) {
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrToken.tokenNotFound);
     }
 
-    if(req.route.path != "/refresh-token"){
-      if(data.access == false)
-      throw new ApiError(StatusCodes.FORBIDDEN, Contants.tokenNotAccess)
+    const token = req.header("Authorization").replace("Bearer ", "");
+    const data = verify(token, env.JWT_SECRET);
+    if (!data) {
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrToken.tokenExpired);
+    }
+
+    if (!data.id) {
+      throw new ApiError(StatusCodes.NOT_FOUND, ErorrUser.userNotExist);
+    }
+
+    if (req.route.path != "/refresh-token") {
+      if (data.access == false)
+        throw new ApiError(StatusCodes.FORBIDDEN, ErorrToken.tokenNotAccess);
+    }
+
+    if (req.route.path == "/refresh-token") {
+      if (data.access == true)
+        throw new ApiError(StatusCodes.FORBIDDEN, ErorrToken.tokenNotRefresh);
     }
     next();
   } catch (error) {
-    next(
-      new ApiError(
-        StatusCodes.UNAUTHORIZED,
-        error.message
-      )
-    );
+    next(new ApiError(StatusCodes.UNAUTHORIZED, error.message));
   }
 };
 export default authencation;

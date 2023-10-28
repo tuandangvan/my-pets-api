@@ -1,5 +1,4 @@
 import express, { json } from "express";
-import { StatusCodes } from "http-status-codes";
 import { authController } from "~/controllers/authController";
 import authencation from "~/middlewares/authencationHandingMiddleware";
 import { authorizationMiddelware } from "~/middlewares/authorizationHandlingMiddelware";

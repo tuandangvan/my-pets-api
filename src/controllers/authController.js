@@ -1,7 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import ApiError from "~/utils/ApiError";
 import Account from "~/models/accountModel";
-import Constant from "~/utils/contants";
 import { jwtUtils } from "~/utils/jwtUtils";
 import { verify } from "jsonwebtoken";
 import { env } from "~/config/environment";
@@ -11,20 +10,24 @@ import { codeOTPService } from "~/services/codeOTPService";
 import { userService } from "~/services/userService";
 import { generate } from "~/utils/generate";
 import { token } from "~/utils/token";
+import ErorrUser from "~/messageError/erorrUser";
+import ErorrToken from "~/messageError/erorrToken";
+import ErorrAccount from "~/messageError/errorAccount";
 
 const signUp = async (req, res, next) => {
   try {
     const email = req.body.email;
     const oldAccount = await accountService.findAccountByEmail(email);
     if (oldAccount) {
-      throw new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, Constant.userExist);
+      throw new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, ErorrUser.userExist);
     }
     const newAccount = await accountService.createAccount(req.body);
 
     if (newAccount) {
       res.status(StatusCodes.CREATED).json({
         success: true,
-        message: "Register success!"
+        message: "Register success!",
+        account: newAccount.id
       });
       //send email
       const code = await generate.generateOTP();
@@ -84,7 +87,9 @@ const signIn = async (req, res, next) => {
   try {
     const account = await accountService.findByCredentials(req.body);
     const user1 = await userService.findUserByAccountId(account.id);
-
+    if(!user1){
+      throw new ApiError(StatusCodes.NOT_FOUND, ErorrUser.userInfoNotFound)
+    }
     const accessToken = await jwtUtils.generateAuthToken({
       account: account,
       userId: user1.id
@@ -130,11 +135,9 @@ const signIn = async (req, res, next) => {
 
 const signOut = async (req, res, next) => {
   try {
+    const gettoken = await token.getTokenHeader(req);
     //kiem tra han cua token
-    const checkRefreshTokenSignIn = verify(
-      await token.getTokenHeader(req),
-      env.JWT_SECRET
-    );
+    const checkRefreshTokenSignIn = verify(gettoken, env.JWT_SECRET);
     //con han
     if (checkRefreshTokenSignIn) {
       await Account.findByIdAndUpdate(
@@ -161,16 +164,16 @@ const signOut = async (req, res, next) => {
 const refreshToken = async (req, res, next) => {
   try {
     const refreshToken = await token.getTokenHeader(req);
-    const encodeToken = verify(refreshToken, env.JWT_SECRET);
+    const decodeToken = verify(refreshToken, env.JWT_SECRET);
 
     const accountTemp = await accountService.findAccountByRefreshToken(refreshToken);
     if(!accountTemp){
-      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.tokenNotFound)
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrToken.tokenNotFound)
     }
-    const account = accountService.findAccountById(encodeToken.id);
+    const account = await accountService.findAccountById(decodeToken.id);
     const accessToken = await jwtUtils.generateAuthToken({
       account: account,
-      userId: encodeToken.userId
+      userId: decodeToken.userId
     });
     res.status(StatusCodes.OK).json({ accessToken });
   } catch (error) {
@@ -188,7 +191,7 @@ const reSendEmailAuthencation = async function (req, res, next) {
     const oldAccount = await accountService.findAccountByEmail(email);
 
     if (!oldAccount) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.emailNotExist);
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrAccount.emailNotExist);
     }
 
     const code = await generate.generateOTP();
@@ -229,7 +232,7 @@ const verifyOTP = async (req, res, next) => {
     const code = req.body.code;
     const oldAccount = await accountService.findAccountByEmail(email);
     if (!oldAccount) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.emailNotExist);
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrAccount.emailNotExist);
     }
 
     const check = await codeOTPService.checkVerifyOTP({
@@ -263,7 +266,7 @@ const forgotPassword = async (req, res, next) => {
     const email = req.body.email;
     const account = await accountService.findAccountByEmail(email);
     if (!account) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.emailNotExist);
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrAccount.emailNotExist);
     }
 
     const user = await userService.findUserByAccountId(account.id);

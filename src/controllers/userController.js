@@ -1,25 +1,38 @@
 import { StatusCodes } from "http-status-codes";
-import accountModel from "~/models/accountModel";
+import { enums } from "~/enums/enums";
+import ErorrAccount from "~/messageError/errorAccount";
+import { accountService } from "~/services/accountService";
 import { userService } from "~/services/userService";
 import ApiError from "~/utils/ApiError";
 
 const createInformation = async (req, res, next) => {
   try {
-
-    const account = await accountModel.findOne({email: req.body.email});
-    if(account.role=="center"){
-      throw new ApiError(StatusCodes.UNAUTHORIZED, "Bạn đã đăng kí quyền người dùng!");
+    const account = await accountService.findAccountById(req.params.accountId);
+    if(!account){
+      throw new ApiError(
+        StatusCodes.UNAUTHORIZED,
+        ErorrAccount.accountNotFound
+      );
     }
-    const infoUser = await userService.createUser({data: req.body, id: account._id});
+    if (account.role == enums.roles.CENTER) {
+      throw new ApiError(
+        StatusCodes.UNAUTHORIZED,
+        "You have registered user rights!"
+      );
+    }
+    const infoUser = await userService.createUser({
+      data: req.body,
+      id: account.id
+    });
     res.status(StatusCodes.CREATED).json({
       success: true,
       data: infoUser
     });
-  } catch(error){
+  } catch (error) {
     const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
     next(customError);
   }
-}
+};
 
 const getAllUser = async (req, res, next) => {
   try {
@@ -47,9 +60,15 @@ const findUserByNamePhoneEmail = async (req, res, next) => {
   }
 };
 
-const updateUserForUser = async(req, res, next) => {
+const changeInfomation = async (req, res, next) => {
   try {
-    const users = await userService.updateUser(req.body.search);
+    const userId = req.params.userId;
+    console.log(userId)
+    const user = await userService.findUserById(userId);
+    if(!user){
+      throw new ApiError(StatusCodes.NOT_FOUND, Contants.userNotExist);
+    }
+    const users = await userService.updateUser({data: req.body, userId: userId});
     res.status(StatusCodes.OK).json({
       success: true,
       data: users
@@ -63,5 +82,5 @@ export const userController = {
   createInformation,
   getAllUser,
   findUserByNamePhoneEmail,
-  updateUserForUser
+  changeInfomation
 };

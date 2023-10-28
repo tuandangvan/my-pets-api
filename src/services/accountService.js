@@ -5,7 +5,8 @@ import ApiError from "~/utils/ApiError";
 import { StatusCodes } from "http-status-codes";
 import { compareSync } from "bcrypt";
 import { checkRole } from "~/utils/checkRole";
-import Contants from "~/utils/contants";
+import ErorrUser from "~/messageError/erorrUser";
+import ErorrAccount from "~/messageError/errorAccount";
 
 const createAccount = async function (data) {
   data.role = await checkRole.checkRoleUser(data.role);
@@ -21,11 +22,11 @@ const createAccount = async function (data) {
 const findByCredentials = async function ({ email, password }) {
   const account = await Account.findOne({ email });
   if (!account) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, Contants.userNotExist);
+    throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrAccount.emailNotExist);
   }
   const isPasswordMatch = compareSync(password, account.password);
   if (!isPasswordMatch) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, Contants.wrongPassword);
+    throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrAccount.wrongPassword);
   }
   return account;
 };
@@ -34,7 +35,7 @@ const findAccountByIdOrEmail = async function (text) {
   const account1 = await Account.findOne({ email: text });
   const account2 = await Account.findOne({ _id: text });
   if (!account1 && !account2) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, Contants.userNotExist);
+    throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrAccount.accountNotFound);
   } else {
     if (!account1) return account2;
   }
