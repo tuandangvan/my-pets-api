@@ -8,7 +8,7 @@ import PermissionRoles from "~/utils/rolePermission";
 const router = express.Router();
 router.post("/sign-up", authController.signUp);
 router.post("/sign-in", authController.signIn);
-router.post("/refresh-token", authController.refreshToken);
+router.post("/refresh-token", authencation, authController.refreshToken);
 router.post("/send-code", authController.reSendEmailAuthencation);
 router.post("/verify-code", authController.verifyOTP);
 router.post("/forgot-password", authController.forgotPassword);

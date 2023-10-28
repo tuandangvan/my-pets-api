@@ -10,6 +10,7 @@ import { emailService } from "~/sendEmail/emailService";
 import { codeOTPService } from "~/services/codeOTPService";
 import { userService } from "~/services/userService";
 import { generate } from "~/utils/generate";
+import { token } from "~/utils/token";
 
 const signUp = async (req, res, next) => {
   try {
@@ -20,24 +21,23 @@ const signUp = async (req, res, next) => {
     }
     const newAccount = await accountService.createAccount(req.body);
 
-    //send email
-    const code = await generate.generateOTP();
-    await codeOTPService.createOTP({ email: email, code: code });
-    const sendEmail = await emailService.sendMailAuthencation({
-      receiver: email,
-      subject: "Verify email address",
-      purpose: "VERIFY EMAIL ADDRESS!",
-      firstName: email,
-      lastName: "",
-      require: "A request has been made to verify your email address!",
-      success: "Here is your authentication code:",
-      text: code
-    });
-
-    if (newAccount && sendEmail) {
+    if (newAccount) {
       res.status(StatusCodes.CREATED).json({
         success: true,
         message: "Register success!"
+      });
+      //send email
+      const code = await generate.generateOTP();
+      await codeOTPService.createOTP({ email: email, code: code });
+      await emailService.sendMailAuthencation({
+        receiver: email,
+        subject: "Verify email address",
+        purpose: "VERIFY EMAIL ADDRESS!",
+        firstName: email,
+        lastName: "",
+        require: "A request has been made to verify your email address!",
+        success: "Here is your authentication code:",
+        text: code
       });
     }
   } catch (error) {
@@ -52,7 +52,7 @@ const signUp = async (req, res, next) => {
 const checkExpireToken = async (req, res, next) => {
   try {
     //check refresh Token by email
-    const tokenHeader = req.headers["refreshtoken"];
+    const tokenHeader = await token.getTokenHeader(req);
     if (tokenHeader) {
       const checkRefreshTokenSignIn = verify(tokenHeader, env.JWT_SECRET);
       if (checkRefreshTokenSignIn) {
@@ -118,7 +118,7 @@ const signIn = async (req, res, next) => {
       accessToken: accessToken
     };
 
-    res.status(StatusCodes.OK).json({ data: userData});
+    res.status(StatusCodes.OK).json({ data: userData });
   } catch (error) {
     const customError = new ApiError(
       StatusCodes.INTERNAL_SERVER_ERROR,
@@ -132,7 +132,7 @@ const signOut = async (req, res, next) => {
   try {
     //kiem tra han cua token
     const checkRefreshTokenSignIn = verify(
-      req.header("Authorization").replace("Bearer ", ""),
+      await token.getTokenHeader(req),
       env.JWT_SECRET
     );
     //con han
@@ -160,17 +160,17 @@ const signOut = async (req, res, next) => {
 
 const refreshToken = async (req, res, next) => {
   try {
-    const refreshToken = req.headers["refreshtoken"];
-    const account = await Account.findOne({ refreshToken });
-    if (!account) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, "Refresh invalid token!");
-    }
+    const refreshToken = await token.getTokenHeader(req);
+    const encodeToken = verify(refreshToken, env.JWT_SECRET);
 
-    verify(refreshToken, env.JWT_SECRET);
-    const user1 = await userService.findUserByAccountId(account._id);
+    const accountTemp = await accountService.findAccountByRefreshToken(refreshToken);
+    if(!accountTemp){
+      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.tokenNotFound)
+    }
+    const account = accountService.findAccountById(encodeToken.id);
     const accessToken = await jwtUtils.generateAuthToken({
       account: account,
-      userId: user1.id
+      userId: encodeToken.userId
     });
     res.status(StatusCodes.OK).json({ accessToken });
   } catch (error) {
@@ -275,7 +275,8 @@ const forgotPassword = async (req, res, next) => {
       firstName: user.firstName,
       lastName: user.lastName,
       require: "There was a request to change your password!",
-      success: "Your password has been changed successfully. Below is your new password:",
+      success:
+        "Your password has been changed successfully. Below is your new password:",
       text: newPassword
     });
 
@@ -301,26 +302,23 @@ const forgotPassword = async (req, res, next) => {
 
 const changePassword = async (req, res, next) => {
   try {
-    const accessToken = req.header("Authorization").replace("Bearer ", "");
-    const token = verify(accessToken, process.env.JWT_SECRET);
+    const accessToken = await token.getTokenHeader(req);
+    const decodeToken = verify(accessToken, process.env.JWT_SECRET);
     const password = req.body.password;
     const newPassword = req.body.newPassword;
     const account = await accountService.findByCredentials({
-      email: token.email,
+      email: decodeToken.email,
       password: password
     });
-    if (!account) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.wrongPassword);
-    }
     await accountService.updatePassword({
-      email: token.email,
+      account: account,
       newPassword: newPassword
     });
 
     const user = await userService.findUserByAccountId(account.id);
 
     const sendEmail = await emailService.sendMailAuthencation({
-      receiver: token.email,
+      receiver: decodeToken.email,
       subject: "Change password",
       purpose: "CHANGE PASSWORD!",
       firstName: user.firstName,

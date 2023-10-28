@@ -7,7 +7,6 @@ const authencation = async (req, res, next) => {
   try {
     const token = req.header("Authorization").replace("Bearer ", "");
     const data = verify(token, env.JWT_SECRET);
-    console.log(data)
     if(!data){
       throw new ApiError(
         StatusCodes.UNAUTHORIZED,
@@ -20,6 +19,11 @@ const authencation = async (req, res, next) => {
         StatusCodes.NOT_FOUND,
         Contants.userNotExist
       );
+    }
+
+    if(req.route.path != "/refresh-token"){
+      if(data.access == false)
+      throw new ApiError(StatusCodes.FORBIDDEN, Contants.tokenNotAccess)
     }
     next();
   } catch (error) {
