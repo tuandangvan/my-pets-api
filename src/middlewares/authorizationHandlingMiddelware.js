@@ -14,6 +14,7 @@ const permission = (permission) => {
     const centerId = req.params.centerId;
     const petId = req.params.petId;
     const postId = req.params.postId;
+    const commentId = req.params.commentId;
 
     if (_.isEqual(permission, PermissionRoles.All)) {
       next();
@@ -39,14 +40,33 @@ const permission = (permission) => {
         return res.status(401).json({ error: "You don't permission!" });
       }
     } else if (postId) {
-      const post = await postService.findPostById(id);
-      const centerIdTemp = post.centerId.toString();
-      const userIdTemp = post.userId.toString();
-      if (
-        (!centerIdTemp.includes(data.centerId) && !userIdTemp) ||
-        (!userIdTemp.includes(data.userId) && !centerIdTemp)
-      ) {
-        return res.status(401).json({ error: "You don't permission!" });
+      const post = await postService.findPostById(postId);
+      let centerIdTemp = null;
+      let userIdTemp = null;
+      if (post.centerId) centerIdTemp = post.centerId.toString();
+      else userIdTemp = post.userId.toString();
+      if (commentId == null) {
+        if (centerIdTemp) {
+          if (!centerIdTemp.includes(data.centerId)) {
+            return res.status(401).json({ error: "You don't permission!" });
+          }
+        } else {
+          if (!userIdTemp.includes(data.userId)) {
+            return res.status(401).json({ error: "You don't permission!" });
+          }
+        }
+      } else {
+        const index = post.comments.findIndex(
+          (element) => element.id == commentId
+        );
+        if (index != -1) {
+          if (post.comments[index].userId != null) {
+            if (!post.comments[index].userId.toString().includes(data.userId))
+              return res.status(401).json({ error: "You don't permission!" });
+          } else if (post.comments[index].centerId != null)
+            if (!post.comments[index].centerId.toString().includes(data.centerId))
+              return res.status(401).json({ error: "You don't permission!" });
+        }
       }
     }
     next();
