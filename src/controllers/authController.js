@@ -89,7 +89,7 @@ const checkExpireToken = async (req, res, next) => {
 const signIn = async (req, res, next) => {
   try {
     const account = await accountService.findByCredentials(req.body);
-    if (account.role == enums.roles.USER) {
+    if (account.role == enums.roles.USER || account.role == enums.roles.ADMIN) {
       const user = await userService.findUserByAccountId(account.id);
       if (!user) {
         throw new ApiError(StatusCodes.NOT_FOUND, ErorrUser.userInfoNotFound);
