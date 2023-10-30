@@ -133,6 +133,7 @@ const signIn = async (req, res, next) => {
       if (!center) {
         throw new ApiError(StatusCodes.NOT_FOUND, ErorrCenter.centerInfoNotFound);
       }
+
       const accessToken = await jwtUtils.generateAuthToken({
         account: account,
         userId: null,
@@ -167,6 +168,7 @@ const signIn = async (req, res, next) => {
       };
       res.status(StatusCodes.OK).json({ data: centerData });
     }
+
   } catch (error) {
     const customError = new ApiError(
       StatusCodes.INTERNAL_SERVER_ERROR,
