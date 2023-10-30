@@ -21,7 +21,7 @@ router.delete("/:postId/comment/:commentId", authencation, authorizationMiddelwa
 
 //reaction
 router.put("/:postId/reaction", authencation, authorizationMiddelware.permission(PermissionRoles.All), postController.reactionPost);
-router.get("/reaction/:id", postController.getReaction);
+// router.get("/reaction/:id", postController.getReaction);
 
 
 export const postRoute = router;

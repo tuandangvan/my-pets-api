@@ -16,9 +16,19 @@ import ErorrAccount from "~/messageError/errorAccount";
 import { enums } from "~/enums/enums";
 import { centerService } from "~/services/centerService";
 import ErorrCenter from "~/messageError/erorrCenter";
+import Joi from "joi";
+import Validate from "~/validate/validateUser";
 
 const signUp = async (req, res, next) => {
   try {
+    //validate
+    console.log(Validate.registerValidation)
+    const erorrValidate =  Joi.validate(req.body, Validate.registerValidation);
+    if (erorrValidate.error) {
+      res.status(400).send(erorrValidate.error.details[0].message);
+      return;
+    }
+
     const email = req.body.email;
     const oldAccount = await accountService.findAccountByEmail(email);
     if (oldAccount) {

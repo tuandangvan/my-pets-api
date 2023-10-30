@@ -166,23 +166,23 @@ const getPost = async (req, res, next) => {
   }
 };
 
-const getReaction = async (req, res, next) => {
-  try {
-    const postId = req.params.id;
-    const post = await postService.getPost(postId);
-    if (!post) {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Not found post!");
-    }
-    res.status(StatusCodes.OK).json({
-      success: true,
-      status: StatusCodes.OK,
-      reaction: post.reaction
-    });
-  } catch (error) {
-    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
-    next(customError);
-  }
-};
+// const getReaction = async (req, res, next) => {
+//   try {
+//     const postId = req.params.id;
+//     const post = await postService.getPost(postId);
+//     if (!post) {
+//       throw new ApiError(StatusCodes.NOT_FOUND, "Not found post!");
+//     }
+//     res.status(StatusCodes.OK).json({
+//       success: true,
+//       status: StatusCodes.OK,
+//       reaction: post.reaction
+//     });
+//   } catch (error) {
+//     const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+//     next(customError);
+//   }
+// };
 
 export const postController = {
   addPost,
@@ -191,5 +191,5 @@ export const postController = {
   reactionPost,
   getPost,
   changeStatusPost,
-  getReaction
+  // getReaction
 };
