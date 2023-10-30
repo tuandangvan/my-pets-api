@@ -5,7 +5,6 @@ import ApiError from "~/utils/ApiError";
 import { StatusCodes } from "http-status-codes";
 import { compareSync } from "bcrypt";
 import { checkRole } from "~/utils/checkRole";
-import ErorrUser from "~/messageError/erorrUser";
 import ErorrAccount from "~/messageError/errorAccount";
 
 const createAccount = async function (data) {

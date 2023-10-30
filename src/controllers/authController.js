@@ -16,9 +16,19 @@ import ErorrAccount from "~/messageError/errorAccount";
 import { enums } from "~/enums/enums";
 import { centerService } from "~/services/centerService";
 import ErorrCenter from "~/messageError/erorrCenter";
+import Joi from "joi";
+import Validate from "~/validate/validateUser";
 
 const signUp = async (req, res, next) => {
   try {
+    //validate
+    console.log(Validate.registerValidation)
+    const erorrValidate =  Joi.validate(req.body, Validate.registerValidation);
+    if (erorrValidate.error) {
+      res.status(400).send(erorrValidate.error.details[0].message);
+      return;
+    }
+
     const email = req.body.email;
     const oldAccount = await accountService.findAccountByEmail(email);
     if (oldAccount) {
@@ -133,6 +143,7 @@ const signIn = async (req, res, next) => {
       if (!center) {
         throw new ApiError(StatusCodes.NOT_FOUND, ErorrCenter.centerInfoNotFound);
       }
+
       const accessToken = await jwtUtils.generateAuthToken({
         account: account,
         userId: null,
@@ -167,6 +178,7 @@ const signIn = async (req, res, next) => {
       };
       res.status(StatusCodes.OK).json({ data: centerData });
     }
+
   } catch (error) {
     const customError = new ApiError(
       StatusCodes.INTERNAL_SERVER_ERROR,
