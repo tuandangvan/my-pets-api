@@ -109,10 +109,11 @@ const signIn = async (req, res, next) => {
       lastName: user.lastName,
       phoneNumber: user.phoneNumber,
       address: user.address,
-      refreshToken: user.accountId.refreshToken
+      refreshToken: user.accountId.refreshToken,
+      accessToken: accessToken
     };
 
-    res.status(StatusCodes.OK).json({ data: userData, accessToken });
+    res.status(StatusCodes.OK).json({ data: userData });
   } catch (error) {
     const customError = new ApiError(
       StatusCodes.INTERNAL_SERVER_ERROR,
