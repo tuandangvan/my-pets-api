@@ -1,13 +1,18 @@
 import mongoose, { Schema } from "mongoose";
-import { enumStatus } from "~/enums/enum";
+import { enums } from "~/enums/enums";
 
 const postSchema = mongoose.Schema(
   {
     _id: mongoose.Schema.Types.ObjectId,
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "Users",
-      required: true
+      ref: "User",
+      default: null
+    },
+    centerId: {
+      type: Schema.Types.ObjectId,
+      ref: "Center",
+      default: null
     },
     title: {
       type: String,
@@ -19,34 +24,57 @@ const postSchema = mongoose.Schema(
       required: true,
       trim: true
     },
-    reaction: [{
-        type: Schema.Types.ObjectId,
-        ref: "Users"
-    }],
-    images: [{
-      type: String
-    }],
+    reaction: [
+      {
+        _id: mongoose.Schema.Types.ObjectId,
+        userId: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+          default: null
+        },
+        centerId: {
+          type: Schema.Types.ObjectId,
+          ref: "Center",
+          default: null
+        }
+      }
+    ],
+    images: [
+      {
+        type: String
+      }
+    ],
     comments: [
       {
         _id: mongoose.Schema.Types.ObjectId,
         userId: {
           type: Schema.Types.ObjectId,
-          ref: "Users"
+          ref: "User",
+          default: null
+        },
+        centerId: {
+          type: Schema.Types.ObjectId,
+          ref: "Center",
+          default: null
         },
         content: {
-            type: String,
-            required: true
+          type: String,
+          required: true
         },
-        createAt:{
-            type: Date,
-            default: Date.now()
+        createdAt: {
+          type: Date,
+          default: Date.now()
         }
       }
     ],
-    status:{
-        type: String,
-        enum: enumStatus.statusPost,
-        default: enumStatus.statusPost.ACTIVE
+    status: {
+      type: String,
+      enum: [
+        enums.statusPost.ACTIVE,
+        enums.statusPost.HIDDEN,
+        enums.statusPost.LOCKED
+      ],
+      default: enums.statusPost.ACTIVE
     }
   },
   {

@@ -1,112 +1,91 @@
 import { StatusCodes } from "http-status-codes";
-import { authencationToken } from "~/auth/authenticationToken";
-import { enumStatus } from "~/enums/enum";
-import userModel from "~/models/userModel";
+import { verify } from "jsonwebtoken";
+import { env } from "~/config/environment";
+import { enums } from "~/enums/enums";
+import ErorrPost from "~/messageError/erorrPost";
 import { postService } from "~/services/postService";
 import ApiError from "~/utils/ApiError";
-import Constant from "~/utils/contants";
+import { setEnum } from "~/utils/setEnum";
+import { token } from "~/utils/token";
 
 const addPost = async (req, res, next) => {
   try {
-    
-    const userToken = await authencationToken.checkExpireAccessToken(
-      req.headers["accesstoken"]
-    );
-    // console.log(userToken.statusCode);
-    if (userToken.statusCode==422) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, Constant.tokenExpired);
-    }
-
-    // const user = await userModel.findOne({ _id: userToken.id });
-
-    // if (!user) {
-    //   throw new ApiError(StatusCodes.NOT_FOUND, "Not found user!");
-    // }
-
-    await postService.createPost({ data: req.body, userId: userToken.userId });
-    res.status(StatusCodes.CREATED).json({
-      success: true,
-      message: "Post success!"
+    const post = req.body;
+    const getToken = await token.getTokenHeader(req);
+    const decodeToken = verify(getToken, env.JWT_SECRET);
+    const newPost = await postService.createPost({
+      data: post,
+      userId: decodeToken.userId,
+      centerId: decodeToken.centerId
     });
+    if (newPost) {
+      res.status(StatusCodes.CREATED).json({
+        success: true,
+        message: "Posted successfully!",
+        postId: newPost.id
+      });
+    } else {
+      res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
+        success: false,
+        message: "Posting failed!"
+      });
+    }
   } catch (error) {
     const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
     next(customError);
   }
 };
 
-const postComment = async (req, res, next) => {
+const updatePost = async (req, res, next) => {
   try {
-    const data = req.body;
-
-    if (!data.content) {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Post require content!");
+    const newPost = req.body;
+    const postId = req.params.postId;
+    const oldPost = await postService.findPostById(postId);
+    if (!oldPost) {
+      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
     }
-
-    const user = await userModel.findOne({ _id: data.userId });
-    const post = await postService.getPost(req.params.id);
-
-    if (!user) {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Not found user!");
-    }
-    if (!post) {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Not found post!");
-    }
-
-    await postService.createComment({ data: data, post: req.params.id });
-    res.status(StatusCodes.CREATED).json({
-      success: true,
-      message: "Post comment success!"
-    });
-  } catch (error) {
-    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
-    next(customError);
-  }
-};
-const deleteComment = async (req, res, next) => {
-  try {
-    const userId = req.body.userId;
-    const postId = req.params.id;
-    const commentId = req.params.commentId;
-    const post = await postService.getPost(postId);
-    if (!post) {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Not found post!");
-    }
-    const deleteCommentResult = await postService.deleteComment({
-      post: post,
-      userId: userId,
-      commentId: commentId
-    });
-    if (deleteCommentResult == null) {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Delete fail");
-    }
+    await postService.updatePost({ postId: oldPost.id, data: newPost });
     res.status(StatusCodes.OK).json({
       success: true,
-      message: `Delete comment ${commentId} success!`,
-      deleteData: deleteCommentResult
+      message: "Post updated successfully!"
     });
-  } catch (error) {
-    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
-    next(customError);
+  } catch (erorr) {
+    next(new ApiError(StatusCodes.UNAUTHORIZED, erorr.message));
   }
 };
 
-const addReaction = async (req, res, next) => {
+const deletePost = async (req, res, next) => {
   try {
-    const userId = req.body.userId;
-
-    const user = await userModel.findOne({ _id: userId });
-    const post = await postService.getPost(req.params.id);
-
-    if (!user) {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Not found user!");
+    const postId = req.params.postId;
+    const oldPost = await postService.findPostById(postId);
+    if (!oldPost) {
+      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
     }
-    if (!post) {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Not found post!");
-    }
+    await postService.deletePostDB(postId);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Post deleted successfully!"
+    });
+  } catch (erorr) {
+    next(new ApiError(StatusCodes.UNAUTHORIZED, erorr.message));
+  }
+};
 
+const reactionPost = async (req, res, next) => {
+  try {
+    const getToken = await token.getTokenHeader(req);
+    const decodeToken = verify(getToken, env.JWT_SECRET);
+    const postId = req.params.postId;
+    const post = await postService.findPostById(postId);
+    if (!post || (post && post.status != enums.statusPost.ACTIVE)) {
+      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
+    }
+    const userId = decodeToken.userId;
+    const centerId = decodeToken.centerId;
     const reaction = await postService.reaction({
+      post: post,
       userId: userId,
-      postId: req.params.id
+      centerId: centerId
     });
     if (!reaction) {
       throw new ApiError(StatusCodes.NOT_FOUND, "Erorr");
@@ -124,16 +103,13 @@ const addReaction = async (req, res, next) => {
 
 const changeStatusPost = async (req, res, next) => {
   try {
-    const post = postService.getPost(req.params.id);
-    const status = req.body.status;
-    let statusNew;
-    if (status == "HIDDEN") {
-      statusNew = enumStatus.statusPost.HIDDEN;
-    } else if (status == "ACTIVE") {
-      statusNew = enumStatus.statusPost.ACTIVE;
-    } else {
-      statusNew = enumStatus.statusPost.LOCKED;
+    const postId = req.params.postId;
+    const post = await postService.findPostById(postId);
+    if (!post) {
+      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
     }
+    const status = req.body.status;
+    const statusNew = await setEnum.setStatusPost(status);
 
     const changeStatus = await postService.updateStatusPost({
       post: post,
@@ -141,7 +117,6 @@ const changeStatusPost = async (req, res, next) => {
     });
     res.status(StatusCodes.OK).json({
       success: true,
-      status: StatusCodes.OK,
       data: changeStatus
     });
   } catch (error) {
@@ -152,19 +127,38 @@ const changeStatusPost = async (req, res, next) => {
 
 const getPost = async (req, res, next) => {
   try {
-    const postId = req.params.id;
-    const post = await postService.getPost(postId);
+    const postId = req.params.postId;
+    const getToken = await token.getTokenHeader(req);
+    const decodeToken = verify(getToken, env.JWT_SECRET);
+    const post = await postService.findPostInfoById(postId);
     if (!post) {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Not found post!");
+      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
     }
-    if (post.status == enumStatus.statusPost.ACTIVE) {
+    let check = false;
+    if (post.status == enums.statusPost.ACTIVE) check = true;
+    if (post.status == enums.statusPost.HIDDEN) {
+      if (post.centerId) {
+        if (
+          post.centerId.id == decodeToken.centerId &&
+          decodeToken.userId == null
+        )
+          check = true;
+      }
+      if (post.userId) {
+        if (
+          post.userId.id == decodeToken.userId &&
+          decodeToken.centerId == null
+        )
+          check = true;
+      }
+    }
+    if (check) {
       res.status(StatusCodes.OK).json({
         success: true,
-        status: StatusCodes.OK,
         data: post
       });
     } else {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Not found post!");
+      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
     }
   } catch (error) {
     const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
@@ -172,24 +166,6 @@ const getPost = async (req, res, next) => {
   }
 };
 
-const getComment = async (req, res, next) => {
-  try {
-    const postId = req.params.id;
-    const post = await postService.getPost(postId);
-    if (!post) {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Not found post!");
-    }
-
-    res.status(StatusCodes.OK).json({
-      success: true,
-      status: StatusCodes.OK,
-      comments: post.comments
-    });
-  } catch (error) {
-    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
-    next(customError);
-  }
-};
 const getReaction = async (req, res, next) => {
   try {
     const postId = req.params.id;
@@ -210,11 +186,10 @@ const getReaction = async (req, res, next) => {
 
 export const postController = {
   addPost,
-  postComment,
-  addReaction,
+  updatePost,
+  deletePost,
+  reactionPost,
   getPost,
   changeStatusPost,
-  getComment,
-  getReaction,
-  deleteComment
+  getReaction
 };

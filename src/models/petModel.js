@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { enums } from "~/enums/enums";
 
 const petSchema = mongoose.Schema(
   {
@@ -23,7 +24,7 @@ const petSchema = mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: ["male", "female"],
+      enum: [enums.genders.MALE, enums.genders.FEMALE ],
       require: true
     },
     color: {
@@ -51,13 +52,13 @@ const petSchema = mongoose.Schema(
     level: {
       type: String,
       required: true,
-      enum: ["Bình thường", "Khẩn cấp"],
-      default: "Bình thường"
+      enum: [enums.statusPet.NORMAL, enums.statusPet.URGENT],
+      default: enums.statusPet.NORMAL
     },
     foundOwner: {
-      type: Boolean,
-      required: true,
-      default: false
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null
     }
   },
   {

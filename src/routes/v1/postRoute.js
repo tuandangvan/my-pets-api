@@ -1,15 +1,26 @@
 import express from "express";
+import { commentController } from "~/controllers/commentController";
 import { postController } from "~/controllers/postController";
+import authencation from "~/middlewares/authencationHandingMiddleware";
+import { authorizationMiddelware } from "~/middlewares/authorizationHandlingMiddelware";
+import PermissionRoles from "~/utils/rolePermission";
 
 
 const router = express.Router();
-router.post("/add", postController.addPost);
-router.post("/comment/:id", postController.postComment);
-router.post("/comment/:id/:commentId", postController.deleteComment);
-router.post("/reaction/:id", postController.addReaction);
-router.post("/status-change/:id", postController.changeStatusPost);
-router.get("/:id", postController.getPost);
-router.get("/comment/:id", postController.getComment);
+router.post("/", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), postController.addPost);
+router.put("/:postId", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), postController.updatePost);
+router.delete("/:postId", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), postController.deletePost);
+router.put("/:postId/status", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), postController.changeStatusPost);
+router.get("/:postId", authencation, authorizationMiddelware.permission(PermissionRoles.All), postController.getPost);
+
+//comment
+router.post("/:postId/comment/", authencation, authorizationMiddelware.permission(PermissionRoles.All), commentController.addComment);
+router.put("/:postId/comment/:commentId", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), commentController.updateComment);
+router.delete("/:postId/comment/:commentId", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), commentController.deleteComment);
+// router.get("/comment/:id", postController.getComment);
+
+//reaction
+router.put("/:postId/reaction", authencation, authorizationMiddelware.permission(PermissionRoles.All), postController.reactionPost);
 router.get("/reaction/:id", postController.getReaction);
 
 

@@ -10,18 +10,19 @@ const createCenter = async function ({ data, id }) {
   return center.save();
 };
 
-const updateCenter = async function ({ data, id }) {
+const updateCenter = async function ({ data, centerId }) {
   const center = await Center.updateOne(
-    { _id: id },
+    { _id: centerId },
     {
-      $set: {
-        name: data.name,
-        address: data.address,
-        phoneNumber: data.phoneNumber
-      }
+      $set: {...data}
     }
   );
   return center;
+};
+
+const findCenterByAccountId = async function(accountId){
+    const center = await Center.findOne({accountId: accountId}).populate("accountId");
+    return center;
 };
 
 const addPetForCenter = async function ({ centerId, petId }) {
@@ -29,6 +30,16 @@ const addPetForCenter = async function ({ centerId, petId }) {
     { _id: centerId },
     {
       $push: { petIds: petId }
+    }
+  );
+  return center;
+};
+
+const deletePetForCenter = async function ({ centerId, petId }) {
+  const center = await Center.updateOne(
+    { _id: centerId },
+    {
+      $pull: { petIds: petId }
     }
   );
   return center;
@@ -43,5 +54,7 @@ export const centerService = {
   createCenter,
   updateCenter,
   addPetForCenter,
-  findCenterById
+  findCenterById,
+  findCenterByAccountId,
+  deletePetForCenter
 };
