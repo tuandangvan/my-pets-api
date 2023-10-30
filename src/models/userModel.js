@@ -33,9 +33,9 @@ const userSchema = mongoose.Schema(
       default: "https://res.cloudinary.com/dfaea99ew/image/upload/v1698469989/a1rstfzd5ihov6sqhvck.jpg"
     },
     experience: {
-      type: Number,
+      type: Boolean,
       required: true,
-      default: 0
+      default: false
     }, //0: chưa có kinh nghiệm, 1: đã có kiến thức về y tế
     favorites: [
       {
