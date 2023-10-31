@@ -41,7 +41,8 @@ const postSchema = mongoose.Schema(
     ],
     images: [
       {
-        type: String
+        type: String,
+        default: "Chưa cập nhật"
       }
     ],
     comments: [

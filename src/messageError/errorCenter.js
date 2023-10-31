@@ -1,4 +1,4 @@
-export default class ErorrCenter {
+export default class ErrorCenter {
   static get centerExist() {
     return "Center is exist !";
   }

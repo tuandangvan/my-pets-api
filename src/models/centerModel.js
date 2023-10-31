@@ -22,7 +22,7 @@ const centerSchema = mongoose.Schema(
     },
     avatar: {
       type: String,
-      defaul: "http://flixtv.volkovdesign.com/admin/img/user.svg"
+      defaul: "https://res.cloudinary.com/dfaea99ew/image/upload/v1698469989/a1rstfzd5ihov6sqhvck.jpg"
     },
     petIds: [{ 
         type: Schema.Types.ObjectId, 

@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { verify } from "jsonwebtoken";
 import { env } from "~/config/environment";
 import { enums } from "~/enums/enums";
-import ErorrPost from "~/messageError/erorrPost";
+import ErrorPost from "~/messageError/errorPost";
 import { postService } from "~/services/postService";
 import ApiError from "~/utils/ApiError";
 import { setEnum } from "~/utils/setEnum";
@@ -42,15 +42,15 @@ const updatePost = async (req, res, next) => {
     const postId = req.params.postId;
     const oldPost = await postService.findPostById(postId);
     if (!oldPost) {
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPost.postNotFound);
     }
     await postService.updatePost({ postId: oldPost.id, data: newPost });
     res.status(StatusCodes.OK).json({
       success: true,
       message: "Post updated successfully!"
     });
-  } catch (erorr) {
-    next(new ApiError(StatusCodes.UNAUTHORIZED, erorr.message));
+  } catch (Error) {
+    next(new ApiError(StatusCodes.UNAUTHORIZED, Error.message));
   }
 };
 
@@ -59,15 +59,15 @@ const deletePost = async (req, res, next) => {
     const postId = req.params.postId;
     const oldPost = await postService.findPostById(postId);
     if (!oldPost) {
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPost.postNotFound);
     }
     await postService.deletePostDB(postId);
     res.status(StatusCodes.OK).json({
       success: true,
       message: "Post deleted successfully!"
     });
-  } catch (erorr) {
-    next(new ApiError(StatusCodes.UNAUTHORIZED, erorr.message));
+  } catch (Error) {
+    next(new ApiError(StatusCodes.UNAUTHORIZED, Error.message));
   }
 };
 
@@ -78,7 +78,7 @@ const reactionPost = async (req, res, next) => {
     const postId = req.params.postId;
     const post = await postService.findPostById(postId);
     if (!post || (post && post.status != enums.statusPost.ACTIVE)) {
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPost.postNotFound);
     }
     const userId = decodeToken.userId;
     const centerId = decodeToken.centerId;
@@ -88,7 +88,7 @@ const reactionPost = async (req, res, next) => {
       centerId: centerId
     });
     if (!reaction) {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Erorr");
+      throw new ApiError(StatusCodes.NOT_FOUND, "Error");
     }
     res.status(StatusCodes.CREATED).json({
       success: true,
@@ -106,7 +106,7 @@ const changeStatusPost = async (req, res, next) => {
     const postId = req.params.postId;
     const post = await postService.findPostById(postId);
     if (!post) {
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPost.postNotFound);
     }
     const status = req.body.status;
     const statusNew = await setEnum.setStatusPost(status);
@@ -132,7 +132,7 @@ const getPost = async (req, res, next) => {
     const decodeToken = verify(getToken, env.JWT_SECRET);
     const post = await postService.findPostInfoById(postId);
     if (!post) {
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPost.postNotFound);
     }
     let check = false;
     if (post.status == enums.statusPost.ACTIVE) check = true;
@@ -158,7 +158,7 @@ const getPost = async (req, res, next) => {
         data: post
       });
     } else {
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPost.postNotFound);
     }
   } catch (error) {
     const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
