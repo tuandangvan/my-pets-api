@@ -38,11 +38,8 @@ const petSchema = mongoose.Schema(
     },
     images: [
       {
-        _id: mongoose.Schema.Types.ObjectId,
-        image: {
-          data: Buffer,
-          contentType: String
-        }
+        type: String,
+        default: "Chưa cập nhật"
       }
     ],
     healthInfo: {

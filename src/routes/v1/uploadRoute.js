@@ -1,6 +1,5 @@
 import express from "express";
 import { uploadController } from "~/controllers/uploadController";
-import { enums } from "~/enums/enums";
 import authencation from "~/middlewares/authencationHandingMiddleware";
 import { authorizationMiddelware } from "~/middlewares/authorizationHandlingMiddelware";
 import fileImage from "~/upload/uploadCloudinary"

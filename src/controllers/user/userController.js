@@ -1,18 +1,26 @@
 import { StatusCodes } from "http-status-codes";
 import { enums } from "~/enums/enums";
-import ErorrUser from "~/messageError/erorrUser";
-import ErorrAccount from "~/messageError/errorAccount";
+import ErrorUser from "~/messageError/errorUser";
+import ErrorAccount from "~/messageError/errorAccount";
 import { accountService } from "~/services/accountService";
 import { userService } from "~/services/userService";
 import ApiError from "~/utils/ApiError";
+import { validate } from "~/validate/validateUser";
 
 const createInformation = async (req, res, next) => {
   try {
+    //validate infomation
+    const result = validate.infoUserValidate(req.body);
+    if(result.error){
+      res.status(400).send({error: result.error.details[0].message});
+      return;
+    }
+
     const account = await accountService.findAccountById(req.params.accountId);
     if(!account){
       throw new ApiError(
         StatusCodes.UNAUTHORIZED,
-        ErorrAccount.accountNotFound
+        ErrorAccount.accountNotFound
       );
     }
     if (account.role == enums.roles.CENTER) {
@@ -41,7 +49,7 @@ const findUser = async (req, res, next) => {
     const user = await userService.findInfoUserByUserId(userId);
    
     if(!user.accountId.isActive){
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrUser.userInfoNotFound);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorUser.userInfoNotFound);
     }
 
     const userData = {
@@ -83,7 +91,7 @@ const changeInfomation = async (req, res, next) => {
     const userId = req.params.userId;
     const user = await userService.findUserById(userId);
     if(!user){
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrUser.userNotExist);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorUser.userNotExist);
     }
     const users = await userService.updateUser({data: req.body, userId: userId});
     res.status(StatusCodes.OK).json({

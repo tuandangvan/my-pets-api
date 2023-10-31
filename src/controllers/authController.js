@@ -10,29 +10,27 @@ import { codeOTPService } from "~/services/codeOTPService";
 import { userService } from "~/services/userService";
 import { generate } from "~/utils/generate";
 import { token } from "~/utils/token";
-import ErorrUser from "~/messageError/erorrUser";
-import ErorrToken from "~/messageError/erorrToken";
-import ErorrAccount from "~/messageError/errorAccount";
+import ErrorUser from "~/messageError/errorUser";
+import ErrorToken from "~/messageError/errorToken";
+import ErrorAccount from "~/messageError/errorAccount";
 import { enums } from "~/enums/enums";
 import { centerService } from "~/services/centerService";
-import ErorrCenter from "~/messageError/erorrCenter";
-import Joi from "joi";
-import Validate from "~/validate/validateUser";
+import ErrorCenter from "~/messageError/errorCenter";
+import { validate } from "~/validate/validateUser";
 
 const signUp = async (req, res, next) => {
   try {
-    //validate
-    console.log(Validate.registerValidation)
-    const erorrValidate =  Joi.validate(req.body, Validate.registerValidation);
-    if (erorrValidate.error) {
-      res.status(400).send(erorrValidate.error.details[0].message);
-      return;
-    }
+   //validate
+   const result = validate.registerValidation(req.body);
+   if(result.error){
+     res.status(400).send({error: result.error.details[0].message});
+     return;
+   }
 
     const email = req.body.email;
     const oldAccount = await accountService.findAccountByEmail(email);
     if (oldAccount) {
-      throw new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, ErorrUser.userExist);
+      throw new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, ErrorUser.userExist);
     }
     const newAccount = await accountService.createAccount(req.body);
 
@@ -102,7 +100,7 @@ const signIn = async (req, res, next) => {
     if (account.role == enums.roles.USER || account.role == enums.roles.ADMIN) {
       const user = await userService.findUserByAccountId(account.id);
       if (!user) {
-        throw new ApiError(StatusCodes.NOT_FOUND, ErorrUser.userInfoNotFound);
+        throw new ApiError(StatusCodes.NOT_FOUND, ErrorUser.userInfoNotFound);
       }
       const accessToken = await jwtUtils.generateAuthToken({
         account: account,
@@ -141,7 +139,7 @@ const signIn = async (req, res, next) => {
     } else if (account.role == enums.roles.CENTER) {
       const center = await centerService.findCenterByAccountId(account.id);
       if (!center) {
-        throw new ApiError(StatusCodes.NOT_FOUND, ErorrCenter.centerInfoNotFound);
+        throw new ApiError(StatusCodes.NOT_FOUND, ErrorCenter.centerInfoNotFound);
       }
 
       const accessToken = await jwtUtils.generateAuthToken({
@@ -225,7 +223,7 @@ const refreshToken = async (req, res, next) => {
       refreshToken
     );
     if (!accountTemp) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrToken.tokenNotFound);
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErrorToken.tokenNotFound);
     }
     const account = await accountService.findAccountById(decodeToken.id);
     const accessToken = await jwtUtils.generateAuthToken({
@@ -249,7 +247,7 @@ const reSendEmailAuthencation = async function (req, res, next) {
     const oldAccount = await accountService.findAccountByEmail(email);
 
     if (!oldAccount) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrAccount.emailNotExist);
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErrorAccount.emailNotExist);
     }
 
     const code = await generate.generateOTP();
@@ -290,7 +288,7 @@ const verifyOTP = async (req, res, next) => {
     const code = req.body.code;
     const oldAccount = await accountService.findAccountByEmail(email);
     if (!oldAccount) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrAccount.emailNotExist);
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErrorAccount.emailNotExist);
     }
 
     const check = await codeOTPService.checkVerifyOTP({
@@ -324,7 +322,7 @@ const forgotPassword = async (req, res, next) => {
     const email = req.body.email;
     const account = await accountService.findAccountByEmail(email);
     if (!account) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrAccount.emailNotExist);
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErrorAccount.emailNotExist);
     }
 
     const user = await userService.findUserByAccountId(account.id);
