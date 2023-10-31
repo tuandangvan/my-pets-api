@@ -1,4 +1,4 @@
-export default class ErorrUser {
+export default class ErrorUser {
   static get userExist() {
     return "User is exist !";
   }

@@ -1,4 +1,4 @@
-export default class ErorrAccount {
+export default class ErrorAccount {
   static get accountNotFound() {
     return "Account not found !";
   }

@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { verify } from "jsonwebtoken";
 import { env } from "~/config/environment";
 import { enums } from "~/enums/enums";
-import ErorrPost from "~/messageError/erorrPost";
+import ErrorPost from "~/messageError/errorPost";
 import { postService } from "~/services/postService";
 import ApiError from "~/utils/ApiError";
 import { token } from "~/utils/token";
@@ -13,7 +13,7 @@ const addComment = async (req, res, next) => {
     const postId = req.params.postId;
     const post = await postService.findPostById(postId);
     if (!post || (post && post.status != enums.statusPost.ACTIVE)) {
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPost.postNotFound);
     }
 
     const getToken = await token.getTokenHeader(req);
@@ -32,7 +32,7 @@ const addComment = async (req, res, next) => {
         message: "Comment posted successfully!"
       });
     } else {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrPost.postCommentFail);
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErrorPost.postCommentFail);
     }
   } catch (error) {
     const customError = new ApiError(
@@ -50,7 +50,7 @@ const updateComment = async (req, res, next) => {
     const commentId = req.params.commentId;
     const post = await postService.findPostById(postId);
     if (!post || (post && post.status != enums.statusPost.ACTIVE)) {
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPost.postNotFound);
     }
     const newPost = await postService.updateCommentByCommentId({
       comment: comment,
@@ -63,11 +63,11 @@ const updateComment = async (req, res, next) => {
         message: "Comment updated successfully!"
       });
     } else {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, ErorrPost.postCommentFail);
+      throw new ApiError(StatusCodes.UNAUTHORIZED, ErrorPost.postCommentFail);
     }
 
-  } catch (erorr) {
-    next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, erorr.message));
+  } catch (Error) {
+    next(new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, Error.message));
   }
 };
 
@@ -76,7 +76,7 @@ const deleteComment = async (req, res, next) => {
     const { postId, commentId } = req.params;
     const post = await postService.findPostById(postId);
     if (!post || (post && post.status != enums.statusPost.ACTIVE)) {
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPost.postNotFound);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPost.postNotFound);
     }
     const deleteCommentResult = await postService.deleteComment({
       post: post,

@@ -1,18 +1,25 @@
 import { StatusCodes } from "http-status-codes";
 import { enums } from "~/enums/enums";
-import ErorrCenter from "~/messageError/erorrCenter";
-import ErorrAccount from "~/messageError/errorAccount";
+import ErrorCenter from "~/messageError/errorCenter";
+import ErrorAccount from "~/messageError/errorAccount";
 import { accountService } from "~/services/accountService";
 import { centerService } from "~/services/centerService";
 import ApiError from "~/utils/ApiError";
+import { validate } from "~/validate/validateUser";
 
 const createInfoForCenter = async (req, res, next) => {
   try {
+    //validate
+    const result = validate.infoCenterValidate(req.body);
+    if (result.error) {
+      res.status(400).send({ error: result.error.details[0].message });
+      return;
+    }
     const account = await accountService.findAccountById(req.params.accountId);
     if (!account)
       throw new ApiError(
         StatusCodes.UNAUTHORIZED,
-        ErorrAccount.accountNotFound
+        ErrorAccount.accountNotFound
       );
 
     if (account.role == enums.roles.USER)
@@ -40,10 +47,13 @@ const updateCenter = async (req, res, next) => {
     const centerId = req.params.centerId;
     const center = await centerService.findCenterById(centerId);
 
-    if(!center){
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrCenter.centerNotExist);
+    if (!center) {
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorCenter.centerNotExist);
     }
-    const centers = await centerService.updateCenter({data: req.body, centerId: centerId});
+    const centers = await centerService.updateCenter({
+      data: req.body,
+      centerId: centerId
+    });
     res.status(StatusCodes.OK).json({
       success: true,
       data: centers

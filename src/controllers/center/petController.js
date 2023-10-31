@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import { verify } from "jsonwebtoken";
 import { env } from "~/config/environment";
-import ErorrCenter from "~/messageError/erorrCenter";
-import ErorrPet from "~/messageError/erorrPet";
+import ErrorCenter from "~/messageError/errorCenter";
+import ErrorPet from "~/messageError/errorPet";
 import { centerService } from "~/services/centerService";
 import { petService } from "~/services/petService";
 import ApiError from "~/utils/ApiError";
@@ -10,6 +10,12 @@ import { token } from "~/utils/token";
 
 const createPet = async (req, res, next) => {
   try {
+    //validate
+    const result = validate.petValidate(req.body);
+    if(result.error){
+      res.status(400).send({error: result.error.details[0].message});
+      return;
+    }
     const getToken = await token.getTokenHeader(req);
     const account = verify(getToken, env.JWT_SECRET);
 
@@ -44,13 +50,13 @@ const updatePet = async (req, res, next) => {
   try {
     const pet = await petService.findPetById(req.params.petId);
     if (!pet) {
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPet.petNotFound);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPet.petNotFound);
     }
     const getToken = await token.getTokenHeader(req);
     const decodeToken = verify(getToken, env.JWT_SECRET);
     const center = await centerService.findCenterById(decodeToken.centerId);
     if (!center) {
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrCenter.centerNotExist);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorCenter.centerNotExist);
     }
     const pets = await petService.updatePet({
       data: req.body,
@@ -71,13 +77,13 @@ const deletePet = async (req, res, next) => {
     const petId = req.params.petId;
     const pet = await petService.findPetById(petId);
     if (!pet) {
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrPet.petNotFound);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPet.petNotFound);
     }
     const getToken = await token.getTokenHeader(req);
     const decodeToken = verify(getToken, env.JWT_SECRET);
     const center = await centerService.findCenterById(decodeToken.centerId);
     if (!center) {
-      throw new ApiError(StatusCodes.NOT_FOUND, ErorrCenter.centerNotExist);
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorCenter.centerNotExist);
     }
     await petService.deletePet(petId);
     await centerService.deletePetForCenter({centerId: decodeToken.centerId, petId: petId});

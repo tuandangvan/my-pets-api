@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import ApiError from "~/utils/ApiError";
 import { verify } from "jsonwebtoken";
 import { env } from "~/config/environment";
-import ErorrToken from "~/messageError/erorrToken";
+import ErorrToken from "~/messageError/errorToken";
 
 const checkExpireAccessToken = async function (accessToken) {
   try {
