@@ -1,4 +1,4 @@
-export default class ErorrToken {
+export default class ErrorToken {
     static get tokenExpired() {
       return "Invalid JWT!";
     }
