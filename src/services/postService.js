@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { enums } from "~/enums/enums";
 import Post from "~/models/postModel";
 
 const createPost = async function ({ data, userId, centerId }) {
@@ -36,6 +37,19 @@ const findPostById = async function (postId) {
 
 const findPostInfoById = async function (postId) {
   const post = await Post.findOne({ _id: postId })
+    .populate("userId")
+    .populate("centerId")
+    .populate("userId.accountId")
+    .populate("centerId.accountId")
+    .populate("reaction.userId")
+    .populate("reaction.centerId")
+    .populate("comments.userId")
+    .populate("comments.centerId");
+  return post;
+};
+
+const findPostInfoAll= async function () {
+  const post = await Post.find({status: enums.statusPost.ACTIVE})
     .populate("userId")
     .populate("centerId")
     .populate("userId.accountId")
@@ -164,5 +178,6 @@ export const postService = {
   createComment,
   updateCommentByCommentId,
   reaction,
-  deleteComment
+  deleteComment,
+  findPostInfoAll
 };

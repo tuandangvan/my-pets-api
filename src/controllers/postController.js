@@ -166,6 +166,22 @@ const getPost = async (req, res, next) => {
   }
 };
 
+const getAllPost = async (req, res, next) => {
+  try {
+    const post = await postService.findPostInfoAll();
+    if (!post) {
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPost.postNotFound);
+    }
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: post
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
+};
+
 // const getReaction = async (req, res, next) => {
 //   try {
 //     const postId = req.params.id;
@@ -191,5 +207,6 @@ export const postController = {
   reactionPost,
   getPost,
   changeStatusPost,
+  getAllPost
   // getReaction
 };
