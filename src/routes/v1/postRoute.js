@@ -12,6 +12,7 @@ router.put("/:postId", authencation, authorizationMiddelware.permission(Permissi
 router.delete("/:postId", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), postController.deletePost);
 router.put("/:postId/status", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), postController.changeStatusPost);
 router.get("/:postId", authencation, authorizationMiddelware.permission(PermissionRoles.All), postController.getPost);
+router.get("/", authencation, authorizationMiddelware.permission(PermissionRoles.All), postController.getAllPost);
 
 //comment
 router.post("/:postId/comment/", authencation, authorizationMiddelware.permission(PermissionRoles.All), commentController.addComment);
