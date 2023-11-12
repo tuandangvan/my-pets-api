@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 const socketServer = (server) => {
     const io = new Server(server,{ cors: "https://localhost:3001" });
+    console.log("Running socket!");
     let onlineUsers = []
     io.on("connection", (socket) => {
         console.log("new connection", socket.id)

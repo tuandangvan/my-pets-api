@@ -34,7 +34,8 @@ const infoCenterValidate = function (data) {
     phoneNumber: Joi.string()
       .required()
       .regex(/^\d{10}$/, "10 character"),
-    address: Joi.string().required()
+    address: Joi.string().required(),
+    avatar: Joi.string()
   });
   const result = schema.validate(data);
   return result;

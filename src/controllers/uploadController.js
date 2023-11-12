@@ -20,7 +20,6 @@ const uploadSingle = async (req, res, next) => {
 
 const uploadMulti = async (req, res, next) => {
     try {
-        console.log(req.files)
       if (req.files) {
         const images = req.files.map(item => ({url: item.path}))
 
