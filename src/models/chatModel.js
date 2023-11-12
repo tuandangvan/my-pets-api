@@ -1,25 +1,44 @@
 import mongoose, { Schema } from "mongoose";
-import { enums } from "~/enums/enums";
 
-const postSchema = mongoose.Schema(
+const chatSchema = mongoose.Schema(
   {
     _id: mongoose.Schema.Types.ObjectId,
     name: {
-        type: String,
-        trim: true
+      type: String,
+      trim: true
     },
     avaiable: {
-        type: Boolean,
-        default: true, 
+      type: Boolean,
+      default: true
     },
-    messages: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Message',
-    }],
-},
+    participants: [
+      {
+        _id: {
+          type: Schema.Types.ObjectId,
+          auto: false
+        },
+        userId: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+          default: null
+        },
+        centerId: {
+          type: Schema.Types.ObjectId,
+          ref: "Center",
+          default: null
+        }
+      }
+    ],
+    messages: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Message"
+      }
+    ]
+  },
 
-    { timestamps: true }
+  { timestamps: true }
 );
 
-const postModel = mongoose.model("Posts", postSchema);
-export default postModel;
+const chatModel = mongoose.model("Chat", chatSchema);
+export default chatModel;

@@ -7,6 +7,8 @@ import { centerRoute } from "./center/centerRoute";
 import { postRoute } from "./postRoute";
 import { uploadRoute } from "./uploadRoute";
 import { adminRoute } from "./admin/adminRoute";
+import { chatRoute } from "./chat/chatRoute";
+import { messageRoute } from "./chat/messageRoute";
 
 
 const router = express.Router();
@@ -26,5 +28,7 @@ router.use("/center", centerRoute);
 router.use("/post", postRoute);
 router.use("/upload", uploadRoute);
 router.use("/admin", adminRoute);
+router.use("/chat", chatRoute);
+router.use("/message", messageRoute);
 
 export const APIs_V1 = router;

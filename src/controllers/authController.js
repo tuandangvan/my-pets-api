@@ -131,6 +131,7 @@ const signIn = async (req, res, next) => {
         firstName: user.firstName,
         lastName: user.lastName,
         phoneNumber: user.phoneNumber,
+        avatar: user.avatar,
         address: user.address,
         refreshToken: refreshToken,
         accessToken: accessToken
@@ -169,6 +170,7 @@ const signIn = async (req, res, next) => {
         role: center.accountId.role,
         isActive: center.accountId.isActive,
         name: center.name,
+        avatar: center.avatar,
         phoneNumber: center.phoneNumber,
         address: center.address,
         refreshToken: refreshToken,
