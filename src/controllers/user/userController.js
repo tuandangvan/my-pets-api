@@ -57,6 +57,7 @@ const findUser = async (req, res, next) => {
       accountId: user.accountId._id,
       email: user.accountId.email,
       role: user.accountId.role,
+      avatar: user.avatar,
       isActive: user.accountId.isActive,
       firstName: user.firstName,
       lastName: user.lastName,

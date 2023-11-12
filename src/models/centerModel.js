@@ -5,7 +5,8 @@ const centerSchema = mongoose.Schema(
     _id: mongoose.Schema.Types.ObjectId,
     accountId: {
       type: Schema.Types.ObjectId,
-      ref: "Account"
+      ref: "Account",
+      unique: true
     },
     name: {
       type: String,
@@ -22,7 +23,8 @@ const centerSchema = mongoose.Schema(
     },
     avatar: {
       type: String,
-      defaul: "https://res.cloudinary.com/dfaea99ew/image/upload/v1698469989/a1rstfzd5ihov6sqhvck.jpg"
+      required: true,
+      default: "https://res.cloudinary.com/dfaea99ew/image/upload/v1698469989/a1rstfzd5ihov6sqhvck.jpg"
     },
     petIds: [{ 
         type: Schema.Types.ObjectId, 

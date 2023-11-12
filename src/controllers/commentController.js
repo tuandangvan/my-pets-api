@@ -25,7 +25,6 @@ const addComment = async (req, res, next) => {
       userId: decodeToken.userId,
       centerId: decodeToken.centerId
     });
-    console.log(newPost)
     if (newPost) {
       res.status(StatusCodes.CREATED).json({
         success: true,
