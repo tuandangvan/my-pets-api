@@ -5,7 +5,7 @@ import ErrorAccount from "~/messageError/errorAccount";
 import { accountService } from "~/services/accountService";
 import { userService } from "~/services/userService";
 import ApiError from "~/utils/ApiError";
-import { validate } from "~/validate/validateUser";
+import { validate } from "~/validate/validate";
 
 const createInformation = async (req, res, next) => {
   try {

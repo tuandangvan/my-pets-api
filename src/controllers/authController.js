@@ -16,7 +16,7 @@ import ErrorAccount from "~/messageError/errorAccount";
 import { enums } from "~/enums/enums";
 import { centerService } from "~/services/centerService";
 import ErrorCenter from "~/messageError/errorCenter";
-import { validate } from "~/validate/validateUser";
+import { validate } from "~/validate/validate";
 
 const signUp = async (req, res, next) => {
   try {
