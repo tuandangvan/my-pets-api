@@ -5,7 +5,7 @@ import ErrorAccount from "~/messageError/errorAccount";
 import { accountService } from "~/services/accountService";
 import { centerService } from "~/services/centerService";
 import ApiError from "~/utils/ApiError";
-import { validate } from "~/validate/validateUser";
+import { validate } from "~/validate/validate";
 
 const createInfoForCenter = async (req, res, next) => {
   try {
@@ -64,7 +64,38 @@ const updateCenter = async (req, res, next) => {
   }
 };
 
+const getCenter = async (req, res, next) => {
+  try {
+    const centerId = req.params.centerId;
+    const center = await centerService.findInfoCenterById(centerId);
+
+    if(!center.accountId.isActive){
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorCenter.centerInfoNotFound);
+    }
+
+    const centerData = {
+      _id: center._id,
+      accountId: center.accountId._id,
+      email: center.accountId.email,
+      role: center.accountId.role,
+      avatar: center.avatar,
+      isActive: center.accountId.isActive,
+      name: center.name,
+      phoneNumber: center.phoneNumber,
+      address: center.address
+    };
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      center: centerData
+    })
+  } catch(error){
+    next(new ApiError(StatusCodes.NOT_FOUND, error.message));
+  }
+};
+
 export const centerController = {
   createInfoForCenter,
-  updateCenter
+  updateCenter,
+  getCenter
 };
