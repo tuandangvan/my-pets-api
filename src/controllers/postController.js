@@ -182,6 +182,47 @@ const getAllPost = async (req, res, next) => {
   }
 };
 
+const getComment = async (req, res, next) => {
+  try {
+    const postId = req.params.postId;
+    const getToken = await token.getTokenHeader(req);
+    const decodeToken = verify(getToken, env.JWT_SECRET);
+    const post = await postService.findPostInfoById(postId);
+    if (!post) {
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPost.postNotFound);
+    }
+    let check = false;
+    if (post.status == enums.statusPost.ACTIVE) check = true;
+    if (post.status == enums.statusPost.HIDDEN) {
+      if (post.centerId) {
+        if (
+          post.centerId.id == decodeToken.centerId &&
+          decodeToken.userId == null
+        )
+          check = true;
+      }
+      if (post.userId) {
+        if (
+          post.userId.id == decodeToken.userId &&
+          decodeToken.centerId == null
+        )
+          check = true;
+      }
+    }
+    if (check) {
+      res.status(StatusCodes.OK).json({
+        success: true,
+        data: post.comments
+      });
+    } else {
+      throw new ApiError(StatusCodes.NOT_FOUND, ErrorPost.postNotFound);
+    }
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
+};
+
 // const getReaction = async (req, res, next) => {
 //   try {
 //     const postId = req.params.id;
@@ -207,6 +248,7 @@ export const postController = {
   reactionPost,
   getPost,
   changeStatusPost,
-  getAllPost
+  getAllPost,
+  getComment
   // getReaction
 };
