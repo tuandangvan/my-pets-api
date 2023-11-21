@@ -18,7 +18,7 @@ router.get("/", authencation, authorizationMiddelware.permission(PermissionRoles
 router.post("/:postId/comment/", authencation, authorizationMiddelware.permission(PermissionRoles.All), commentController.addComment);
 router.put("/:postId/comment/:commentId", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), commentController.updateComment);
 router.delete("/:postId/comment/:commentId", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), commentController.deleteComment);
-// router.get("/comment/:id", postController.getComment);
+router.get("/:postId/comment", authencation, authorizationMiddelware.permission(PermissionRoles.All), postController.getComment);
 
 //reaction
 router.put("/:postId/reaction", authencation, authorizationMiddelware.permission(PermissionRoles.All), postController.reactionPost);

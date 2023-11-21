@@ -64,6 +64,7 @@ const findPostInfoAll= async function () {
 const createComment = async function ({ comment, postId, userId, centerId }) {
   const newComment = {
     _id: new mongoose.Types.ObjectId(),
+    commentId: comment.commentId,
     content: comment.content,
     userId: userId,
     centerId: centerId,
