@@ -14,11 +14,6 @@ const postSchema = mongoose.Schema(
       ref: "Center",
       default: null
     },
-    title: {
-      type: String,
-      required: true,
-      trim: true
-    },
     content: {
       type: String,
       required: true,
@@ -56,6 +51,12 @@ const postSchema = mongoose.Schema(
         centerId: {
           type: Schema.Types.ObjectId,
           ref: "Center",
+          default: null
+        },
+        commentId:{
+          type: Schema.Types.ObjectId,
+          ref: "Comment",
+          required: true,
           default: null
         },
         content: {
