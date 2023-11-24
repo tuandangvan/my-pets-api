@@ -6,9 +6,7 @@ import { env } from "~/config/environment";
 import { APIs_V1 } from "~/routes/v1/index";
 import cors from "cors";
 import { errorHandlingMiddleware } from "~/middlewares/errorHandlingMiddleware";
-
-import { Socket } from "socket.io";
-import socketServer from "../socketServer";
+import socketServer from "./socketServer";
 
 const START_SERVER = () => {
   const app = express();
