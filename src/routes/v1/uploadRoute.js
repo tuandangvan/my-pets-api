@@ -1,9 +1,9 @@
 import express from "express";
-import { uploadController } from "~/controllers/uploadController";
-import authencation from "~/middlewares/authencationHandingMiddleware";
-import { authorizationMiddelware } from "~/middlewares/authorizationHandlingMiddelware";
-import fileImage from "~/upload/uploadCloudinary"
-import PermissionRoles from "~/utils/rolePermission";
+import { uploadController } from "../../controllers/uploadController.js";
+import authencation from "../../middlewares/authencationHandingMiddleware.js";
+import { authorizationMiddelware } from "../../middlewares/authorizationHandlingMiddelware.js";
+import fileImage from "../../upload/uploadCloudinary.js"
+import PermissionRoles from "../../utils/rolePermission.js";
 
 
 const router = express.Router();

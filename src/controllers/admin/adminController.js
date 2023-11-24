@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
-import { petService } from "~/services/petService";
-import { userService } from "~/services/userService";
-import ApiError from "~/utils/ApiError";
+import { petService } from "../../services/petService.js";
+import { userService } from "../../services/userService.js";
+import ApiError from "../../utils/ApiError.js";
 
 const getAllUser = async (req, res, next) => {
   try {

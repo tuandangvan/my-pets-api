@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Pet from "~/models/petModel";
-import { setEnum } from "~/utils/setEnum";
+import Pet from "../models/petModel.js";
+import { setEnum } from "../utils/setEnum.js";
 
 const createPet = async function ({data, centerId}) {
   data.centerId = centerId;

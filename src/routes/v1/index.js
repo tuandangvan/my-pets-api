@@ -1,14 +1,14 @@
 import express from "express";
 import { StatusCodes } from "http-status-codes";
-import { authRoute } from "./authRoute";
-import { userRoute } from "./user/userRoute";
-import { petRoute } from "./center/petRoute";
-import { centerRoute } from "./center/centerRoute";
-import { postRoute } from "./postRoute";
-import { uploadRoute } from "./uploadRoute";
-import { adminRoute } from "./admin/adminRoute";
-import { chatRoute } from "./chat/chatRoute";
-import { messageRoute } from "./chat/messageRoute";
+import { authRoute } from "./authRoute.js";
+import { userRoute } from "./user/userRoute.js";
+import { petRoute } from "./center/petRoute.js";
+import { centerRoute } from "./center/centerRoute.js";
+import { postRoute } from "./postRoute.js";
+import { uploadRoute } from "./uploadRoute.js";
+import { adminRoute } from "./admin/adminRoute.js";
+import { chatRoute } from "./chat/chatRoute.js";
+import { messageRoute } from "./chat/messageRoute.js";
 
 
 const router = express.Router();

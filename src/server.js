@@ -1,12 +1,12 @@
 /* eslint-disable no-console*/
 import express from "express";
-import { CONNECT_DATABASE, CLOSE_DATABASE } from "~/config/mongodb";
+import { CONNECT_DATABASE, CLOSE_DATABASE } from "./config/mongodb.js";
 import exitHook from "async-exit-hook";
-import { env } from "~/config/environment";
-import { APIs_V1 } from "~/routes/v1/index";
+import { env } from "./config/environment.js";
+import { APIs_V1 } from "../src/routes/v1/index.js";
 import cors from "cors";
-import { errorHandlingMiddleware } from "~/middlewares/errorHandlingMiddleware";
-import socketServer from "./socketServer";
+import { errorHandlingMiddleware } from "./middlewares/errorHandlingMiddleware.js";
+import socketServer from "./socketServer.js";
 
 const START_SERVER = () => {
   const app = express();

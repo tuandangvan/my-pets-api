@@ -1,11 +1,11 @@
 import { StatusCodes } from "http-status-codes";
-import { enums } from "~/enums/enums";
-import ErrorUser from "~/messageError/errorUser";
-import ErrorAccount from "~/messageError/errorAccount";
-import { accountService } from "~/services/accountService";
-import { userService } from "~/services/userService";
-import ApiError from "~/utils/ApiError";
-import { validate } from "~/validate/validate";
+import { enums } from "../../enums/enums.js";
+import ErrorUser from "../../messageError/errorUser.js";
+import ErrorAccount from "../../messageError/errorAccount.js";
+import { accountService } from "../../services/accountService.js";
+import { userService } from "../../services/userService.js";
+import ApiError from "../../utils/ApiError.js";
+import { validate } from "../../validate/validate.js";
 
 const createInformation = async (req, res, next) => {
   try {

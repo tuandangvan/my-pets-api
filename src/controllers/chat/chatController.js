@@ -1,13 +1,13 @@
 import { StatusCodes } from "http-status-codes";
 import { verify } from "jsonwebtoken";
-import { env } from "~/config/environment";
-import { enums } from "~/enums/enums";
-import chatModel from "~/models/chatModel";
-import { centerService } from "~/services/centerService";
-import { chatService } from "~/services/chatService";
-import { userService } from "~/services/userService";
-import ApiError from "~/utils/ApiError";
-import { token } from "~/utils/token";
+import { env } from "../../config/environment.js";
+import { enums } from "../../enums/enums.js";
+import chatModel from "../../models/chatModel.js";
+import { centerService } from "../../services/centerService.js";
+import { chatService } from "../../services/chatService.js";
+import { userService } from "../../services/userService.js";
+import ApiError from "../../utils/ApiError.js";
+import { token } from "../../utils/token.js";
 
 // Tạo cuộc trò chuyện giữa hai người
 const createChatBetweenTwoUsers = async (req, res, next) => {

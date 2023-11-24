@@ -1,8 +1,8 @@
 import { verify } from "jsonwebtoken";
-import { env } from "~/config/environment";
-import { chatService } from "~/services/chatService";
-import { messageService } from "~/services/messageService";
-import { token } from "~/utils/token";
+import { env } from "../../config/environment.js";
+import { chatService } from "../../services/chatService.js";
+import { messageService } from "../../services/messageService.js";
+import { token } from "../../utils/token.js";
 
 // Tạo cuộc trò chuyện giữa hai người
 const createMessage = async (req, res, next) => {

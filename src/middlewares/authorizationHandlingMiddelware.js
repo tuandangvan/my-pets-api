@@ -1,8 +1,8 @@
 import { verify } from "jsonwebtoken";
-import { env } from "~/config/environment";
-import { petService } from "~/services/petService";
-import { postService } from "~/services/postService";
-import PermissionRoles from "~/utils/rolePermission";
+import { env } from "../config/environment.js";
+import { petService } from "../services/petService.js";
+import { postService } from "../services/postService.js";
+import PermissionRoles from "../utils/rolePermission.js";
 import { _ } from "lodash";
 
 const permission = (permission) => {

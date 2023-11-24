@@ -1,8 +1,8 @@
 import express from "express";
-import { adminController } from "~/controllers/admin/adminController";
-import authencation from "~/middlewares/authencationHandingMiddleware";
-import { authorizationMiddelware } from "~/middlewares/authorizationHandlingMiddelware";
-import PermissionRoles from "~/utils/rolePermission";
+import { adminController } from "../../../controllers/admin/adminController.js";
+import authencation from "../../../middlewares/authencationHandingMiddleware.js";
+import { authorizationMiddelware } from "../../../middlewares/authorizationHandlingMiddelware.js";
+import PermissionRoles from "../../../utils/rolePermission.js";
 
 
 const router = express.Router();

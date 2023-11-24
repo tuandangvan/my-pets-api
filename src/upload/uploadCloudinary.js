@@ -1,7 +1,7 @@
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
-import { env } from "~/config/environment";
+import { env } from "../config/environment.js";
 
 
 cloudinary.config({
