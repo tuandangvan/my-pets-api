@@ -11,6 +11,9 @@ import socketServer from "./socketServer";
 const START_SERVER = () => {
   const app = express();
 
+  app.get("/", (req, res) => {
+    res.json("hello")});
+
   // Enable req.body json data
   app.use(express.json());
   app.use(cors());
