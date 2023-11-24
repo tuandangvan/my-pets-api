@@ -45,9 +45,8 @@
 
 import { Server } from "socket.io";
 const socketServer = (server) => {
-  const io = new Server(server, { cors: "https://found-and-adoption-pet-api-be.vercel.app" });
+  const io = new Server(server, { cors: "https://localhost:8050" });
   console.log("Running socket!");
-  
   let onlineUsers = [];
   // Lắng nghe kết nối từ các client
   io.on("connection", (socket) => {
