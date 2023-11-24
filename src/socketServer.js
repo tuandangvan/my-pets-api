@@ -44,7 +44,13 @@
 // module.exports = socketServer;
 
 import { Server } from "socket.io";
-const socketServer = (server) => {
+import express from "express";
+const app = express();
+
+
+const socketServer = () => {
+  const server = app.listen(8051, () => {
+  });
   const io = new Server(server, { cors: "https://localhost:8050" });
   console.log("Running socket!");
   let onlineUsers = [];
@@ -80,4 +86,6 @@ const socketServer = (server) => {
   });
 };
 
-module.exports = socketServer;
+socketServer();
+
+// module.exports = socketServer;

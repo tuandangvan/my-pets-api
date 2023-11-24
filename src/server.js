@@ -35,7 +35,7 @@ const START_SERVER = () => {
     console.log("5. Disconnected from MongoDB Cloud Atlas");
   });
   //connect to socket
-  socketServer(server);
+  // socketServer(server);
 };
 
 console.log("1. Connecting to MongoDB Cloud Atlas");
