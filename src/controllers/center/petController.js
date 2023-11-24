@@ -1,12 +1,12 @@
 import { StatusCodes } from "http-status-codes";
 import { verify } from "jsonwebtoken";
-import { env } from "~/config/environment";
-import ErrorCenter from "~/messageError/errorCenter";
-import ErrorPet from "~/messageError/errorPet";
-import { centerService } from "~/services/centerService";
-import { petService } from "~/services/petService";
-import ApiError from "~/utils/ApiError";
-import { token } from "~/utils/token";
+import { env } from "../../config/environment.js";
+import ErrorCenter from "../../messageError/errorCenter.js";
+import ErrorPet from "../../messageError/errorPet.js";
+import { centerService } from "../../services/centerService.js";
+import { petService } from "../../services/petService.js";
+import ApiError from "../../utils/ApiError.js";
+import { token } from "../../utils/token.js";
 
 const createPet = async (req, res, next) => {
   try {

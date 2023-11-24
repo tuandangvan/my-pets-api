@@ -1,4 +1,4 @@
-import OTPModel from "~/models/codeOTPModel";
+import OTPModel from "../models/codeOTPModel.js";
 
 let intervalId;
 let intervalTime = 1000; // 10 giây (30,000 mili giây)

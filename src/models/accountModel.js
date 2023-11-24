@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { enums } from "~/enums/enums";
+import { enums } from "../enums/enums.js";
 
 const accountSchema = mongoose.Schema(
   {

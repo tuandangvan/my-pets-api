@@ -1,12 +1,12 @@
 import { StatusCodes } from "http-status-codes";
 import { verify } from "jsonwebtoken";
-import { env } from "~/config/environment";
-import { enums } from "~/enums/enums";
-import ErrorPost from "~/messageError/errorPost";
-import { postService } from "~/services/postService";
-import ApiError from "~/utils/ApiError";
-import { setEnum } from "~/utils/setEnum";
-import { token } from "~/utils/token";
+import { env } from "../config/environment.js";
+import { enums } from "../enums/enums.js";
+import ErrorPost from "../messageError/errorPost.js";
+import { postService } from "../services/postService.js";
+import ApiError from "../utils/ApiError.js";
+import { setEnum } from "../utils/setEnum.js";
+import { token } from "../utils/token.js";
 
 const addPost = async (req, res, next) => {
   try {

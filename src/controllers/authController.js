@@ -1,22 +1,22 @@
 import { StatusCodes } from "http-status-codes";
-import ApiError from "~/utils/ApiError";
-import Account from "~/models/accountModel";
-import { jwtUtils } from "~/utils/jwtUtils";
+import ApiError from "../utils/ApiError.js";
+import Account from "../models/accountModel.js";
+import { jwtUtils } from "../utils/jwtUtils.js";
 import { verify } from "jsonwebtoken";
-import { env } from "~/config/environment";
-import { accountService } from "~/services/accountService";
-import { emailService } from "~/sendEmail/emailService";
-import { codeOTPService } from "~/services/codeOTPService";
-import { userService } from "~/services/userService";
-import { generate } from "~/utils/generate";
-import { token } from "~/utils/token";
-import ErrorUser from "~/messageError/errorUser";
-import ErrorToken from "~/messageError/errorToken";
-import ErrorAccount from "~/messageError/errorAccount";
-import { enums } from "~/enums/enums";
-import { centerService } from "~/services/centerService";
-import ErrorCenter from "~/messageError/errorCenter";
-import { validate } from "~/validate/validate";
+import { env } from "../config/environment.js";
+import { accountService } from "../services/accountService.js";
+import { emailService } from "../sendEmail/emailService.js";
+import { codeOTPService } from "../services/codeOTPService.js";
+import { userService } from "../services/userService.js";
+import { generate } from "../utils/generate.js";
+import { token } from "../utils/token.js";
+import ErrorUser from "../messageError/errorUser.js";
+import ErrorToken from "../messageError/errorToken.js";
+import ErrorAccount from "../messageError/errorAccount.js";
+import { enums } from "../enums/enums.js";
+import { centerService } from "../services/centerService.js";
+import ErrorCenter from "../messageError/errorCenter.js";
+import { validate } from "../validate/validate.js";
 
 const signUp = async (req, res, next) => {
   try {

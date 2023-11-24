@@ -1,8 +1,8 @@
 import express from "express";
-import { chatController } from "~/controllers/chat/chatController";
-import authencation from "~/middlewares/authencationHandingMiddleware";
-import { authorizationMiddelware } from "~/middlewares/authorizationHandlingMiddelware";
-import PermissionRoles from "~/utils/rolePermission";
+import { chatController } from "../../../controllers/chat/chatController.js";
+import authencation from "../../../middlewares/authencationHandingMiddleware.js";
+import { authorizationMiddelware } from "../../../middlewares/authorizationHandlingMiddelware.js";
+import PermissionRoles from "../../../utils/rolePermission.js";
 
 
 const router = express.Router();

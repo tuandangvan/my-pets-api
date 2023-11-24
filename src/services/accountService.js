@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import Account from "~/models/accountModel";
+import Account from "../models/accountModel.js";
 import { hashSync } from "bcrypt";
-import ApiError from "~/utils/ApiError";
+import ApiError from "../utils/ApiError.js";
 import { StatusCodes } from "http-status-codes";
 import { compareSync } from "bcrypt";
-import { checkRole } from "~/utils/checkRole";
-import ErrorAccount from "~/messageError/errorAccount";
+import { checkRole } from "../utils/checkRole.js";
+import ErrorAccount from "../messageError/errorAccount.js";
 
 const createAccount = async function (data) {
   data.role = await checkRole.checkRoleUser(data.role);
