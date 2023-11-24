@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import messageModel from "~/models/messageModel";
+import messageModel from "../models/messageModel.js";
 
 const createMessage = async function (messageData) {
   const message = new messageModel(messageData);

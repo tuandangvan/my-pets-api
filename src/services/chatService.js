@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { enums } from "~/enums/enums";
-import chatModel from "~/models/chatModel";
+import { enums } from "../enums/enums.js";
+import chatModel from "../models/chatModel.js";
 
 const createChat = async function (participants) {
   const chat = new chatModel({

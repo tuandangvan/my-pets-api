@@ -1,9 +1,9 @@
 import { Jwt } from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
-import ApiError from "~/utils/ApiError";
+import ApiError from "../utils/ApiError.js";
 import { verify } from "jsonwebtoken";
-import { env } from "~/config/environment";
-import ErorrToken from "~/messageError/errorToken";
+import { env } from "../config/environment.js";
+import ErorrToken from "../messageError/errorToken.js";
 
 const checkExpireAccessToken = async function (accessToken) {
   try {

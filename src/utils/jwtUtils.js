@@ -1,7 +1,7 @@
-import { sign } from "jsonwebtoken";
-import { env } from "~/config/environment";
+import jwt from 'jsonwebtoken';
+import { env } from "../config/environment.js";
 const generateAuthToken = async function ({account, userId, centerId}) {
-  const token = await sign(
+  const token = await jwt.sign(
     {
       id: account.id,
       email: account.email,
@@ -17,7 +17,7 @@ const generateAuthToken = async function ({account, userId, centerId}) {
   return token;
 };
 const generateRefreshToken = async function ({account, userId, centerId}) {
-  const token = await sign(
+  const token = await jwt.sign(
     {
       id: account.id,
       email: account.email,

@@ -1,4 +1,4 @@
-import { enums } from "~/enums/enums";
+import { enums } from "../enums/enums.js";
 
 export default class PermissionRoles {
   static get All() {

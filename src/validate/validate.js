@@ -1,5 +1,5 @@
 import Joi from "@hapi/joi";
-import { enums } from "~/enums/enums";
+import { enums } from "../enums/enums.js";
 
 // Register Validate
 const registerValidation = function (data) {

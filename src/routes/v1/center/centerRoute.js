@@ -1,8 +1,8 @@
 import express from "express";
-import { centerController } from "~/controllers/center/centerController";
-import authencation from "~/middlewares/authencationHandingMiddleware";
-import { authorizationMiddelware } from "~/middlewares/authorizationHandlingMiddelware";
-import PermissionRoles from "~/utils/rolePermission";
+import { centerController } from "../../../controllers/center/centerController.js";
+import authencation from "../../../middlewares/authencationHandingMiddleware.js";
+import { authorizationMiddelware } from "../../../middlewares/authorizationHandlingMiddelware.js";
+import PermissionRoles from "../../../utils/rolePermission.js";
 
 
 const router = express.Router();

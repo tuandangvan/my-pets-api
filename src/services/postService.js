@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { enums } from "~/enums/enums";
-import Post from "~/models/postModel";
+import { enums } from "../enums/enums.js";
+import Post from "../models/postModel.js";
 
 const createPost = async function ({ data, userId, centerId }) {
   const post = new Post({

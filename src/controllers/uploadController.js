@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import ApiError from "~/utils/ApiError";
+import ApiError from "../utils/ApiError.js";
 
 const uploadSingle = async (req, res, next) => {
   try {

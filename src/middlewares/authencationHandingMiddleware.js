@@ -1,9 +1,9 @@
 import { StatusCodes } from "http-status-codes";
 import { verify } from "jsonwebtoken";
-import { env } from "~/config/environment";
-import ApiError from "~/utils/ApiError";
-import ErrorToken from "~/messageError/errorToken";
-import ErrorAccount from "~/messageError/errorAccount";
+import { env } from "../config/environment.js";
+import ApiError from "../utils/ApiError.js";
+import ErrorToken from "../messageError/errorToken.js";
+import ErrorAccount from "../messageError/errorAccount.js";
 const authencation = async (req, res, next) => {
   try {
     if (!req.header("Authorization")) {
