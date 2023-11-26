@@ -28,7 +28,8 @@ const addComment = async (req, res, next) => {
     if (newPost) {
       res.status(StatusCodes.CREATED).json({
         success: true,
-        message: "Comment posted successfully!"
+        message: "Comment posted successfully!",
+        _id: newPost._id
       });
     } else {
       throw new ApiError(StatusCodes.UNAUTHORIZED, ErrorPost.postCommentFail);
