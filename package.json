@@ -5,7 +5,7 @@
   "author": "mascara",
   "description": "chat-app-server",
   "engines": {
-    "node": "18.15.0"
+    "node": "18.x"
   },
   "scripts": {
     "lint": "eslint src --ext js --report-unused-disable-directives --max-warnings 0",
@@ -13,7 +13,7 @@
     "build-babel": "babel ./src -d ./build/src",
     "build": "npm run clean && npm run build-babel",
     "production": "npm run build && cross-env BUILD_MODE=production node ./build/src/server.js",
-    "dev": "cross-env BUILD_MODE=dev nodemon --exec babel-node ./src/server.js",
+    "dev": "cross-env BUILD_MODE=dev nodemon --exec babel-node ./src/server.js ./src/socketServer.js",
     "start": "nodemon --exec babel-node ./src/server.js"
   },
   "dependencies": {

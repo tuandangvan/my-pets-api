@@ -1,9 +1,9 @@
 import express from "express";
-import { commentController } from "~/controllers/commentController";
-import { postController } from "~/controllers/postController";
-import authencation from "~/middlewares/authencationHandingMiddleware";
-import { authorizationMiddelware } from "~/middlewares/authorizationHandlingMiddelware";
-import PermissionRoles from "~/utils/rolePermission";
+import { commentController } from "../../controllers/commentController.js";
+import { postController } from "../../controllers/postController.js";
+import authencation from "../../middlewares/authencationHandingMiddleware.js";
+import { authorizationMiddelware } from "../../middlewares/authorizationHandlingMiddelware.js";
+import PermissionRoles from "../../utils/rolePermission.js";
 
 
 const router = express.Router();

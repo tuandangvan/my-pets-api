@@ -1,8 +1,8 @@
 import express, { json } from "express";
-import { authController } from "~/controllers/authController";
-import authencation from "~/middlewares/authencationHandingMiddleware";
-import { authorizationMiddelware } from "~/middlewares/authorizationHandlingMiddelware";
-import PermissionRoles from "~/utils/rolePermission";
+import { authController } from "../../controllers/authController.js";
+import authencation from "../../middlewares/authencationHandingMiddleware.js";
+import { authorizationMiddelware } from "../../middlewares/authorizationHandlingMiddelware.js";
+import PermissionRoles from "../../utils/rolePermission.js";
 
 const router = express.Router();
 router.post("/sign-up", authController.signUp);

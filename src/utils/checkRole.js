@@ -1,5 +1,5 @@
-import { enums } from "~/enums/enums";
-import ApiError from "~/utils/ApiError";
+import { enums } from "../enums/enums.js";
+import ApiError from "../utils/ApiError.js";
 import { StatusCodes } from "http-status-codes";
 
 const checkRoleUser = async function (role) {

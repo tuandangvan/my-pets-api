@@ -1,4 +1,4 @@
-import { contentEmail } from "~/utils/contentEmail";
+import { contentEmail } from "../utils/contentEmail.js";
 
 const nodemailer = require("nodemailer");
 

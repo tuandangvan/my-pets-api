@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Center from "~/models/centerModel";
+import Center from "../models/centerModel.js";
 
 const createCenter = async function ({ data, id }) {
   const center = new Center({
