@@ -45,17 +45,16 @@
 
 import { Server } from "socket.io";
 const socketServer = (server) => {
-  const io = new Server(server, { cors: "https://found-and-adoption-pet-api-be.vercel.app" });
+  const io = new Server(server, { cors: "https://localhost:8050" });
   console.log("Running socket!");
-  
   let onlineUsers = [];
   // Lắng nghe kết nối từ các client
   io.on("connection", (socket) => {
     console.log("A client connected");
-    socket.on("addNewUser", (userId) => {
-      !onlineUsers.some((user) => userId === user.userId) &&
+    socket.on("addNewUser", (data) => {
+      !onlineUsers.some((user) => data.userId === user.userId) &&
         onlineUsers.push({
-          userId,
+          userId: data.userId,
           socketId: socket.id
         });
       console.log("localUser", onlineUsers);

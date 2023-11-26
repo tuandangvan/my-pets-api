@@ -74,7 +74,7 @@ const createComment = async function ({ comment, postId, userId, centerId }) {
     { _id: postId },
     { $push: { comments: newComment } }
   );
-  return commentOut;
+  return newComment;
 };
 
 const updateCommentByCommentId = async function ({
