@@ -44,8 +44,9 @@ const infoCenterValidate = function (data) {
 const petValidate = function (data) {
   const schema = Joi.object({
     namePet: Joi.string().required(),
-    species: Joi.string().required(),
+    petType: Joi.string().required(),
     breed: Joi.string().required(),
+    age: Joi.number(),
     gender: Joi.string()
       .required()
       .valid(enums.genders.MALE, enums.genders.FEMALE, enums.genders.ORTHER),
