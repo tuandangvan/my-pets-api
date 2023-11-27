@@ -14,7 +14,7 @@ const petSchema = mongoose.Schema(
       required: true,
       trim: true
     },
-    species: {
+    petType: {
       type: String,
       default: "Chưa cập nhật"
     },
@@ -26,6 +26,11 @@ const petSchema = mongoose.Schema(
       type: String,
       enum: [enums.genders.MALE, enums.genders.FEMALE ],
       require: true
+    },
+    age: {
+      type: Number,
+      required: true,
+      default: 0
     },
     color: {
         type: String,
