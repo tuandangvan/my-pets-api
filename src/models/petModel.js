@@ -47,10 +47,10 @@ const petSchema = mongoose.Schema(
         default: "Chưa cập nhật"
       }
     ],
-    healthInfo: {
-      type: String,
-      default: "Chưa cập nhật"
-    },
+    // healthInfo: {
+    //   type: String,
+    //   default: "Chưa cập nhật"
+    // },
     level: {
       type: String,
       required: true,
