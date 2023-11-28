@@ -53,7 +53,7 @@ const petValidate = function (data) {
     color: Joi.string().required(),
     description: Joi.string(),
     images: Joi.array(),
-    healthInfo: Joi.string(),
+    // healthInfo: Joi.string(),
     level: Joi.string().required().valid(
       enums.statusPet.NORMAL,
       enums.statusPet.URGENT
