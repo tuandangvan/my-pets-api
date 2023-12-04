@@ -167,13 +167,14 @@ const getPost = async (req, res, next) => {
   }
 };
 
-
 const getAllPost = async (req, res, next) => {
   try {
     //phân trang
-    const page = parseInt(req.query.page);
+    const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 15;
-    const totalItems = await postModel.countDocuments({status: enums.statusPost.ACTIVE});
+    const totalItems = await postModel.countDocuments({
+      status: enums.statusPost.ACTIVE
+    });
     const totalPages = Math.ceil(totalItems / limit);
 
     const post = await postService.findPostInfoAll(page, limit);
