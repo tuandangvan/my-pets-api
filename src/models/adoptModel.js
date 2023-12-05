@@ -4,12 +4,17 @@ import { enums } from "../enums/enums";
 const adoptSchema = mongoose.Schema(
   {
     _id: mongoose.Schema.Types.ObjectId,
-    userRequest: {
+    userId: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
       required: true
     },
-    petAdopt: {
+    centerId: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Center",
+      required: true
+    },
+    petId: {
       type: mongoose.Schema.ObjectId,
       ref: "Pet",
       required: true

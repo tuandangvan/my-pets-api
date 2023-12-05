@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 import Adopt from "../models/adoptModel.js";
 
-const createAdopt = async function ({ data, id }) {
+const createAdopt = async function ({ data, id, centerId }) {
   const adopt = new Adopt({
     _id: new mongoose.Types.ObjectId(),
     ...data,
-    userRequest: id
+    userId: id,
+    centerId
   });
   return adopt.save();
 };
@@ -45,11 +46,27 @@ const cancelledReason = async function (id, isCenter, reason) {
 
 const findAdoptUserCancel = async function (userId, petId) {
   const adopt = await Adopt.findOne({
-    userRequest: userId,
-    petAdopt: petId,
+    userId: userId,
+    petId: petId,
     statusAdopt: "PENDING"
   });
   return adopt;
+};
+
+const findAdoptCenterByCenterIdStatus = async function (centerId, statusAdopt) {
+  const adopts = await Adopt.find({
+    centerId: centerId,
+    statusAdopt: statusAdopt
+  }).populate('petId').populate('centerId').populate('userId');
+  return adopts;
+};
+
+const findAdoptCenterByUserIdStatus = async function (userId, statusAdopt) {
+  const adopts = await Adopt.find({
+    userId: userId,
+    statusAdopt: statusAdopt
+  }).populate('petId').populate('centerId').populate('userId');
+  return adopts;
 };
 
 export const adoptService = {
@@ -57,5 +74,7 @@ export const adoptService = {
   findAdoptById,
   changeStatus,
   cancelledReason,
-  findAdoptUserCancel
+  findAdoptUserCancel,
+  findAdoptCenterByCenterIdStatus,
+  findAdoptCenterByUserIdStatus
 };

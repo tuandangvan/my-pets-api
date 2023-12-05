@@ -13,26 +13,30 @@ import ErrorAdopt from "../messageError/errorAdopt";
 const adoption = async (req, res, next) => {
   try {
     const adoptReq = req.body;
-    const pet = await petService.findPetById({ _id: adoptReq.petAdopt });
+    const pet = await petService.findPetById({ _id: adoptReq.petId });
     if (!pet) {
       throw new ApiError(StatusCodes.NOT_FOUND, ErrorPet.petNotFound);
     }
     const getToken = await token.getTokenHeader(req);
     const decodeToken = verify(getToken, env.JWT_SECRET);
-    const adopt = await adoptService.findAdoptUserCancel(decodeToken.userId, adoptReq.petAdopt);
-    if(adopt){
+    const adopt = await adoptService.findAdoptUserCancel(
+      decodeToken.userId,
+      adoptReq.petId
+    );
+    if (adopt) {
       throw new ApiError(StatusCodes.NOT_FOUND, ErrorAdopt.adoptExist);
     }
     //create request
     const newAdopt = await adoptService.createAdopt({
       data: adoptReq,
-      id: decodeToken.userId
+      id: decodeToken.userId,
+      centerId: pet.centerId
     });
     //change status by ADOPTING
     if (newAdopt) {
       if (pet.statusAdopt == enums.statusAdopt.NOTHING) {
         await petService.changeStatus(
-          adoptReq.petAdopt,
+          adoptReq.petId,
           enums.statusAdopt.ADOPTING
         );
       }
@@ -50,7 +54,7 @@ const adoption = async (req, res, next) => {
   }
 };
 
-const adoptionAccept = async (req, res, next) => {
+const adoptionStatusAdopt = async (req, res, next) => {
   try {
     const adoptId = req.params.adoptId;
     const status = await setEnum.setStatusAdopt(req.body.statusAdopt);
@@ -70,10 +74,10 @@ const adoptionAccept = async (req, res, next) => {
       decodeToken.centerId &&
       adopt.statusAdopt == enums.statusAdopt.PENDING
     ) {
-      await petService.changeOwner(adopt.petAdopt, adopt.userRequest);
+      await petService.changeOwner(adopt.petId, adopt.userId);
 
       await petService.changeStatus(
-        adopt.petAdopt,
+        adopt.petId,
         enums.statusAdopt.HAS_ONE_OWNER
       );
 
@@ -87,7 +91,7 @@ const adoptionAccept = async (req, res, next) => {
       decodeToken.centerId &&
       adopt.statusAdopt == enums.statusAdopt.PENDING
     ) {
-      await petService.changeStatus(adopt.petAdopt, enums.statusAdopt.NOTHING);
+      await petService.changeStatus(adopt.petIdnums.statusAdopt.NOTHING);
       await adoptService.changeStatus(adopt.id, enums.statusAdopt.CANCELLED);
       await adoptService.cancelledReason(adopt.id, true, reason);
       res.status(StatusCodes.OK).json({
@@ -99,15 +103,14 @@ const adoptionAccept = async (req, res, next) => {
       decodeToken.userId &&
       adopt.statusAdopt == enums.statusAdopt.PENDING
     ) {
-      await petService.changeStatus(adopt.petAdopt, enums.statusAdopt.NOTHING);
+      await petService.changeStatus(adopt.petId, enums.statusAdopt.NOTHING);
       await adoptService.changeStatus(adopt.id, enums.statusAdopt.CANCELLED);
       await adoptService.cancelledReason(adopt.id, false, reason);
       res.status(StatusCodes.OK).json({
         success: true,
         message: "Cancel adoption successfully!"
       });
-    }
-    else{
+    } else {
       res.status(StatusCodes.NOT_ACCEPTABLE).json({
         success: true,
         message: "Adopt failed!"
@@ -119,7 +122,50 @@ const adoptionAccept = async (req, res, next) => {
   }
 };
 
+const getAdoptCenter = async (req, res, next) => {
+  try {
+    const getToken = await token.getTokenHeader(req);
+    const decodeToken = verify(getToken, env.JWT_SECRET);
+    const centerId = decodeToken.centerId;
+    const statusAdoption = req.query.status;
+
+    const adopts = await adoptService.findAdoptCenterByCenterIdStatus(
+      centerId,
+      statusAdoption
+    );
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: adopts
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
+    next(customError);
+  }
+};
+
+const getAdoptUser = async (req, res, next) => {
+  try {
+    const getToken = await token.getTokenHeader(req);
+    const decodeToken = verify(getToken, env.JWT_SECRET);
+    const userId = decodeToken.userId;
+    const statusAdoption = req.query.status;
+
+    const adopts = await adoptService.findAdoptCenterByUserIdStatus(
+      userId,
+      statusAdoption
+    );
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: adopts
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
+    next(customError);
+  }
+};
 export const adoptController = {
   adoption,
-  adoptionAccept
+  adoptionStatusAdopt,
+  getAdoptCenter,
+  getAdoptUser
 };

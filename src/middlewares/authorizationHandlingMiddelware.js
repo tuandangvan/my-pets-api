@@ -79,9 +79,9 @@ const permission = (permission) => {
       if(!adopt){
         return res.status(404).json({ message: ErrorAdopt.adoptNotFound });
       }
-      await adopt.populate("petAdopt");
-      const centerId = adopt.petAdopt.centerId.toString();
-      const userId = adopt.userRequest.toString();
+      await adopt.populate("petId");
+      const centerId = adopt.petId.centerId.toString();
+      const userId = adopt.userId.toString();
       if (
         (!centerId.includes(data.centerId) || data.userId) &&
         req.body.statusAdopt == enums.statusAdopt.ACCEPTED

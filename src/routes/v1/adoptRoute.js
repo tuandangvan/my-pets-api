@@ -7,6 +7,9 @@ import PermissionRoles from "../../utils/rolePermission.js";
 
 const router = express.Router();
 router.post("/", authencation, authorizationMiddelware.permission(PermissionRoles.onlyUser), adoptController.adoption);
-router.put("/:adoptId/status", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), adoptController.adoptionAccept);
+router.put("/:adoptId/status", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), adoptController.adoptionStatusAdopt);
+router.get("/center", authencation, authorizationMiddelware.permission(PermissionRoles.onlyCenter), adoptController.getAdoptCenter);
+
+router.get("/user", authencation, authorizationMiddelware.permission(PermissionRoles.onlyUser), adoptController.getAdoptUser);
 
 export const adoptRoute = router;
