@@ -87,7 +87,7 @@ const getCenter = async (req, res, next) => {
 
     res.status(StatusCodes.OK).json({
       success: true,
-      center: centerData
+      data: centerData
     })
   } catch(error){
     next(new ApiError(StatusCodes.NOT_FOUND, error.message));
