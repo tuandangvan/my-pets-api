@@ -12,7 +12,7 @@ const createInformation = async (req, res, next) => {
     //validate infomation
     const result = validate.infoUserValidate(req.body);
     if(result.error){
-      res.status(400).send({error: result.error.details[0].message});
+      res.status(400).send({success: true,message: result.error.details[0].message});
       return;
     }
 
