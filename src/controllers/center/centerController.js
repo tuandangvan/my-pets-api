@@ -54,7 +54,7 @@ const updateCenter = async (req, res, next) => {
       data: req.body,
       centerId: centerId
     });
-    res.status(StatusCodes.OK).json({
+    res.status(StatusCodes.CREATED).json({
       success: true,
       data: centers
     });
@@ -84,8 +84,8 @@ const getCenter = async (req, res, next) => {
       phoneNumber: center.phoneNumber,
       address: center.address,
       aboutMe: center.aboutMe,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      createdAt: center.createdAt,
+      updatedAt: center.updatedAt
     };
 
     res.status(StatusCodes.OK).json({
