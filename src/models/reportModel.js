@@ -30,7 +30,6 @@ const reportSchema = new mongoose.Schema(
     ],
     commentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
       default: null
     },
     status: {

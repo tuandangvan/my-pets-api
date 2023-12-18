@@ -19,8 +19,29 @@ const addReport = async function (reportId, reporter) {
     return report;
 }
 
+const changeStatusReport = async function (reportId, status) {
+    const report = await Report.updateOne({_id: reportId}, {$set: {status: status}});
+    return report;
+}
+
+const getAllReport = async function (status) {
+    const report = await Report.find()
+    .populate("commentId")
+    .populate("reporter.userId")
+    .populate("reporter.centerId")
+    .sort({createdAt: -1});
+    return report;
+};
+
+const findReportById = async function (reportId) {
+    const report = await Report.findOne({_id: reportId});
+    return report;
+};
 export const reportService = {
   reportPost,
   findReportByPostIdDestinate,
-  addReport
+  addReport,
+  changeStatusReport,
+  getAllReport,
+  findReportById
 };
