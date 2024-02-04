@@ -59,6 +59,14 @@ const petSchema = mongoose.Schema(
       type: String,
       default: "Chưa cập nhật"
     },
+    price: {
+      type: String,
+      default: "0"
+    },
+    free: {
+      type: Boolean,
+      default: false
+    },
     images: [
       {
         type: String,
@@ -93,8 +101,8 @@ const petSchema = mongoose.Schema(
     adoptBy: {
       type: String,
       required: true,
-      enum: ["CENTER", "USER"],
-    },
+      enum: ["CENTER", "USER"]
+    }
   },
   {
     timestamps: true
