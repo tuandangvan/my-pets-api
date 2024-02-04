@@ -44,6 +44,41 @@ The project is planned to be completed in approximately six months, with ongoing
 ## Conclusion:
 The "Found and Adoption Pets" API Development project aims to provide a seamless and user-friendly experience for individuals looking to adopt pets or find their lost furry companions. By implementing a comprehensive set of features and adhering to best practices in API development, the project strives to make a positive impact on the pet adoption community.
 
+## Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/tuandangvan/found-and-adoption-pet-api-be.git
+```
+
+Go to the project directory
+
+```bash
+  cd found-and-adoption-pet-api-be
+```
+
+Install dependencies
+
+```bash
+  npm install yarn
+```
+
+Create the `.env` file from folder src with content
+```bash
+MONGODB_URI="mongodb+srv://vantuan:12345@cluster0.pvrmqmz.mongodb.net/?retryWrites=true&w=majority"
+DATABASE_NAME='API_PET_TEST'
+APP_HOST='localhost'
+APP_PORT=8050
+AUTHOR="Tuan Dang"
+JWT_SECRET="tuandang"
+```
+
+Start the server
+
+```bash
+  yarn dev
+```
 
 # Description API
 
@@ -189,3 +224,95 @@ The "Found and Adoption Pets" API Development project aims to provide a seamless
 | `level`| `string` |   **Required, value: Bình thường or Khẩn cấp** |
 | `healthInfo`| `string` |    Not Required                  |
 | `foundOwner`| `string` |    Not Required                  |
+
+#### Delete Pet
+
+```http
+  POST api/v1/pet/delete/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of pet to fetch |
+| `centerId`| `string` | **Required**. Id of center to fetch |
+
+
+## API for ARTICLE
+
+#### Add a article
+
+```http
+  POST /api/v1/post/add
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `userId`  | `string` | **Required**. Id of user to fetch |
+| `title`| `string` | **Required**. Title of an article |
+| `content`| `string` | **Required**. Content of an article |
+| `images`| `string` | **Not Required**. Images of an article |
+
+#### Add a article
+
+```http
+  POST /api/v1/post/change-status/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of article to fetch |
+| `status`  | `string` | **Required**. Status of an article |
+
+#### Find an article
+
+```http
+  GET /api/v1/post/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of article to fetch |
+
+
+#### Add a comment for article
+
+```http
+  POST /api/v1/post/comment/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of article to fetch |
+| `userId`  | `string` | **Required**. Id of user to fetch |
+| `content`| `string` | **Required**. Content of an comment |
+
+#### Find comment an article
+
+```http
+  GET /api/v1/post/comment/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of article to fetch |
+
+#### Reaction article
+
+```http
+  POST /api/v1/post/reaction/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of article to fetch |
+| `userId`  | `string` | **Required**. Id of user to fetch |
+
+#### Get Reaction article
+
+```http
+  GET /api/v1/post/reaction/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of article to fetch |

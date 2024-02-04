@@ -6,7 +6,8 @@ const userSchema = mongoose.Schema(
     accountId: {
       type: Schema.Types.ObjectId,
       ref: "Account",
-      required: true
+      required: true,
+      unique: true
     },
     firstName: {
       type: String,
@@ -27,14 +28,22 @@ const userSchema = mongoose.Schema(
       type: String,
       default: "Chưa cập nhật"
     },
+    location: {
+      latitude: {
+        type: String,
+      },
+      longitude: {
+        type: String,
+      }
+    },
     avatar: {
       type: String,
-      defaul: "http://flixtv.volkovdesign.com/admin/img/user.svg"
+      default: "https://res.cloudinary.com/dfaea99ew/image/upload/v1698469989/a1rstfzd5ihov6sqhvck.jpg"
     },
     experience: {
-      type: Number,
+      type: Boolean,
       required: true,
-      default: 0
+      default: false
     }, //0: chưa có kinh nghiệm, 1: đã có kiến thức về y tế
     favorites: [
       {
@@ -44,7 +53,11 @@ const userSchema = mongoose.Schema(
           ref: "Pet"
         }
       }
-    ]
+    ],
+    aboutMe:{
+      type: String,
+      default: "Nothing"
+    }
   },
   {
     timestamps: true

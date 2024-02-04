@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import User from "~/models/userModel";
+import User from "../models/userModel.js";
 
 const createUser = async function ({data, id}) {
   const user = new User({
@@ -11,10 +11,24 @@ const createUser = async function ({data, id}) {
 };
 
 const getAll = async function () {
-  const user = await User.findOne({_id: "652709069659dedef8c0addf"})
-  .populate("accountId").select("_id accountId name phone");
+  const user = await User.find()
+  .populate("accountId");
+  return user;
+};
 
-  console.log(user.accountId.email);
+const findUserByAccountId = async function (accountId) {
+  const user = await User.findOne({accountId: accountId}).populate("accountId");
+  return user;
+};
+
+const findInfoUserByUserId = async function (userId) {
+  const user = await User.findOne({_id: userId}).populate("accountId");
+  return user;
+};
+
+const findUserById = async function (_id) {
+  const user = await User.findOne({_id})
+
   return user;
 };
 
@@ -29,18 +43,27 @@ const getUsers = async function (data) {
   return users;
 };
 
-const updateUser = async function (data) {
+const updateUser = async function ({data, userId}) {
   const users = User.updateOne(
-    { email: data.email }, 
+    { _id: userId }, 
     { $set: { ...data }
   });
+  return users;
+};
+
+const findAD = async function () {
+  const users = User.find({role: "ADMIN"});
   return users;
 };
 
 
 export const userService = {
   createUser,
+  findUserById,
   getAll,
   getUsers,
-  updateUser
+  updateUser,
+  findUserByAccountId,
+  findInfoUserByUserId,
+  findAD
 };

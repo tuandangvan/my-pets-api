@@ -1,4 +1,4 @@
-import OTPModel from "~/models/codeOTPModel";
+import OTPModel from "../models/codeOTPModel.js";
 
 let intervalId;
 let intervalTime = 1000; // 10 giây (30,000 mili giây)
@@ -10,35 +10,6 @@ const createOTP = async function (data) {
     code: data.code
   });
   return otp.save();
-};
-
-function StopedInterval(intervalId) {
-  clearInterval(intervalId);
-  console.log("Stoped Interval!");
-  check = 0;
-}
-
-// Hàm xóa các mã OTP đã quá hạn (ví dụ: sau 5 phút)
-const deleteExpiredOTP = async function () {
-  if (check == 0 && intervalId != null) {
-    console.log("Interval running!");
-    check += 1;
-  }
-
-  if (intervalId != null) {
-    clearInterval(intervalId);
-  }
-
-  intervalId = setInterval(async () => {
-    const hasData = await OTPModel.find({});
-    if (hasData[0] == null) {
-      StopedInterval(intervalId);
-      return;
-    }
-    const expirationTime = new Date();
-    expirationTime.setMinutes(expirationTime.getMinutes() - 5); // 5 phút trước
-    await OTPModel.deleteMany({ createdAt: { $lt: expirationTime } });
-  }, intervalTime); // 1 giây
 };
 
 const checkOPTExited = async function (data) {
@@ -62,24 +33,27 @@ const checkOPTExited = async function (data) {
 };
 
 const checkVerifyOTP = async function (data) {
-  const otp = await OTPModel.findOne({
-    email: data.email,
-    code: data.code,
-    used: false
-  });
-  if (otp) {
-    otp.used = true;
-    await otp.save();
-    return "verifySuccess";
-  } else {
-    // Mã OTP không hợp lệ hoặc đã được sử dụng
-    return "verifyFail";
+  try {
+    const otp = await OTPModel.findOne({
+      email: data.email,
+      code: data.code,
+      used: false
+    });
+    if (otp) {
+      otp.used = true;
+      await otp.save();
+      return "verifySuccess";
+    } else {
+      // Mã OTP không hợp lệ hoặc đã được sử dụng
+      return "verifyFail";
+    }
+  } catch (error) {
+    return error;
   }
 };
 
 export const codeOTPService = {
   createOTP,
-  deleteExpiredOTP,
   checkVerifyOTP,
   checkOPTExited
 };

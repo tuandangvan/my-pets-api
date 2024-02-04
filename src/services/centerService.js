@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Center from "~/models/centerModel";
+import Center from "../models/centerModel.js";
 
 const createCenter = async function ({ data, id }) {
   const center = new Center({
@@ -10,16 +10,19 @@ const createCenter = async function ({ data, id }) {
   return center.save();
 };
 
-const updateCenter = async function ({ data, id }) {
+const updateCenter = async function ({ data, centerId }) {
   const center = await Center.updateOne(
-    { _id: id },
+    { _id: centerId },
     {
-      $set: {
-        name: data.name,
-        address: data.address,
-        phoneNumber: data.phoneNumber
-      }
+      $set: { ...data }
     }
+  );
+  return center;
+};
+
+const findCenterByAccountId = async function (accountId) {
+  const center = await Center.findOne({ accountId: accountId }).populate(
+    "accountId"
   );
   return center;
 };
@@ -34,8 +37,55 @@ const addPetForCenter = async function ({ centerId, petId }) {
   return center;
 };
 
+const addPetLinkForCenter = async function ({ centerId, petId }) {
+  const center = await Center.updateOne(
+    { _id: centerId },
+    {
+      $push: { petLinkIds: petId }
+    }
+  );
+  return center;
+};
+
+const deletePetForCenter = async function ({ centerId, petId }) {
+  const center = await Center.updateOne(
+    { _id: centerId },
+    {
+      $pull: { petIds: petId }
+    }
+  );
+  return center;
+};
+
+const findCenterById = async function (id) {
+  const center = await Center.findOne({ _id: id });
+  return center;
+};
+
+const findInfoCenterById = async function (id) {
+  const center = await Center.findOne({ _id: id }).populate("accountId");
+  return center;
+};
+
+const findAllCenterByIdAD = async function () {
+  const center = await Center.find().populate("accountId");
+  return center;
+};
+
+const findAllCenter = async function () {
+  const center = await Center.find().select("id name location");
+  return center;
+};
+
 export const centerService = {
   createCenter,
   updateCenter,
-  addPetForCenter
+  addPetForCenter,
+  addPetLinkForCenter,
+  findCenterById,
+  findCenterByAccountId,
+  deletePetForCenter,
+  findInfoCenterById,
+  findAllCenterByIdAD,
+  findAllCenter
 };
