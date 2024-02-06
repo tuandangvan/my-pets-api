@@ -12,6 +12,7 @@ import { messageRoute } from "./chat/messageRoute.js";
 import { adoptRoute } from "./adoptRoute.js";
 import { notifyRoute } from "./notifyRoute.js";
 import { reportRoute } from "./reportRoute.js";
+import { orderRoute } from "./order/orderRoute.js";
 
 
 const router = express.Router();
@@ -36,4 +37,5 @@ router.use("/message", messageRoute);
 router.use("/adopt", adoptRoute);
 router.use("/notify", notifyRoute);
 router.use("/report", reportRoute);
+router.use("/order", orderRoute);
 export const APIs_V1 = router;
