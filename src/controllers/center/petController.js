@@ -223,6 +223,21 @@ const favoritePet = async (req, res, next) => {
   }
 };
 
+const findPetFavorite = async (req, res, next) => {
+  try {
+    const getToken = await token.getTokenHeader(req);
+    const decodeToken = verify(getToken, env.JWT_SECRET);
+    const pets = await petService.findPetFavorite(decodeToken.userId);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: pets
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
+};
+
 export const petController = {
   createPet,
   getAllPetOfCenter,
@@ -233,5 +248,6 @@ export const petController = {
   getAllPetPersonal,
   filter,
   getAllCenter,
-  favoritePet
+  favoritePet,
+  findPetFavorite
 };
