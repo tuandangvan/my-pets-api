@@ -15,5 +15,6 @@ router.get("/all/pets/center", authencation, authorizationMiddelware.permission(
 router.get("/all/pets/personal", authencation, authorizationMiddelware.permission(PermissionRoles.All), petController.getAllPetPersonal);
 router.get("/search/find", authencation, authorizationMiddelware.permission(PermissionRoles.All), petController.filter);
 router.get("/centers/all", authencation, authorizationMiddelware.permission(PermissionRoles.All), petController.getAllCenter);
+router.put("/favorite/pet", authencation, authorizationMiddelware.permission(PermissionRoles.onlyUser), petController.favoritePet);
 
 export const petRoute = router;

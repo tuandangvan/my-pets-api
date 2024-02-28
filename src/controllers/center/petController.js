@@ -20,12 +20,11 @@ const createPet = async (req, res, next) => {
       return;
     }
 
-
     const getToken = await token.getTokenHeader(req);
     const account = verify(getToken, env.JWT_SECRET);
 
     const newPet = await petService.createPet({
-      data: req.body,
+      data: req.body
     });
     var centerUpdate = null;
     if (!req.body.giver) {
@@ -207,6 +206,23 @@ const getAllCenter = async (req, res, next) => {
   }
 };
 
+const favoritePet = async (req, res, next) => {
+  try {
+    const petId = req.body.petId;
+    const getToken = await token.getTokenHeader(req);
+    const decodeToken = verify(getToken, env.JWT_SECRET);
+
+    await petService.favoritePet(petId, decodeToken.userId);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "success"
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
+};
+
 export const petController = {
   createPet,
   getAllPetOfCenter,
@@ -216,5 +232,6 @@ export const petController = {
   getAllPet,
   getAllPetPersonal,
   filter,
-  getAllCenter
+  getAllCenter,
+  favoritePet
 };
