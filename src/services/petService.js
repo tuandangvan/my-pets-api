@@ -41,7 +41,7 @@ const findAllOfCenter = async function (centerId) {
   return pets;
 };
 
-const findAll = async function () {
+const findAll = async function (userId) {
   const pets = await Pet.find({
     $or: [
       { statusAdopt: enums.statusAdopt.NOTHING },
@@ -55,6 +55,16 @@ const findAll = async function () {
     .populate("linkCenter")
     .populate("centerId")
     .populate("foundOwner");
+
+  pets.forEach(async (element) => {
+    if (userId) {
+      element.favorites = await userModel.find({
+        _id: userId,
+        favorites: element._id
+      });
+    }
+  });
+
   return pets;
 };
 
@@ -154,7 +164,6 @@ const favoritePet = async function (petId, userId) {
     _id: userId,
     favorites: petId
   });
-  console.log(petIdExist);
   if (petIdExist.length > 0) {
     const favorite = await userModel.updateOne(
       { _id: userId },
@@ -162,12 +171,26 @@ const favoritePet = async function (petId, userId) {
         $pull: { favorites: petId }
       }
     );
+
+    await Pet.updateOne(
+      { _id: petId },
+      {
+        $pull: { favorites: userId }
+      }
+    );
+
     return favorite;
   } else {
     const favorite = await userModel.updateOne(
       { _id: userId },
       {
         $push: { favorites: petId }
+      }
+    );
+    await Pet.updateOne(
+      { _id: petId },
+      {
+        $push: { favorites: userId }
       }
     );
     return favorite;
