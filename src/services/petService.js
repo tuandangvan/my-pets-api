@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Pet from "../models/petModel.js";
 import { setEnum } from "../utils/setEnum.js";
 import { enums } from "../enums/enums.js";
+import userModel from "../models/userModel.js";
 
 const createPet = async function ({ data }) {
   data.level = await setEnum.setLevelPet(data.level);
@@ -148,6 +149,31 @@ const filter = async function ({ breed, color, age }) {
   return pet;
 };
 
+const favoritePet = async function (petId, userId) {
+  const petIdExist = await userModel.find({
+    _id: userId,
+    favorites: petId
+  });
+  console.log(petIdExist);
+  if (petIdExist.length > 0) {
+    const favorite = await userModel.updateOne(
+      { _id: userId },
+      {
+        $pull: { favorites: petId }
+      }
+    );
+    return favorite;
+  } else {
+    const favorite = await userModel.updateOne(
+      { _id: userId },
+      {
+        $push: { favorites: petId }
+      }
+    );
+    return favorite;
+  }
+};
+
 export const petService = {
   createPet,
   updatePet,
@@ -159,4 +185,5 @@ export const petService = {
   changeStatus,
   changeOwner,
   filter,
+  favoritePet
 };
