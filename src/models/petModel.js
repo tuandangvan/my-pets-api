@@ -77,6 +77,12 @@ const petSchema = mongoose.Schema(
     //   type: String,
     //   default: "Chưa cập nhật"
     // },
+    favorites: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
     level: {
       type: String,
       required: true,
