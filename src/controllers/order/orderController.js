@@ -3,6 +3,7 @@ import { env } from "../../config/environment";
 import { orderService } from "../../services/orderService";
 import { token } from "../../utils/token";
 import { verify } from "jsonwebtoken";
+import ApiError from "../../utils/ApiError";
 
 const createOrder = async (req, res, next) => {
   try {
