@@ -30,7 +30,7 @@ const getOrderBySeller = async function (sellerId, typeSeller) {
 
 const getOrderByBuyer = async function (buyerId, statusOrder) {
   const orders = await Order.find({ buyer: buyerId, statusOrder })
-    .populate("buyer", "firstName, lastName avatar phoneNumber address")
+    .populate("buyer", "firstName lastName avatar phoneNumber address")
     .populate("seller.userId", "firstName lastName avatar phoneNumber address")
     .populate("seller.centerId", "name  avatar phoneNumber address")
     .populate("petId");
