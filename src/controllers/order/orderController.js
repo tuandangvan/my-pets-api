@@ -68,8 +68,23 @@ const getOrderBuyer = async (req, res, next) => {
     }
   };
 
+  const getOrderDetailByBuyer = async (req, res, next) => {
+    try {
+      const orderId = req.params.orderId;
+      const orders = await orderService.getOrderDetailByBuyer(orderId);
+      res.status(StatusCodes.OK).json({
+        success: true,
+        data: orders
+      });
+    } catch (error) {
+      const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
+      next(customError);
+    }
+  };
+
 export const orderController = {
   createOrder,
   getOrderBySeller,
-  getOrderBuyer
+  getOrderBuyer,
+  getOrderDetailByBuyer
 };
