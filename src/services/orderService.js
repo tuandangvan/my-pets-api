@@ -14,7 +14,8 @@ const getOrderBySeller = async function (sellerId, typeSeller) {
     const orders = await Order.find({ "seller.centerId": sellerId })
       .populate("buyer", "firstName lastName avatar phoneNumber address")
       .populate("seller.centerId", "name avatar phoneNumber address")
-      .populate("petId");
+      .populate("petId")
+      .populate("petId.centerId");
     return orders;
   } else {
     const orders = await Order.find({ "seller.userId": sellerId })
@@ -23,7 +24,8 @@ const getOrderBySeller = async function (sellerId, typeSeller) {
         "seller.userId",
         "firstName lastName avatar phoneNumber address"
       )
-      .populate("petId");
+      .populate("petId")
+      .populate("petId.centerId");
     return orders;
   }
 };
@@ -37,8 +39,18 @@ const getOrderByBuyer = async function (buyerId, statusOrder) {
   return orders;
 };
 
+const getOrderDetailByBuyer = async function (orderId) {
+  const orders = await Order.findOne({ _id: orderId })
+    .populate("buyer", "firstName lastName avatar phoneNumber address")
+    .populate("seller.userId", "firstName lastName avatar phoneNumber address")
+    .populate("seller.centerId", "name  avatar phoneNumber address")
+    .populate("petId");
+  return orders;
+};
+
 export const orderService = {
   createOrder,
   getOrderBySeller,
-  getOrderByBuyer
+  getOrderByBuyer,
+  getOrderDetailByBuyer
 };

@@ -25,4 +25,11 @@ router.get(
   orderController.getOrderBuyer
 );
 
+router.get(
+  "/buyer/:orderId",
+  authencation,
+  authorizationMiddelware.permission(PermissionRoles.onlyUser),
+  orderController.getOrderDetailByBuyer
+);
+
 export const orderRoute = router;
