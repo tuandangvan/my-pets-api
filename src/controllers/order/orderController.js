@@ -33,6 +33,7 @@ const getOrderBySeller = async (req, res, next) => {
     const decodeToken = verify(getToken, env.JWT_SECRET);
     var sellerId;
     var typeSeller;
+    const statusOrder = req.query.statusOrder;
     if (decodeToken.role == "CENTER") {
       sellerId = decodeToken.centerId;
       typeSeller = "C";
@@ -40,7 +41,7 @@ const getOrderBySeller = async (req, res, next) => {
       sellerId = decodeToken.userId;
       typeSeller = "U";
     }
-    const orders = await orderService.getOrderBySeller(sellerId, typeSeller);
+    const orders = await orderService.getOrderBySeller(sellerId, typeSeller, statusOrder);
     res.status(StatusCodes.OK).json({
       success: true,
       data: orders
