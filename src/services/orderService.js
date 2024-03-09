@@ -9,16 +9,16 @@ const createOrder = async function (data) {
   return order.save();
 };
 
-const getOrderBySeller = async function (sellerId, typeSeller) {
+const getOrderBySeller = async function (sellerId, typeSeller, statusOrder) {
   if (typeSeller === "C") {
-    const orders = await Order.find({ "seller.centerId": sellerId })
+    const orders = await Order.find({ "seller.centerId": sellerId, statusOrder })
       .populate("buyer", "firstName lastName avatar phoneNumber address")
       .populate("seller.centerId", "name avatar phoneNumber address")
       .populate("petId")
       .populate("petId.centerId");
     return orders;
   } else {
-    const orders = await Order.find({ "seller.userId": sellerId })
+    const orders = await Order.find({ "seller.userId": sellerId, statusOrder })
       .populate("buyer", "firstName lastName avatar phoneNumber address")
       .populate(
         "seller.userId",
