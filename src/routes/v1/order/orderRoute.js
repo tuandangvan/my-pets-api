@@ -32,4 +32,11 @@ router.get(
   orderController.getOrderDetailByBuyer
 );
 
+router.get(
+  "/seller/:orderId",
+  authencation,
+  authorizationMiddelware.permission(PermissionRoles.User_Center),
+  orderController.getOrderDetailBySeller
+);
+
 export const orderRoute = router;
