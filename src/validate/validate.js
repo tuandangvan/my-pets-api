@@ -66,7 +66,13 @@ const petValidate = function (data) {
     // healthInfo: Joi.string(),
     level: Joi.string()
       .required()
-      .valid(enums.statusPet.NORMAL, enums.statusPet.URGENT)
+      .valid(enums.statusPet.NORMAL, enums.statusPet.URGENT),
+    original: Joi.string(),
+    instruction: Joi.string(),
+    attention: Joi.string(),
+    hobbies: Joi.string(),
+    inoculation: Joi.string(),
+
   });
   const result = schema.validate(data);
   return result;

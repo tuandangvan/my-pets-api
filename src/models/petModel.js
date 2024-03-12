@@ -108,7 +108,27 @@ const petSchema = mongoose.Schema(
       type: String,
       required: true,
       enum: ["CENTER", "USER"]
-    }
+    },
+    original: {
+      type: String,
+      default: "Chưa cập nhật"
+    },
+    instruction: {
+      type: String,
+      default: "Chưa cập nhật"
+    },
+    attention: {
+      type: String,
+      default: "Chưa cập nhật"
+    },
+    hobbies: {
+      type: String,
+      default: "Chưa cập nhật"
+    },
+    inoculation: {
+      type: String,
+      default: "Chưa cập nhật"
+    },
   },
   {
     timestamps: true
