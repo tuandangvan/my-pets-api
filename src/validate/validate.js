@@ -21,6 +21,7 @@ const infoUserValidate = function (data) {
     phoneNumber: Joi.string()
       .required()
       .regex(/^\d{10}$/, "10 character"),
+    location: Joi.object(),
     address: Joi.string().required(),
     experience: Joi.boolean().required(),
     aboutMe: Joi.string()
@@ -35,6 +36,7 @@ const infoCenterValidate = function (data) {
     phoneNumber: Joi.string()
       .required()
       .regex(/^\d{10}$/, "10 character"),
+    location: Joi.object(),
     address: Joi.string().required(),
     avatar: Joi.string(),
     aboutMe: Joi.string()
@@ -62,10 +64,9 @@ const petValidate = function (data) {
     free: Joi.boolean(),
     images: Joi.array(),
     // healthInfo: Joi.string(),
-    level: Joi.string().required().valid(
-      enums.statusPet.NORMAL,
-      enums.statusPet.URGENT
-    )
+    level: Joi.string()
+      .required()
+      .valid(enums.statusPet.NORMAL, enums.statusPet.URGENT)
   });
   const result = schema.validate(data);
   return result;
@@ -75,7 +76,7 @@ const postValidate = function (data) {
   const schema = Joi.object({
     title: Joi.string().required(),
     content: Joi.string().required(),
-    images: Joi.array(),
+    images: Joi.array()
   });
   const result = schema.validate(data);
   return result;
