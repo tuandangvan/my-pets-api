@@ -50,11 +50,11 @@ const petSchema = mongoose.Schema(
       type: Date,
       default: null
     },
-    color: {
-      type: String,
-      required: true,
-      default: "Chưa cập nhật"
-    },
+    color: [
+      {
+        type: String,
+      }
+    ],
     description: {
       type: String,
       default: "Chưa cập nhật"
@@ -128,7 +128,7 @@ const petSchema = mongoose.Schema(
     inoculation: {
       type: String,
       default: "Chưa cập nhật"
-    },
+    }
   },
   {
     timestamps: true
