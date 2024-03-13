@@ -58,7 +58,7 @@ const petValidate = function (data) {
     gender: Joi.string()
       .required()
       .valid(enums.genders.MALE, enums.genders.FEMALE, enums.genders.ORTHER),
-    color: Joi.string().required(),
+    color: Joi.array().required(),
     description: Joi.string(),
     price: Joi.string(),
     free: Joi.boolean(),
