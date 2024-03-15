@@ -46,13 +46,16 @@ const petSchema = mongoose.Schema(
       type: String,
       default: 1.0
     },
+    weight: {
+      type: String
+    },
     birthday: {
       type: Date,
       default: null
     },
     color: [
       {
-        type: String,
+        type: String
       }
     ],
     price: {

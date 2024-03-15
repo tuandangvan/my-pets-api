@@ -54,6 +54,7 @@ const petValidate = function (data) {
     namePet: Joi.string().required(),
     petType: Joi.string().required(),
     breed: Joi.string().required(),
+    weight: Joi.string(),
     birthday: Joi.date().required(),
     gender: Joi.string()
       .required()
@@ -70,8 +71,7 @@ const petValidate = function (data) {
     instruction: Joi.string(),
     attention: Joi.string(),
     hobbies: Joi.string(),
-    inoculation: Joi.string(),
-
+    inoculation: Joi.string()
   });
   const result = schema.validate(data);
   return result;

@@ -3,7 +3,6 @@ import Pet from "../models/petModel.js";
 import { setEnum } from "../utils/setEnum.js";
 import { enums } from "../enums/enums.js";
 import userModel from "../models/userModel.js";
-import e from "express";
 
 const createPet = async function ({ data }) {
   data.level = await setEnum.setLevelPet(data.level);
