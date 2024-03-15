@@ -11,7 +11,10 @@ const createOrder = async function (data) {
 
 const getOrderBySeller = async function (sellerId, typeSeller, statusOrder) {
   if (typeSeller === "C") {
-    const orders = await Order.find({ "seller.centerId": sellerId, statusOrder })
+    const orders = await Order.find({
+      "seller.centerId": sellerId,
+      statusOrder
+    })
       .populate("buyer", "firstName lastName avatar phoneNumber address")
       .populate("seller.centerId", "name avatar phoneNumber address")
       .populate("petId")
@@ -57,10 +60,16 @@ const getOrderDetailBySeller = async function (orderId) {
   return orders;
 };
 
+const changeStatusOrder = async function (orderId, statusOrder) {
+  const orders = await Order.updateOne({ _id: orderId }, { statusOrder });
+  return orders;
+};
+
 export const orderService = {
   createOrder,
   getOrderBySeller,
   getOrderByBuyer,
   getOrderDetailByBuyer,
-  getOrderDetailBySeller
+  getOrderDetailBySeller,
+  changeStatusOrder
 };
