@@ -63,10 +63,6 @@ const petValidate = function (data) {
     price: Joi.string(),
     free: Joi.boolean(),
     images: Joi.array(),
-    // healthInfo: Joi.string(),
-    level: Joi.string()
-      .required()
-      .valid(enums.statusPet.NORMAL, enums.statusPet.URGENT),
     original: Joi.string(),
     instruction: Joi.string(),
     attention: Joi.string(),

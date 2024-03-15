@@ -82,12 +82,6 @@ const petSchema = mongoose.Schema(
         ref: "User"
       }
     ],
-    level: {
-      type: String,
-      required: true,
-      enum: [enums.statusPet.NORMAL, enums.statusPet.URGENT],
-      default: enums.statusPet.NORMAL
-    },
     foundOwner: {
       type: Schema.Types.ObjectId,
       ref: "User",
