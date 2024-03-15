@@ -40,7 +40,7 @@ router.get(
 );
 
 router.put(
-  "/seller/:orderId",
+  "/:orderId",
   authencation,
   authorizationMiddelware.permission(PermissionRoles.User_Center),
   orderController.changeStatusOrder
