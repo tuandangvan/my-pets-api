@@ -199,17 +199,29 @@ const favoritePet = async function (petId, userId) {
 const findPetFavorite = async function (userId) {
   const petUser = await userModel.findOne({ _id: userId });
   if (petUser) {
-    const pets = await Promise.all(petUser.favorites.map(async (element) => {
-      return await Pet.findOne({ _id: element })
-        .populate("giver")
-        .populate("rescue")
-        .populate("linkCenter")
-        .populate("centerId")
-        .populate("foundOwner");
-    }));
+    const pets = await Promise.all(
+      petUser.favorites.map(async (element) => {
+        return await Pet.findOne({ _id: element })
+          .populate("giver")
+          .populate("rescue")
+          .populate("linkCenter")
+          .populate("centerId")
+          .populate("foundOwner");
+      })
+    );
     return pets;
   }
   return [];
+};
+
+const getOnePet = async function (id) {
+  const pet = await Pet.findOne({ _id: id })
+    .populate("giver")
+    .populate("rescue")
+    .populate("linkCenter")
+    .populate("centerId")
+    .populate("foundOwner");
+  return pet;
 };
 
 export const petService = {
@@ -224,5 +236,6 @@ export const petService = {
   changeOwner,
   filter,
   favoritePet,
-  findPetFavorite
+  findPetFavorite,
+  getOnePet
 };

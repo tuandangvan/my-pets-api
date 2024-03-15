@@ -238,6 +238,19 @@ const findPetFavorite = async (req, res, next) => {
   }
 };
 
+const getOnePet = async (req, res, next) => {
+  try {
+    const pet = await petService.getOnePet(req.params.petId);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: pet
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
+}
+
 export const petController = {
   createPet,
   getAllPetOfCenter,
@@ -249,5 +262,6 @@ export const petController = {
   filter,
   getAllCenter,
   favoritePet,
-  findPetFavorite
+  findPetFavorite,
+  getOnePet
 };
