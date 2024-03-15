@@ -39,4 +39,12 @@ router.get(
   orderController.getOrderDetailBySeller
 );
 
+router.put(
+  "/seller/:orderId",
+  authencation,
+  authorizationMiddelware.permission(PermissionRoles.User_Center),
+  orderController.changeStatusOrder
+);
+
+
 export const orderRoute = router;

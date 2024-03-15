@@ -55,10 +55,6 @@ const petSchema = mongoose.Schema(
         type: String,
       }
     ],
-    description: {
-      type: String,
-      default: "Chưa cập nhật"
-    },
     price: {
       type: String,
       default: "0"
