@@ -224,6 +224,11 @@ const getOnePet = async function (id) {
   return pet;
 };
 
+const getPetCenter = async function (centerId) {
+  const pet = await Pet.find({ centerId: centerId }).select("id namePet images");
+  return pet;
+};
+
 export const petService = {
   createPet,
   updatePet,
@@ -237,5 +242,6 @@ export const petService = {
   filter,
   favoritePet,
   findPetFavorite,
-  getOnePet
+  getOnePet,
+  getPetCenter
 };

@@ -19,6 +19,11 @@ const postSchema = mongoose.Schema(
       required: true,
       trim: true
     },
+    petId: {
+      type: Schema.Types.ObjectId,
+      ref: "Pet",
+      default: null
+    },
     reaction: [
       {
         _id: mongoose.Schema.Types.ObjectId,
@@ -53,7 +58,7 @@ const postSchema = mongoose.Schema(
           ref: "Center",
           default: null
         },
-        commentId:{
+        commentId: {
           type: Schema.Types.ObjectId,
           ref: "Comment",
           required: true,
@@ -81,7 +86,7 @@ const postSchema = mongoose.Schema(
     statusAccount: {
       type: String,
       required: true,
-      default: 'ACTIVE',
+      default: "ACTIVE"
     }
   },
   {

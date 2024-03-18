@@ -321,6 +321,19 @@ const getReaction = async (req, res, next) => {
   }
 };
 
+const findPostOfPet = async (req, res, next) => {
+  try {
+    const post = await postService.findPostOfPet(req.params.petId);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: post
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
+};
+
 export const postController = {
   addPost,
   updatePost,
@@ -331,5 +344,6 @@ export const postController = {
   getAllPost,
   getComment,
   getReaction,
-  getAllPostPersonal
+  getAllPostPersonal,
+  findPostOfPet
 };
