@@ -77,7 +77,8 @@ const postValidate = function (data) {
   const schema = Joi.object({
     title: Joi.string().required(),
     content: Joi.string().required(),
-    images: Joi.array()
+    images: Joi.array(),
+    petId: Joi.string()
   });
   const result = schema.validate(data);
   return result;

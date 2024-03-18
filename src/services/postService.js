@@ -35,7 +35,9 @@ const deletePostDB = async function (postId) {
 };
 
 const findPostById = async function (postId) {
-  const post = await Post.findOne({ _id: postId }).populate("userId").populate("centerId");
+  const post = await Post.findOne({ _id: postId })
+    .populate("userId")
+    .populate("centerId");
   return post;
 };
 const findPostByIdReaction = async function (postId) {
@@ -263,6 +265,22 @@ const changeStatusAcc = async function (id, isUser, status) {
   }
 };
 
+const findPostOfPet = async function (petId) {
+  const post = await Post.find({
+    petId: petId,
+    status: enums.statusPost.ACTIVE
+  })
+    .populate("userId")
+    .populate("centerId")
+    .populate("userId.accountId")
+    .populate("centerId.accountId")
+    .populate("reaction.userId")
+    .populate("reaction.centerId")
+    .populate("comments.userId")
+    .populate("comments.centerId");
+  return post;
+};
+
 export const postService = {
   createPost,
   updatePost,
@@ -278,5 +296,6 @@ export const postService = {
   findPostByIdReaction,
   findPostInfoAllActive,
   findAllPostPersonal,
-  changeStatusAcc
+  changeStatusAcc,
+  findPostOfPet
 };

@@ -14,6 +14,7 @@ router.put("/:postId/status", authencation, authorizationMiddelware.permission(P
 router.get("/:postId", authencation, authorizationMiddelware.permission(PermissionRoles.All), postController.getPost);
 router.get("/", authencation, authorizationMiddelware.permission(PermissionRoles.All), postController.getAllPost);
 router.get("/personal/:id", authencation, authorizationMiddelware.permission(PermissionRoles.All), postController.getAllPostPersonal);
+router.get("/pet/:petId", authencation, authorizationMiddelware.permission(PermissionRoles.All), postController.findPostOfPet);
 
 //comment
 router.post("/:postId/comment/", authencation, authorizationMiddelware.permission(PermissionRoles.All), commentController.addComment);
