@@ -116,11 +116,25 @@ const changeStatusOrder = async (req, res, next) => {
   }
 };
 
+const getPayment = async (req, res, next) => {
+  try {
+    const orders = await orderService.getPayment(req.params.orderId);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: orders
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
+    next(customError);
+  }
+};
+
 export const orderController = {
   createOrder,
   getOrderBySeller,
   getOrderBuyer,
   getOrderDetailByBuyer,
   getOrderDetailBySeller,
-  changeStatusOrder
+  changeStatusOrder,
+  getPayment
 };

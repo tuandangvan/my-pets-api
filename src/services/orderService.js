@@ -65,11 +65,21 @@ const changeStatusOrder = async function (orderId, statusOrder) {
   return orders;
 };
 
+const getPayment = async function (orderId) {
+  const orders = await Order.findOne({ _id: orderId })
+    .populate("buyer", "firstName lastName avatar phoneNumber address")
+    .populate("seller.userId", "firstName lastName avatar phoneNumber address")
+    .populate("seller.centerId", "name  avatar phoneNumber address")
+    .populate("petId", "namePet price");
+  return orders;
+};
+
 export const orderService = {
   createOrder,
   getOrderBySeller,
   getOrderByBuyer,
   getOrderDetailByBuyer,
   getOrderDetailBySeller,
-  changeStatusOrder
+  changeStatusOrder,
+  getPayment
 };
