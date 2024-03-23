@@ -14,6 +14,7 @@ import { notifyRoute } from "./notifyRoute.js";
 import { reportRoute } from "./reportRoute.js";
 import { orderRoute } from "./order/orderRoute.js";
 import { paymentRoute } from "./order/paymentRoute.js";
+import { voucherRoute } from "./order/voucherRoute.js";
 
 
 const router = express.Router();
@@ -40,4 +41,5 @@ router.use("/notify", notifyRoute);
 router.use("/report", reportRoute);
 router.use("/order", orderRoute);
 router.use("/payment", paymentRoute);
+router.use("/voucher", voucherRoute);
 export const APIs_V1 = router;
