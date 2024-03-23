@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Order from "../models/orderModel.js";
+import e from "express";
 
 const createOrder = async function (data) {
   const order = new Order({
@@ -61,7 +62,28 @@ const getOrderDetailBySeller = async function (orderId) {
 };
 
 const changeStatusOrder = async function (orderId, statusOrder) {
-  const orders = await Order.updateOne({ _id: orderId }, { statusOrder });
+  var orders;
+  if (statusOrder === "CONFIRMED") {
+    orders = await Order.updateOne(
+      { _id: orderId },
+      { statusOrder, dateConfirm: new Date() }
+    );
+  } else if (statusOrder === "DELIVERING") {
+    orders = await Order.updateOne(
+      { _id: orderId },
+      { statusOrder, dateDelivering: new Date() }
+    );
+  } else if (statusOrder === "COMPLETED") {
+    orders = await Order.updateOne(
+      { _id: orderId },
+      { statusOrder, dateCompleted: new Date() }
+    );
+  } else if (statusOrder === "CANCEL") {
+    orders = await Order.updateOne(
+      { _id: orderId },
+      { statusOrder, dateCancel: new Date() }
+    );
+  }
   return orders;
 };
 

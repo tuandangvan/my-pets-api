@@ -56,12 +56,28 @@ const orderSchema = mongoose.Schema(
       enum: ["PENDING", "COMFIRMED", "DELIVERING", "COMPLETED", "CANCEL"],
       default: "PENDING"
     },
+    dateConfirm: {
+      type: Date,
+      default: null
+    },
+    dateDelivering: {
+      type: Date,
+      default: null
+    },
+    dateCompleted: {
+      type: Date,
+      default: null
+    },
+    dateCancel: {
+      type: Date,
+      default: null
+    },
     statusPayment: {
       type: String,
       required: true,
       enum: ["PENDING", "PAID", "REFUND"],
       default: "PENDING"
-    },
+    }
   },
 
   {
