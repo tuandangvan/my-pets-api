@@ -20,8 +20,10 @@ const createVoucher = async (req, res, next) => {
 
 const getVoucherOfCenter = async (req, res, next) => {
   try {
+    const use = req.query.use;
+    const centerId = req.params.centerId;
     const vouchers = await voucherService.getVoucherOfCenter(
-      req.params.centerId
+      centerId, use
     );
     res.status(StatusCodes.OK).json({
       success: true,
@@ -32,6 +34,7 @@ const getVoucherOfCenter = async (req, res, next) => {
     next(customError);
   }
 };
+
 
 const applyVoucher = async (req, res, next) => {
   try {

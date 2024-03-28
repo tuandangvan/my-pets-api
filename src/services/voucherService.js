@@ -9,8 +9,23 @@ const createVoucher = async function (data) {
   return voucher.save();
 };
 
-const getVoucherOfCenter = async function (centerId) {
-  const voucher = await Voucher.find({ createdBy: centerId });
+const getVoucherOfCenter = async function (centerId, use) {
+  const date = moment().tz("Asia/Ho_Chi_Minh");
+  var voucher;
+  if (use == 0) {
+    voucher = await Voucher.find({ createdBy: centerId, startDate: { $gte: date } });
+  } else if (use == 1) {
+    voucher = await Voucher.find({
+      createdBy: centerId,
+      startDate: { $lte: date }, // start date is before or on the current date
+      endDate: { $gte: date } // end date is after or on the current date
+    });
+  } else if (use == 2) {
+    voucher = await Voucher.find({ createdBy: centerId, endDate: { $lte: date } });
+  }
+  else {
+    voucher = await Voucher.find({ createdBy: centerId });
+  }
   return voucher;
 };
 
