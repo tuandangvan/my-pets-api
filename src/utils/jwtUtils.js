@@ -12,7 +12,7 @@ const generateAuthToken = async function ({account, userId, centerId}) {
       access: true
     },
     env.JWT_SECRET,
-    { expiresIn: "5m" }
+    { expiresIn: "1d" }
   );
   return token;
 };
