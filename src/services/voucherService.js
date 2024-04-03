@@ -35,8 +35,15 @@ const applyVoucher = async function (code) {
   return voucher;
 };
 
+const updateUsedVoucher = async function (code) {
+  const voucher = await Voucher.findOne({ code: code });
+  voucher.used += 1;
+  return voucher.save();
+};
+
 export const voucherService = {
   createVoucher,
   getVoucherOfCenter,
-  applyVoucher
+  applyVoucher,
+  updateUsedVoucher
 };

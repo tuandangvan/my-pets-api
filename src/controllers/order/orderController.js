@@ -4,6 +4,8 @@ import { orderService } from "../../services/orderService";
 import { token } from "../../utils/token";
 import { verify } from "jsonwebtoken";
 import ApiError from "../../utils/ApiError";
+import { voucherService } from "../../services/voucherService";
+import moment from "moment-timezone";
 
 const createOrder = async (req, res, next) => {
   try {
@@ -11,16 +13,49 @@ const createOrder = async (req, res, next) => {
     const getToken = await token.getTokenHeader(req);
     const decodeToken = verify(getToken, env.JWT_SECRET);
 
-    if (decodeToken.userId != data.buyer) {
-      throw new Error("You are not authorized to create order!");
-    }
+    //check voucher
+    const code = req.body.code;
+    const voucher = await voucherService.applyVoucher(code);
+    const currentDate = moment().tz("Asia/Ho_Chi_Minh");
+    if (!voucher) {
+      res.status(StatusCodes.NOT_FOUND).json({
+        success: false,
+        message: "Voucher not found!",
+      });
+    } else if (voucher.status != "active") {
+      res.status(StatusCodes.NOT_FOUND).json({
+        success: false,
+        message: "Voucher is not active!",
+      });
+    } else if (
+      !currentDate.isBetween(
+        moment(voucher.startDate).add(-7, "hours"),
+        moment(voucher.endDate).add(-7, "hours")
+      )
+    ) {
+      res.status(StatusCodes.NOT_FOUND).json({
+        success: false,
+        message: "Voucher is not active or expired!",
+      });
+    } else if (voucher.used == voucher.quantity) {
+      res.status(StatusCodes.NOT_FOUND).json({
+        success: false,
+        message: "Voucher is out of stock!",
+      });
+    } else {
+      if (decodeToken.userId != data.buyer) {
+        throw new Error("You are not authorized to create order!");
+      }
+      const order = await orderService.createOrder(data);
+      //update voucher
+      await voucherService.updateUsedVoucher(code);
 
-    const order = await orderService.createOrder(data);
-    res.status(StatusCodes.CREATED).json({
-      success: true,
-      message: "Create order successfully!",
-      orderId: order._id
-    });
+      res.status(StatusCodes.CREATED).json({
+        success: true,
+        message: "Create order successfully!",
+        orderId: order._id
+      });
+    }
   } catch (error) {
     const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
     next(customError);

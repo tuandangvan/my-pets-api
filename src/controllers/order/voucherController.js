@@ -52,7 +52,7 @@ const applyVoucher = async (req, res, next) => {
       )
     ) {
       throw new Error("Voucher is not active or expired!");
-    } else if (voucher.quantity <= 0) {
+    } else if (voucher.used == voucher.quantity) {
       throw new Error("Voucher is out of stock!");
     } else {
       res.status(StatusCodes.OK).json({

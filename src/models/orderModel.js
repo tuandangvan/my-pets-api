@@ -45,6 +45,22 @@ const orderSchema = mongoose.Schema(
       type: String,
       required: true
     },
+    voucherProduct: {
+      type:  Number,
+      default: 0
+    },
+    voucherShipping: {
+      type:  Number,
+      default: 0
+    },
+    voucherTotal: {
+      type:  Number,
+      default: 0
+    },
+    totalPayment: {
+      type: Number,
+      default: 0
+    },
     paymentMethods: {
       type: String,
       required: true,
