@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import Order from "../models/orderModel.js";
-import e from "express";
 
 const createOrder = async function (data) {
   const order = new Order({
