@@ -12,9 +12,13 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  allowedFormats: ['jpg', 'png'],
+  params: {
+    folder: 'some-folder-name',
+    resource_type: 'auto', // automatically detect the resource type
+  },
+  allowedFormats: ['jpg', 'png', 'mp4', 'mov', 'avi'],
   filename: function (req, file, cb) {
-    cb(null, file.originalname); 
+    cb(null, file.originalname);
   }
 });
 
