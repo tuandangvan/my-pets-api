@@ -9,5 +9,6 @@ import PermissionRoles from "../../utils/rolePermission.js";
 const router = express.Router();
 router.post("/single", authencation, authorizationMiddelware.permission(PermissionRoles.All), fileImage.single('file') , uploadController.uploadSingle);
 router.post("/multi-image", fileImage.array('file', 5) , uploadController.uploadMulti);
+router.post("/video", authencation, authorizationMiddelware.permission(PermissionRoles.All), fileImage.single('file') , uploadController.uploadVideo);
 
 export const uploadRoute = router;
