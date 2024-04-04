@@ -12,9 +12,18 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: 'some-folder-name',
-    resource_type: 'auto', // automatically detect the resource type
+  params: (req, file) => {
+    const isVideo = file.mimetype.includes('video');
+    let folder;
+    if (isVideo) {
+      folder = 'video-pets';
+    } else {
+      folder = 'image-pets';
+    }
+    return {
+      folder,
+      resource_type: 'auto'
+    };
   },
   allowedFormats: ['jpg', 'png', 'mp4', 'mov', 'avi'],
   filename: function (req, file, cb) {
