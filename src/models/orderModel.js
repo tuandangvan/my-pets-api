@@ -46,15 +46,15 @@ const orderSchema = mongoose.Schema(
       required: true
     },
     voucherProduct: {
-      type:  Number,
+      type: Number,
       default: 0
     },
     voucherShipping: {
-      type:  Number,
+      type: Number,
       default: 0
     },
     voucherTotal: {
-      type:  Number,
+      type: Number,
       default: 0
     },
     totalPayment: {
@@ -93,7 +93,11 @@ const orderSchema = mongoose.Schema(
       required: true,
       enum: ["PENDING", "PAID", "REFUND"],
       default: "PENDING"
-    }
+    },
+    rating: {
+      type: Boolean,
+      default: false
+    },
   },
 
   {
