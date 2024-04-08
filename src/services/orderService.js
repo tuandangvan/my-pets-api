@@ -95,6 +95,11 @@ const getPayment = async function (orderId) {
   return orders;
 };
 
+const rating = async function (orderId) {
+  const orders = await Order.updateOne({ _id: orderId }, { rating: true });
+  return orders;
+};
+
 export const orderService = {
   createOrder,
   getOrderBySeller,
@@ -102,5 +107,6 @@ export const orderService = {
   getOrderDetailByBuyer,
   getOrderDetailBySeller,
   changeStatusOrder,
-  getPayment
+  getPayment,
+  rating
 };
