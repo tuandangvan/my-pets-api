@@ -8,7 +8,7 @@ const createReview = async (req, res, next) => {
         const data = req.body;
         const review = await reviewService.createReview(data);
         if (review) {
-            await orderService.rating(review.id);
+            await orderService.rating(data.orderId);
             res.status(StatusCodes.CREATED).json({
                 success: true,
                 message: "Create review successfully!",
