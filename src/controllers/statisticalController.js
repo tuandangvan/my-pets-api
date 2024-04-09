@@ -20,9 +20,26 @@ const statisticalYear = async (req, res, next) => {
         const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
         next(customError);
     }
+}
 
+const statisticalYearMonth = async (req, res, next) => {
+    try {
+        const getToken = await token.getTokenHeader(req);
+        const decodeToken = verify(getToken, env.JWT_SECRET);
+        const year = req.query.y;
+        const month = req.query.m;
+        const data = await statisticalService.statisticalYearMonth(year, month, decodeToken.centerId);
+        res.status(StatusCodes.OK).json({
+            success: true,
+            data: data
+        });
+    } catch (error) {
+        const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
+        next(customError);
+    }
 }
 
 export const statisticalController = {
-    statisticalYear
+    statisticalYear,
+    statisticalYearMonth
 };
