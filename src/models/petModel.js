@@ -121,7 +121,12 @@ const petSchema = mongoose.Schema(
     inoculation: {
       type: String,
       default: "Chưa cập nhật"
-    }
+    },
+    statusPaid: {
+      type: String,
+      enums: ["PENDING", "PAID", "NOTHING"],
+      default: "NOTHING"
+    },
   },
   {
     timestamps: true
