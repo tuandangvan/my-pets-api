@@ -43,8 +43,7 @@ const findAllOfCenter = async function (centerId) {
 const findAll = async function (userId) {
   const pets = await Pet.find({
     $or: [
-      { statusAdopt: enums.statusAdopt.NOTHING },
-      { statusAdopt: enums.statusAdopt.ADOPTING }
+      { statusPaid: "NOTHING" },
     ],
     adoptBy: "CENTER"
   })
@@ -70,8 +69,7 @@ const findAll = async function (userId) {
 const findAllPersonal = async function () {
   const pets = await Pet.find({
     $or: [
-      { statusAdopt: enums.statusAdopt.NOTHING },
-      { statusAdopt: enums.statusAdopt.ADOPTING }
+      { statusPaid: "NOTHING" },
     ],
     adoptBy: "USER"
   })
@@ -229,6 +227,10 @@ const getPetCenter = async function (centerId) {
   return pet;
 };
 
+const updateStatusPaid = async function (id, status) {
+    await Pet.updateOne({ _id: id }, { $set: { statusPaid: status } });
+}
+
 export const petService = {
   createPet,
   updatePet,
@@ -243,5 +245,6 @@ export const petService = {
   favoritePet,
   findPetFavorite,
   getOnePet,
-  getPetCenter
+  getPetCenter,
+  updateStatusPaid
 };

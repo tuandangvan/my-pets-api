@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Order from "../models/orderModel.js";
+import { petService } from "./petService.js";
 
 const createOrder = async function (data) {
   const order = new Order({
@@ -60,28 +61,31 @@ const getOrderDetailBySeller = async function (orderId) {
   return orders;
 };
 
-const changeStatusOrder = async function (orderId, statusOrder) {
+const changeStatusOrder = async function (order, statusOrder) {
   var orders;
   if (statusOrder === "CONFIRMED") {
     orders = await Order.updateOne(
-      { _id: orderId },
+      { _id: order._id },
       { statusOrder, dateConfirm: new Date() }
     );
   } else if (statusOrder === "DELIVERING") {
     orders = await Order.updateOne(
-      { _id: orderId },
+      { _id: order._id },
       { statusOrder, dateDelivering: new Date() }
     );
   } else if (statusOrder === "COMPLETED") {
     orders = await Order.updateOne(
-      { _id: orderId },
+      { _id: order._id },
       { statusOrder, dateCompleted: new Date() }
     );
+    await petService.updateStatusPaid(order.petId, "PAID");
+
   } else if (statusOrder === "CANCEL") {
     orders = await Order.updateOne(
-      { _id: orderId },
+      { _id: order._id },
       { statusOrder, dateCancel: new Date() }
     );
+    await petService.updateStatusPaid(order.petId, "NOTHING");
   }
   return orders;
 };
