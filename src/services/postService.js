@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { enums } from "../enums/enums.js";
 import Post from "../models/postModel.js";
-import { accountService } from "./accountService.js";
 
 const createPost = async function ({ data, userId, centerId }) {
   const post = new Post({
@@ -48,7 +47,7 @@ const findPostByIdReaction = async function (postId) {
 };
 
 const findPostInfoById = async function (postId) {
-  const post = await Post.findOne({ _id: postId })
+  const post = await Post.findOne({ _id: postId})
     .populate("userId")
     .populate("centerId")
     .populate("userId.accountId")
@@ -60,10 +59,11 @@ const findPostInfoById = async function (postId) {
   return post;
 };
 
-const findPostInfoAllActive = async function (page, limit) {
+const findPostInfoAllActive = async function (page, limit, type) {
   const post = await Post.find({
     status: enums.statusPost.ACTIVE,
-    statusAccount: "ACTIVE"
+    statusAccount: "ACTIVE", 
+    type: type
   })
     .populate("userId")
     .populate("centerId")
@@ -73,14 +73,15 @@ const findPostInfoAllActive = async function (page, limit) {
     .populate("reaction.centerId")
     .populate("comments.userId")
     .populate("comments.centerId")
+    .populate("petId")
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
   return post;
 };
 
-const findPostInfoAll = async function (page, limit) {
-  const post = await Post.find({ status: enums.statusPost.ACTIVE })
+const findPostInfoAll = async function (page, limit, type) {
+  const post = await Post.find({ status: enums.statusPost.ACTIVE, type:type })
     .populate("userId")
     .populate("centerId")
     .populate("userId.accountId")
@@ -89,13 +90,14 @@ const findPostInfoAll = async function (page, limit) {
     .populate("reaction.centerId")
     .populate("comments.userId")
     .populate("comments.centerId")
+    .populate("petId")
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
   return post;
 };
 
-const findAllPostPersonal = async function (idRequest, idNeedFind) {
+const findAllPostPersonal = async function (idRequest, idNeedFind, type) {
   if (idRequest == idNeedFind) {
     const post = await Post.find({
       $or: [
@@ -104,14 +106,14 @@ const findAllPostPersonal = async function (idRequest, idNeedFind) {
           $or: [
             { status: enums.statusPost.ACTIVE },
             { status: enums.statusPost.HIDDEN }
-          ]
+          ], type:type
         },
         {
           centerId: idNeedFind,
           $or: [
             { status: enums.statusPost.ACTIVE },
             { status: enums.statusPost.HIDDEN }
-          ]
+          ], type:type
         }
       ]
     })
@@ -122,6 +124,7 @@ const findAllPostPersonal = async function (idRequest, idNeedFind) {
       .populate("reaction.userId")
       .populate("reaction.centerId")
       .populate("comments.userId")
+      .populate("petId")
       .populate("comments.centerId");
     return post;
   } else {
@@ -129,7 +132,7 @@ const findAllPostPersonal = async function (idRequest, idNeedFind) {
       $or: [
         { userId: idNeedFind, status: enums.statusPost.ACTIVE },
         { centerId: idNeedFind, status: enums.statusPost.ACTIVE }
-      ]
+      ], type:type
     })
       .populate("userId")
       .populate("centerId")
@@ -138,6 +141,7 @@ const findAllPostPersonal = async function (idRequest, idNeedFind) {
       .populate("reaction.userId")
       .populate("reaction.centerId")
       .populate("comments.userId")
+      .populate("petId")
       .populate("comments.centerId");
     return post;
   }

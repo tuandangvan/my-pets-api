@@ -1,9 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 import { enums } from "../enums/enums.js";
+import { type } from "@hapi/joi/lib/extend.js";
 
 const postSchema = mongoose.Schema(
   {
     _id: mongoose.Schema.Types.ObjectId,
+    type: {
+      type: String,
+      enum: ['NORMAL', 'VIDEO'],
+      default: 'NORMAL'
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -18,6 +24,10 @@ const postSchema = mongoose.Schema(
       type: String,
       required: true,
       trim: true
+    },
+    video: {
+      type: String,
+      default: ""
     },
     petId: {
       type: Schema.Types.ObjectId,
