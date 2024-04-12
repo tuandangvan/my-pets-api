@@ -218,10 +218,12 @@ const getAllPost = async (req, res, next) => {
     //phân trang
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 15;
-    const postsActive = await postService.findPostInfoAllActive(page, limit);
+    const type = req.query.type;
+    const postsActive = await postService.findPostInfoAllActive(page, limit, type);
     const countPost = await postModel.countDocuments({
       status: enums.statusPost.ACTIVE,
-      statusAccount: "ACTIVE"
+      statusAccount: "ACTIVE",
+      type: type
     });
 
     const totalPages = Math.ceil(countPost / limit);
@@ -241,12 +243,13 @@ const getAllPost = async (req, res, next) => {
 const getAllPostPersonal = async (req, res, next) => {
   try {
     const id = req.params.id; //id user or center
+    const type = req.query.type;
     const getToken = await token.getTokenHeader(req);
     const decodeToken = verify(getToken, env.JWT_SECRET);
 
     const post = await postService.findAllPostPersonal(
       decodeToken?.userId ? decodeToken.userId : decodeToken.centerId,
-      id
+      id, type
     );
     if (!post) {
       throw new ApiError(StatusCodes.NOT_FOUND, ErrorPost.postNotFound);
