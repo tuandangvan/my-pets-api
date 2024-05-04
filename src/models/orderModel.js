@@ -94,6 +94,10 @@ const orderSchema = mongoose.Schema(
       enum: ["PENDING", "PAID", "REFUND"],
       default: "PENDING"
     },
+    datePaid: {
+      type: Date,
+      default: null
+    },
     rating: {
       type: Boolean,
       default: false

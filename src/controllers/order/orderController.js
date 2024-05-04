@@ -182,6 +182,20 @@ const getPayment = async (req, res, next) => {
   }
 };
 
+const getRevenue = async (req, res, next) => {
+  try {
+    const status = req.query.status;
+    const orders = await orderService.getRevenue(req.params.centerId, status);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: orders
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
+    next(customError);
+  }
+}
+
 export const orderController = {
   createOrder,
   getOrderBySeller,
@@ -189,5 +203,6 @@ export const orderController = {
   getOrderDetailByBuyer,
   getOrderDetailBySeller,
   changeStatusOrder,
-  getPayment
+  getPayment,
+  getRevenue
 };

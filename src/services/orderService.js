@@ -104,6 +104,15 @@ const rating = async function (orderId) {
   return orders;
 };
 
+const getRevenue = async function (centerId, status) {
+  const orders = await Order.find({ "seller.centerId": centerId, statusPayment: status })
+  .populate("buyer", "firstName lastName avatar phoneNumber address")
+    .populate("seller.userId", "firstName lastName avatar phoneNumber address")
+    .populate("seller.centerId", "name  avatar phoneNumber address")
+    .populate("petId");
+  return orders;
+}
+
 export const orderService = {
   createOrder,
   getOrderBySeller,
@@ -112,5 +121,6 @@ export const orderService = {
   getOrderDetailBySeller,
   changeStatusOrder,
   getPayment,
-  rating
+  rating,
+  getRevenue
 };
