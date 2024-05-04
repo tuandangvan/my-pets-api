@@ -46,5 +46,11 @@ router.put(
   orderController.changeStatusOrder
 );
 
+router.get(
+  "/:centerId/payment",
+  authencation,
+  authorizationMiddelware.permission(PermissionRoles.onlyCenter),
+  orderController.getRevenue
+);
 
 export const orderRoute = router;

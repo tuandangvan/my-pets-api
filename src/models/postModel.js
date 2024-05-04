@@ -1,6 +1,5 @@
 import mongoose, { Schema } from "mongoose";
 import { enums } from "../enums/enums.js";
-import { type } from "@hapi/joi/lib/extend.js";
 
 const postSchema = mongoose.Schema(
   {
