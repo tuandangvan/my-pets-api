@@ -156,7 +156,7 @@ const getOrderDetailBySeller = async (req, res, next) => {
 const changeStatusOrder = async (req, res, next) => {
   try {
     const orderId = req.params.orderId;
-    const order = await orderModel.findOne({_id: orderId});
+    const order = await orderModel.findOne({ _id: orderId });
     const statusOrder = req.body.statusOrder;
     await orderService.changeStatusOrder(order, statusOrder);
     res.status(StatusCodes.OK).json({
@@ -196,6 +196,20 @@ const getRevenue = async (req, res, next) => {
   }
 }
 
+const confirmPayment = async (req, res, next) => {
+  try {
+    const orderId = req.params.orderId;
+    await orderService.confirmPayment(orderId);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Confirm payment successfully!"
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
+    next(customError);
+  }
+}
+
 export const orderController = {
   createOrder,
   getOrderBySeller,
@@ -204,5 +218,6 @@ export const orderController = {
   getOrderDetailBySeller,
   changeStatusOrder,
   getPayment,
-  getRevenue
+  getRevenue,
+  confirmPayment
 };
