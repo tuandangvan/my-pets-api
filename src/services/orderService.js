@@ -73,13 +73,17 @@ const changeStatusOrder = async function (order, statusOrder) {
       { _id: order._id },
       { statusOrder, dateDelivering: new Date() }
     );
-  } else if (statusOrder === "COMPLETED") {
+  } else if (statusOrder === "DELIVERED") {
+    orders = await Order.updateOne(
+      { _id: order._id },
+      { statusOrder }
+    );
+  }
+  else if (statusOrder === "COMPLETED") {
     orders = await Order.updateOne(
       { _id: order._id },
       { statusOrder, dateCompleted: new Date() }
     );
-    await petService.updateStatusPaid(order.petId, "PAID");
-
   } else if (statusOrder === "CANCEL") {
     orders = await Order.updateOne(
       { _id: order._id },
@@ -106,10 +110,15 @@ const rating = async function (orderId) {
 
 const getRevenue = async function (centerId, status) {
   const orders = await Order.find({ "seller.centerId": centerId, statusPayment: status })
-  .populate("buyer", "firstName lastName avatar phoneNumber address")
+    .populate("buyer", "firstName lastName avatar phoneNumber address")
     .populate("seller.userId", "firstName lastName avatar phoneNumber address")
     .populate("seller.centerId", "name  avatar phoneNumber address")
     .populate("petId");
+  return orders;
+}
+
+const confirmPayment = async function (orderId) {
+  const orders = await Order.updateOne({ _id: orderId }, { statusPayment: "PAID", datePaid: new Date() });
   return orders;
 }
 
@@ -122,5 +131,6 @@ export const orderService = {
   changeStatusOrder,
   getPayment,
   rating,
-  getRevenue
+  getRevenue,
+  confirmPayment
 };
