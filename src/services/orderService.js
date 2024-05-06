@@ -58,6 +58,17 @@ const getOrderBySeller = async function (sellerId, typeSeller, statusOrder) {
 };
 
 const getOrderByBuyer = async function (buyerId, statusOrder) {
+  if (statusOrder === "COMPLETED") {
+    const orders = await Order.find({
+      buyer: buyerId,
+      $or: [{ statusOrder: "COMPLETED" }, { statusOrder: "DELIVERED" }]
+    })
+      .populate("buyer", "firstName lastName avatar phoneNumber address")
+      .populate("seller.centerId", "name avatar phoneNumber address")
+      .populate("petId")
+      .populate("petId.centerId");
+    return orders;
+  }
   const orders = await Order.find({ buyer: buyerId, statusOrder })
     .populate("buyer", "firstName lastName avatar phoneNumber address")
     .populate("seller.userId", "firstName lastName avatar phoneNumber address")
