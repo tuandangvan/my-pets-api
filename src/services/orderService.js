@@ -12,6 +12,18 @@ const createOrder = async function (data) {
 
 const getOrderBySeller = async function (sellerId, typeSeller, statusOrder) {
   if (typeSeller === "C") {
+
+    if (statusOrder === "COMPLETED") {
+      const orders = await Order.find({
+        "seller.centerId": sellerId,
+        $or: [{ statusOrder: "COMPLETED" }, { statusOrder: "DELIVERED" }]
+      })
+        .populate("buyer", "firstName lastName avatar phoneNumber address")
+        .populate("seller.centerId", "name avatar phoneNumber address")
+        .populate("petId")
+        .populate("petId.centerId");
+      return orders;
+    }
     const orders = await Order.find({
       "seller.centerId": sellerId,
       statusOrder
@@ -22,6 +34,17 @@ const getOrderBySeller = async function (sellerId, typeSeller, statusOrder) {
       .populate("petId.centerId");
     return orders;
   } else {
+    if (statusOrder === "COMPLETED") {
+      const orders = await Order.find({
+        "seller.centerId": sellerId,
+        $or: [{ statusOrder: "COMPLETED" }, { statusOrder: "DELIVERED" }]
+      })
+        .populate("buyer", "firstName lastName avatar phoneNumber address")
+        .populate("seller.centerId", "name avatar phoneNumber address")
+        .populate("petId")
+        .populate("petId.centerId");
+      return orders;
+    }
     const orders = await Order.find({ "seller.userId": sellerId, statusOrder })
       .populate("buyer", "firstName lastName avatar phoneNumber address")
       .populate(
