@@ -20,4 +20,11 @@ router.get(
 
 router.get("/apply/:code", authencation, voucherController.applyVoucher);
 
+router.get(
+  "/center/:centerId",
+  authencation,
+  authorizationMiddelware.permission(PermissionRoles.All),
+  voucherController.findVoucherCenter
+);
+
 export const voucherRoute = router;

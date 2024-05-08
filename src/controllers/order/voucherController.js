@@ -67,8 +67,26 @@ const applyVoucher = async (req, res, next) => {
   }
 };
 
+const findVoucherCenter = async (req, res, next) => {
+  try {
+    const centerId = req.params.centerId;
+    const type = req.query.type;
+    const voucher = await voucherService.findVoucherCenter(centerId, type);
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: voucher
+    });
+
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
+    next(customError);
+  }
+}
+
 export const voucherController = {
   createVoucher,
   getVoucherOfCenter,
-  applyVoucher
+  applyVoucher,
+  findVoucherCenter
 };

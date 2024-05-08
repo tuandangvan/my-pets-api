@@ -41,9 +41,22 @@ const updateUsedVoucher = async function (code) {
   return voucher.save();
 };
 
+const findVoucherCenter = async function (centerId, type) {
+  const date = moment().tz("Asia/Ho_Chi_Minh");
+  const voucher = await Voucher.find({
+    createdBy: centerId, 
+    type: type,
+    startDate: { $lte: date },
+    endDate: { $gte: date }
+  });
+  return voucher;
+
+}
+
 export const voucherService = {
   createVoucher,
   getVoucherOfCenter,
   applyVoucher,
-  updateUsedVoucher
+  updateUsedVoucher,
+  findVoucherCenter
 };
