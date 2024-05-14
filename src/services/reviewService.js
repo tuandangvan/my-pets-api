@@ -35,8 +35,16 @@ const getAllReviewBySeller = async function (type, id) {
 
 }
 
+const replyReview = async function (reviewId, reply) {
+    const review = await Review.updateOne({ _id: reviewId }, { reply: reply, dateReply: Date.now() });
+    return review;
+}
+
+
+
 export const reviewService = {
     createReview,
     getOneReviewByPetId,
-    getAllReviewBySeller
+    getAllReviewBySeller,
+    replyReview
 };

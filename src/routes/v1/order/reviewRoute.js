@@ -26,5 +26,7 @@ router.get(
     reviewController.getAllReviewBySeller
 );
 
+router.post("/:reviewId/reply", authencation, authorizationMiddelware.permission(PermissionRoles.onlyCenter), reviewController.replyReview);
+
 
 export const reviewRoute = router;

@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import ApiError from "../../utils/ApiError";
 import { reviewService } from "../../services/reviewService";
 import { orderService } from "../../services/orderService";
+import reviewModel from "../../models/reviewModel";
 
 const createReview = async (req, res, next) => {
     try {
@@ -46,10 +47,26 @@ const getAllReviewBySeller = async (req, res, next) => {
     }
 };
 
+const replyReview = async (req, res, next) => {
+    try {
+        const reviewId = req.params.reviewId;
+        const reply = req.body.reply;
+        await reviewService.replyReview(reviewId, reply);
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: "Reply review successfully!",
+        });
+    } catch (error) {
+        const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
+        next(customError);
+    }
+};
+
 
 
 export const reviewController = {
     createReview,
     getOneReview,
-    getAllReviewBySeller
+    getAllReviewBySeller,
+    replyReview
 };
