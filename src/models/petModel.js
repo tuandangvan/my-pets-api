@@ -82,6 +82,10 @@ const petSchema = mongoose.Schema(
         ref: "User"
       }
     ],
+    view: {
+      type: Number,
+      default: 0
+    },
     foundOwner: {
       type: Schema.Types.ObjectId,
       ref: "User",

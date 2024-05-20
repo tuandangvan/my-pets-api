@@ -219,6 +219,13 @@ const getOnePet = async function (id) {
     .populate("linkCenter")
     .populate("centerId")
     .populate("foundOwner");
+
+  await Pet.updateOne(
+    { _id: id },
+    {
+      $set: { view: pet.view + 1 }
+    }
+  );
   return pet;
 };
 
