@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Order from "../models/orderModel.js";
 import { petService } from "./petService.js";
+import petModel from "../models/petModel.js";
 
 const createOrder = async function (data) {
   const order = new Order({
@@ -156,6 +157,42 @@ const confirmPayment = async function (orderId) {
   return orders;
 }
 
+const getListBreed = async function (type) {
+  var breeds = [];
+  if (type == "Dog") {
+    breeds = ["Chó Alaska", "Chó Bắc Kinh", "Chó Beagle", "Chó Becgie",
+      "Chó Chihuahua", "Chó Corgi", "Chó Dachshund", "Chó Golden", "Chó Husky",
+      "Chó Phốc Sóc", "Chó Poodle", "Chó Pug", "Chó Samoyed", "Chó Shiba", "Chó cỏ", "Chó khác"];
+  } else {
+    breeds = ["Mèo Ba Tư", "Mèo Ai Cập", "Mèo Anh lông dài", "Mèo Xiêm",
+      "Mèo Munchkin", "Mèo Ragdoll", "Mèo mướp", "Mèo vàng", "Mèo mun", "Mèo khác"];
+  }
+
+  const orderPet = await Order.find({ statusOrder: "COMPLETED" }).populate("petId", "breed view").select("petId");
+
+  var listBreed = [];
+
+  for (let i = 0; i < breeds.length; i++) {
+    var sold = 0;
+    var view = 0;
+    for (let j = 0; j < orderPet.length; j++) {
+      if (orderPet[j].petId.breed === breeds[i]) {
+        sold++;
+        view += orderPet[j].petId.view;
+      }
+    }
+    listBreed.push({ breed: breeds[i], sold: sold, view: view });
+  }
+  //sắp xếp giảm dần theo lượt bán và lượt xem
+  // listBreed.sort((a, b) => {
+  //   if (b.sold - a.sold === 0) {
+  //     return b.view - a.view; // sort by count_viewed if count_sold is equal
+  //   }
+  //   return b.sold - a.sold;
+  // });
+  return listBreed;
+}
+
 export const orderService = {
   createOrder,
   getOrderBySeller,
@@ -166,5 +203,6 @@ export const orderService = {
   getPayment,
   rating,
   getRevenue,
-  confirmPayment
+  confirmPayment,
+  getListBreed
 };

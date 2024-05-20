@@ -210,6 +210,21 @@ const confirmPayment = async (req, res, next) => {
   }
 }
 
+
+const getListBreed = async (req, res, next) => {
+  try {
+    const breeds = await orderService.getListBreed(req.query.petType);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: breeds
+    });
+
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
+    next(customError);
+  }
+}
+
 export const orderController = {
   createOrder,
   getOrderBySeller,
@@ -219,5 +234,6 @@ export const orderController = {
   changeStatusOrder,
   getPayment,
   getRevenue,
-  confirmPayment
+  confirmPayment,
+  getListBreed
 };
