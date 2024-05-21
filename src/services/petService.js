@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import Pet from "../models/petModel.js";
 import { setEnum } from "../utils/setEnum.js";
-import { enums } from "../enums/enums.js";
 import userModel from "../models/userModel.js";
+import { reduce } from "lodash";
 
 const createPet = async function ({ data }) {
   data.gender = await setEnum.setGender(data.gender);
@@ -32,22 +32,14 @@ const deletePet = async function (id) {
 
 const findAllOfCenter = async function (centerId) {
   const pets = await Pet.find({ centerId: centerId })
-    // .populate("giver")
-    // .populate("rescue")
-    // .populate("linkCenter")
     .populate("centerId");
-  // .populate("foundOwner");
   return pets;
 };
 
 const findAll = async function (userId) {
   const pets = await Pet.find({ statusPaid: "NOTHING" })
     .sort({ level: -1 })
-    // .populate("giver")
-    // .populate("rescue")
-    // .populate("linkCenter")
     .populate("centerId");
-  // .populate("foundOwner");
 
   pets.forEach(async (element) => {
     if (userId) {
@@ -64,11 +56,7 @@ const findAll = async function (userId) {
 const findAllPersonal = async function () {
   const pets = await Pet.find({ statusPaid: "NOTHING" })
     .sort({ level: -1 })
-    // .populate("giver")
-    // .populate("rescue")
-    // .populate("linkCenter")
     .populate("centerId");
-  // .populate("foundOwner");
   return pets;
 };
 
@@ -135,12 +123,7 @@ const filter = async function ({ breed, color, age }) {
     $and: query
   })
     .sort({ level: -1 })
-    // .populate("giver")
-    // .populate("rescue")
-    // .populate("linkCenter")
     .populate("centerId");
-  // .populate("foundOwner");
-  // console.log(pet);
 
   return pet;
 };
@@ -189,11 +172,7 @@ const findPetFavorite = async function (userId) {
     const pets = await Promise.all(
       petUser.favorites.map(async (element) => {
         return await Pet.findOne({ _id: element })
-          // .populate("giver")
-          // .populate("rescue")
-          // .populate("linkCenter")
           .populate("centerId");
-          // .populate("foundOwner");
       })
     );
     return pets;
@@ -203,11 +182,7 @@ const findPetFavorite = async function (userId) {
 
 const getOnePet = async function (id) {
   const pet = await Pet.findOne({ _id: id })
-    // .populate("giver")
-    // .populate("rescue")
-    // .populate("linkCenter")
     .populate("centerId");
-    // .populate("foundOwner");
 
   await Pet.updateOne(
     { _id: id },
@@ -227,6 +202,16 @@ const updateStatusPaid = async function (id, status) {
   await Pet.updateOne({ _id: id }, { $set: { statusPaid: status } });
 }
 
+const getPetReduce = async function () {
+  const pet = await Pet.find({ 
+    statusPaid: "NOTHING", 
+    reducePrice: { $gt: 0 }, 
+    dateStartReduce: { $lte: new Date() }, 
+    dateEndReduce: { $gte: new Date() } 
+  });
+  return pet;
+}
+
 export const petService = {
   createPet,
   updatePet,
@@ -242,5 +227,6 @@ export const petService = {
   findPetFavorite,
   getOnePet,
   getPetCenter,
-  updateStatusPaid
+  updateStatusPaid,
+  getPetReduce
 };
