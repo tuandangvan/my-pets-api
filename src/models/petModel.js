@@ -66,16 +66,24 @@ const petSchema = mongoose.Schema(
       type: Boolean,
       default: false
     },
+    reducePrice: {
+      type: Number,
+      default: 0
+    },
+    dateStartReduce: {
+      type: Date,
+      default: null
+    },
+    dateEndReduce: {
+      type: Date,
+      default: null
+    },
     images: [
       {
         type: String,
         default: "Chưa cập nhật"
       }
     ],
-    // healthInfo: {
-    //   type: String,
-    //   default: "Chưa cập nhật"
-    // },
     favorites: [
       {
         type: Schema.Types.ObjectId,
@@ -86,26 +94,26 @@ const petSchema = mongoose.Schema(
       type: Number,
       default: 0
     },
-    foundOwner: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      default: null
-    },
-    statusAdopt: {
-      type: String,
-      required: true,
-      enum: [
-        enums.statusAdopt.NOTHING,
-        enums.statusAdopt.ADOPTING,
-        enums.statusAdopt.HAS_ONE_OWNER
-      ],
-      default: enums.statusAdopt.NOTHING
-    },
-    adoptBy: {
-      type: String,
-      required: true,
-      enum: ["CENTER", "USER"]
-    },
+    // foundOwner: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: "User",
+    //   default: null
+    // },
+    // statusAdopt: {
+    //   type: String,
+    //   required: true,
+    //   enum: [
+    //     enums.statusAdopt.NOTHING,
+    //     enums.statusAdopt.ADOPTING,
+    //     enums.statusAdopt.HAS_ONE_OWNER
+    //   ],
+    //   default: enums.statusAdopt.NOTHING
+    // },
+    // adoptBy: {
+    //   type: String,
+    //   required: true,
+    //   enum: ["CENTER", "USER"]
+    // },
     original: {
       type: String,
       default: "Chưa cập nhật"
