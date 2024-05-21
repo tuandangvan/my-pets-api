@@ -7,13 +7,16 @@ import { centerService } from "../../services/centerService.js";
 import ApiError from "../../utils/ApiError.js";
 import { validate } from "../../validate/validate.js";
 import { postService } from "../../services/postService.js";
+import centerModel from "../../models/centerModel.js";
+import reviewModel from "../../models/reviewModel.js";
+import { orderService } from "../../services/orderService.js";
 
 const createInfoForCenter = async (req, res, next) => {
   try {
     //validate
     const result = validate.infoCenterValidate(req.body);
     if (result.error) {
-      res.status(400).send({success: false, message: result.error.details[0].message });
+      res.status(400).send({ success: false, message: result.error.details[0].message });
       return;
     }
     const account = await accountService.findAccountById(req.params.accountId);
@@ -70,7 +73,7 @@ const getCenter = async (req, res, next) => {
     const centerId = req.params.centerId;
     const center = await centerService.findInfoCenterById(centerId);
 
-    if(center.accountId.status==enums.statusAccount.LOCKED){
+    if (center.accountId.status == enums.statusAccount.LOCKED) {
       throw new ApiError(StatusCodes.NOT_FOUND, ErrorCenter.centerInfoNotFound);
     }
 
@@ -93,7 +96,7 @@ const getCenter = async (req, res, next) => {
       success: true,
       data: centerData
     })
-  } catch(error){
+  } catch (error) {
     next(new ApiError(StatusCodes.NOT_FOUND, error.message));
   }
 };
@@ -117,9 +120,24 @@ const changStatusAccount = async (req, res, next) => {
   }
 };
 
+const getCenterHot = async (req, res, next) => {
+  try {
+    const centers = await orderService.getCenterHot();
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: centers
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
+}
+
+
 export const centerController = {
   createInfoForCenter,
   updateCenter,
   getCenter,
-  changStatusAccount
+  changStatusAccount,
+  getCenterHot
 };

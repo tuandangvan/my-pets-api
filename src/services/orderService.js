@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import Order from "../models/orderModel.js";
 import { petService } from "./petService.js";
 import petModel from "../models/petModel.js";
+import centerModel from "../models/centerModel.js";
+import reviewModel from "../models/reviewModel.js";
 
 const createOrder = async function (data) {
   const order = new Order({
@@ -193,6 +195,32 @@ const getListBreed = async function (type) {
   return listBreed;
 }
 
+const getCenterHot = async function () {
+  const listCenter = await centerModel.find({}).select("_id name avatar rating");
+
+  const orderPet = await Order.find({ statusOrder: "COMPLETED" });
+
+  var listCenters = [];
+  for (let i = 0; i < listCenter.length; i++) {
+    var sold = 0;
+    for (let j = 0; j < orderPet.length; j++) {
+      if (listCenter[i].id == orderPet[j].seller.centerId) {
+        sold++;
+      }
+    }
+    listCenters.push({ centerId: listCenter[i]._id, avatar: listCenter[i].avatar, name: listCenter[i].name, rating: listCenter[i].rating, sold: sold, });
+
+  }
+  listCenters.sort((a, b) => {
+    if (b.sold - a.sold === 0) {
+      return b.rating - a.rating;
+    }
+    return b.sold - a.sold;
+  });
+  return listCenters;
+
+}
+
 export const orderService = {
   createOrder,
   getOrderBySeller,
@@ -204,5 +232,6 @@ export const orderService = {
   rating,
   getRevenue,
   confirmPayment,
-  getListBreed
+  getListBreed,
+  getCenterHot
 };

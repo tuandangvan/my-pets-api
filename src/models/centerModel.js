@@ -1,3 +1,4 @@
+import { Double } from "mongodb";
 import mongoose, { Schema } from "mongoose";
 
 const centerSchema = mongoose.Schema(
@@ -46,6 +47,10 @@ const centerSchema = mongoose.Schema(
         type: Schema.Types.ObjectId, 
         ref: "Pet" 
     }],
+    rating: {
+      type: Number,
+      default: 0
+    },
   },
   {
     timestamps: true
