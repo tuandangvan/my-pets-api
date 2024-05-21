@@ -9,21 +9,6 @@ const petSchema = mongoose.Schema(
       ref: "Center",
       default: null
     },
-    giver: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      default: null
-    },
-    rescue: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      default: null
-    },
-    linkCenter: {
-      type: Schema.Types.ObjectId,
-      ref: "Center",
-      default: null
-    },
     namePet: {
       type: String,
       required: true,
@@ -94,26 +79,6 @@ const petSchema = mongoose.Schema(
       type: Number,
       default: 0
     },
-    // foundOwner: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: "User",
-    //   default: null
-    // },
-    // statusAdopt: {
-    //   type: String,
-    //   required: true,
-    //   enum: [
-    //     enums.statusAdopt.NOTHING,
-    //     enums.statusAdopt.ADOPTING,
-    //     enums.statusAdopt.HAS_ONE_OWNER
-    //   ],
-    //   default: enums.statusAdopt.NOTHING
-    // },
-    // adoptBy: {
-    //   type: String,
-    //   required: true,
-    //   enum: ["CENTER", "USER"]
-    // },
     original: {
       type: String,
       default: "Chưa cập nhật"

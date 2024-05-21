@@ -21,7 +21,8 @@ router.get("/favorite/pet", authencation, authorizationMiddelware.permission(Per
 router.get("/one/:petId", petController.getOnePet);
 router.get("/center/:centerId", authencation, authorizationMiddelware.permission(PermissionRoles.All), petController.getPetCenter);
 
-router.get("/breed/list", orderController.getListBreed)
+router.get("/breed/list", orderController.getListBreed);
+router.get("/sale/list", petController.getPetReduce);
 
 
 export const petRoute = router;
