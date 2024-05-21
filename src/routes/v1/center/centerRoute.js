@@ -14,4 +14,6 @@ centerController.getCenter);
 
 router.put("/:centerId/status", authencation, authorizationMiddelware.permission(PermissionRoles.onlyUser),
 centerController.changStatusAccount);
+
+router.get("/hot/list", centerController.getCenterHot);
 export const centerRoute = router;
