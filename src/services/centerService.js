@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Center from "../models/centerModel.js";
+import userModel from "../models/userModel.js";
 
 const createCenter = async function ({ data, id }) {
   const center = new Center({
@@ -76,6 +77,53 @@ const findAllCenter = async function () {
   const center = await Center.find().select("id name location");
   return center;
 };
+const followCenter = async function (centerId, userIdFL, centerIdFL) {
+  var followed;
+  if (userIdFL) {
+    const user = await Center.findOne({ _id: centerId });
+    user.followerUser.forEach(element => {
+      if (element == userIdFL) {
+        followed = true;
+      }
+    });
+  } else {
+    const user = await Center.findOne({ _id: centerId });
+    user.followerCenter.forEach(element => {
+      if (element == centerIdFL) {
+        followed = true;
+      }
+    });
+  }
+  if (userIdFL) {
+    if (followed) {
+      const user = await Center.updateOne({ _id: centerId }, { $pull: { followerUser: userIdFL } });
+      await userModel.updateOne({ _id: userIdFL }, { $pull: { followingCenter: centerId } });
+      return "Unfollowed";
+    }
+    else {
+      const user = await Center.updateOne({ _id: centerId }, { $push: { followerUser: userIdFL } });
+      await userModel.updateOne({ _id: userIdFL }, { $push: { followingCenter: centerId } });
+      return "Followed";
+    }
+  }
+  else {
+    if (followed) {
+      const user = await Center.updateOne({ _id: centerId }, { $pull: { followerCenter: centerIdFL } });
+      await Center.updateOne({ _id: centerIdFL }, { $pull: { followingCenter: centerId } });
+      return "Unfollowed";
+    }
+    else {
+      const user = await Center.updateOne({ _id: centerId }, { $push: { followerCenter: centerIdFL } });
+      await Center.updateOne({ _id: centerIdFL }, { $push: { followingCenter: centerId } });
+      return "Followed";
+    }
+  }
+}
+
+const getMyFollow = async function (userId) {
+  const user = await Center.findOne({ _id: userId }).select("followingCenter followerUser");
+  return user;
+}
 
 export const centerService = {
   createCenter,
@@ -87,5 +135,7 @@ export const centerService = {
   deletePetForCenter,
   findInfoCenterById,
   findAllCenterByIdAD,
-  findAllCenter
+  findAllCenter,
+  followCenter,
+  getMyFollow
 };

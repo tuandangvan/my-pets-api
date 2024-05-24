@@ -17,6 +17,7 @@ import { paymentRoute } from "./order/paymentRoute.js";
 import { voucherRoute } from "./order/voucherRoute.js";
 import { reviewRoute } from "./order/reviewRoute.js";
 import { statisticalRoute } from "./statisticalRoute.js";
+import { followRote } from "./followRoute.js";
 
 
 const router = express.Router();
@@ -46,4 +47,5 @@ router.use("/payment", paymentRoute);
 router.use("/voucher", voucherRoute);
 router.use("/review", reviewRoute);
 router.use("/statistical", statisticalRoute);
+router.use("/follow", followRote);
 export const APIs_V1 = router;

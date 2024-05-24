@@ -52,6 +52,30 @@ const userSchema = mongoose.Schema(
         ref: "Pet"
       }
     ],
+    followingUser: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
+    followingCenter: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Center"
+      }
+    ],
+    followerUser: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
+    followerCenter: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Center"
+      }
+    ],
     aboutMe: {
       type: String,
       default: "Nothing"
