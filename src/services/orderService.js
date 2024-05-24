@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Order from "../models/orderModel.js";
 import { petService } from "./petService.js";
 import centerModel from "../models/centerModel.js";
+import petModel from "../models/petModel.js";
 
 const createOrder = async function (data) {
   const order = new Order({
@@ -165,10 +166,11 @@ const getListBreed = async function (type) {
       "Chó Phốc Sóc", "Chó Poodle", "Chó Pug", "Chó Samoyed", "Chó Shiba", "Chó cỏ", "Chó khác"];
   } else {
     breeds = ["Mèo Ba Tư", "Mèo Ai Cập", "Mèo Anh lông dài", "Mèo Xiêm",
-      "Mèo Munchkin", "Mèo Ragdoll", "Mèo mướp", "Mèo vàng", "Mèo mun", "Mèo khác"];
+      "Mèo Munchkin", "Mèo Ragdoll", "Mèo Mướp", "Mèo Vàng", "Mèo Mun", "Mèo khác"];
   }
 
   const orderPet = await Order.find({ statusOrder: "COMPLETED" }).populate("petId", "breed view").select("petId");
+  const pet = await petModel.find({}).select("breed view");
 
   var listBreed = [];
 
@@ -178,10 +180,17 @@ const getListBreed = async function (type) {
     for (let j = 0; j < orderPet.length; j++) {
       if (orderPet[j].petId.breed === breeds[i]) {
         sold++;
-        view += orderPet[j].petId.view;
       }
     }
     listBreed.push({ breed: breeds[i], sold: sold, view: view });
+  }
+  
+  for (let i = 0; i < listBreed.length; i++) {
+    for (let j = 0; j < pet.length; j++) {
+      if (listBreed[i].breed === pet[j].breed) {
+        listBreed[i].view += pet[j].view;
+      }
+    }
   }
   //sắp xếp giảm dần theo lượt bán và lượt xem
   // listBreed.sort((a, b) => {
