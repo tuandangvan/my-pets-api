@@ -35,6 +35,30 @@ const centerSchema = mongoose.Schema(
       required: true,
       default: "https://res.cloudinary.com/dfaea99ew/image/upload/v1698469989/a1rstfzd5ihov6sqhvck.jpg"
     },
+    followingUser: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
+    followingCenter: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Center"
+      }
+    ],
+    followerUser: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
+    followerCenter: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Center"
+      }
+    ],
     aboutMe:{
       type: String,
       default: "Nothing"
