@@ -65,6 +65,7 @@ const findCenterById = async function (id) {
 
 const findInfoCenterById = async function (id) {
   const center = await Center.findOne({ _id: id }).populate("accountId");
+  center.accountId.password = undefined;
   return center;
 };
 
