@@ -77,24 +77,9 @@ const getCenter = async (req, res, next) => {
       throw new ApiError(StatusCodes.NOT_FOUND, ErrorCenter.centerInfoNotFound);
     }
 
-    const centerData = {
-      _id: center._id,
-      accountId: center.accountId._id,
-      email: center.accountId.email,
-      role: center.accountId.role,
-      avatar: center.avatar,
-      status: center.accountId.status,
-      name: center.name,
-      phoneNumber: center.phoneNumber,
-      address: center.address,
-      aboutMe: center.aboutMe,
-      createdAt: center.createdAt,
-      updatedAt: center.updatedAt
-    };
-
     res.status(StatusCodes.OK).json({
       success: true,
-      data: centerData
+      data: center
     })
   } catch (error) {
     next(new ApiError(StatusCodes.NOT_FOUND, error.message));
