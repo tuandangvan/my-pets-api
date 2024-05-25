@@ -203,7 +203,7 @@ const getListBreed = async function (type) {
 }
 
 const getCenterHot = async function () {
-  const listCenter = await centerModel.find({}).select("_id name avatar rating followerUser followerCenter");
+  const listCenter = await centerModel.find({}).select("_id name avatar rating aboutMe location followerUser followerCenter");
 
   const orderPet = await Order.find({ statusOrder: "COMPLETED" });
 
@@ -222,7 +222,9 @@ const getCenterHot = async function () {
       rating: listCenter[i].rating,
       sold: sold,
       followerUser: listCenter[i].followerUser,
-      followerCenter: listCenter[i].followerCenter
+      followerCenter: listCenter[i].followerCenter,
+      aboutMe: listCenter[i].aboutMe,
+      location: listCenter[i].location
     });
 
   }
