@@ -24,6 +24,7 @@ const findUserByAccountId = async function (accountId) {
 
 const findInfoUserByUserId = async function (userId) {
   const user = await User.findOne({ _id: userId }).populate("accountId");
+  user.accountId.password = undefined;
   return user;
 };
 

@@ -55,26 +55,9 @@ const findUser = async (req, res, next) => {
       throw new ApiError(StatusCodes.NOT_FOUND, ErrorUser.userInfoNotFound);
     }
 
-    const userData = {
-      _id: user._id,
-      accountId: user.accountId._id,
-      email: user.accountId.email,
-      role: user.accountId.role,
-      avatar: user.avatar,
-      status: user.accountId.status,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phoneNumber: user.phoneNumber,
-      address: user.address,
-      experience: user.experience,
-      aboutMe: user.aboutMe,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
-    };
-
     res.status(StatusCodes.OK).json({
       success: true,
-      data: userData
+      data: user
     });
   } catch (error) {
     next(new ApiError(StatusCodes.NOT_FOUND, error.message));
