@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import Voucher from "../models/voucherModel.js";
-import moment from "moment-timezone";
 
 const createVoucher = async function (data) {
   const voucher = new Voucher({
@@ -11,7 +10,8 @@ const createVoucher = async function (data) {
 };
 
 const getVoucherOfCenter = async function (centerId, use) {
-  const date = moment().tz("Asia/Ho_Chi_Minh");
+  const date = new Date();
+  date.setHours(date.getHours() + 7);
   var voucher;
   if (use == 0) {
     voucher = await Voucher.find({ createdBy: centerId, startDate: { $gte: date } });
@@ -42,9 +42,10 @@ const updateUsedVoucher = async function (code) {
 };
 
 const findVoucherCenter = async function (centerId, type) {
-  const date = moment().tz("Asia/Ho_Chi_Minh");
+  const date = new Date();
+  date.setHours(date.getHours() + 7);
   const voucher = await Voucher.find({
-    createdBy: centerId, 
+    createdBy: centerId,
     type: type,
     startDate: { $lte: date },
     endDate: { $gte: date }

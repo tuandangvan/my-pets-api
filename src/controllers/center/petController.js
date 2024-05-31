@@ -279,6 +279,36 @@ const getPetReduce = async (req, res, next) => {
 
 }
 
+const getPetBreed = async (req, res, next) => {
+  try {
+    const pets = await petService.getPetBreed(req.query.breed);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: pets
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
+
+}
+
+const updatePriceSale = async (req, res, next) => {
+  try {
+    const petId = req.params.petId;
+    const data = req.body;
+    const pets = await petService.updatePriceSale(petId, data);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Updated successfully!"
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
+
+}
+
 export const petController = {
   createPet,
   getAllPetOfCenter,
@@ -293,5 +323,7 @@ export const petController = {
   findPetFavorite,
   getOnePet,
   getPetCenter,
-  getPetReduce
+  getPetReduce,
+  getPetBreed,
+  updatePriceSale
 };
