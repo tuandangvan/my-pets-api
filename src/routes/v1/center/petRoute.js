@@ -24,5 +24,8 @@ router.get("/center/:centerId", authencation, authorizationMiddelware.permission
 router.get("/breed/list", orderController.getListBreed);
 router.get("/sale/list", petController.getPetReduce);
 
+router.get("/breed/list/pet", petController.getPetBreed);
+router.put("/:petId/price-sale", petController.updatePriceSale);
+
 
 export const petRoute = router;

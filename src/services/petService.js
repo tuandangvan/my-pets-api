@@ -3,6 +3,7 @@ import Pet from "../models/petModel.js";
 import { setEnum } from "../utils/setEnum.js";
 import userModel from "../models/userModel.js";
 import { reduce } from "lodash";
+import moment from "moment-timezone";
 
 const createPet = async function ({ data }) {
   data.gender = await setEnum.setGender(data.gender);
@@ -203,14 +204,42 @@ const updateStatusPaid = async function (id, status) {
 }
 
 const getPetReduce = async function () {
-  const pet = await Pet.find({ 
-    statusPaid: "NOTHING", 
-    reducePrice: { $gt: 0 }, 
-    dateStartReduce: { $lte: new Date() }, 
-    dateEndReduce: { $gte: new Date() } 
+  // const date = moment().tz("Asia/Singapore");
+  const date = new Date();
+  date.setHours(date.getHours() + 7);
+  const pet = await Pet.find({
+    statusPaid: "NOTHING",
+    reducePrice: { $gt: 0 },
+    dateStartReduce: { $lte: date },
+    dateEndReduce: { $gte: date }
   });
   return pet;
 }
+
+const getPetBreed = async function (breed) {
+  const pet = await Pet.find({ breed: breed, statusPaid: "NOTHING" }).populate("centerId");;
+  return pet;
+}
+
+const updatePriceSale = async function (petId, data) {
+
+  const petFind = await Pet.findOne({ _id: petId, statusPaid: "NOTHING"});
+  if (!petFind) {
+    throw new Error("Pet not found or pet is sold out");
+  }
+  const pet = await Pet.updateOne(
+    { _id: petId },
+    {
+      $set: {
+        reducePrice: data.reducePrice,
+        dateStartReduce: data.dateStartReduce,
+        dateEndReduce: data.dateEndReduce
+      }
+    });
+  return pet;
+}
+
+
 
 export const petService = {
   createPet,
@@ -228,5 +257,7 @@ export const petService = {
   getOnePet,
   getPetCenter,
   updateStatusPaid,
-  getPetReduce
+  getPetReduce,
+  getPetBreed,
+  updatePriceSale
 };
