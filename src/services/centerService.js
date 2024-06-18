@@ -122,7 +122,7 @@ const followCenter = async function (centerId, userIdFL, centerIdFL) {
 }
 
 const getMyFollow = async function (userId) {
-  const user = await Center.findOne({ _id: userId }).select("followingCenter followerUser");
+  const user = await Center.findOne({ _id: userId }).select("followingCenter followingUser followerUser followerCenter");
   return user;
 }
 
