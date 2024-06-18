@@ -107,6 +107,19 @@ const getMyFollow = async function (userId) {
   return user;
 }
 
+const getFollower = async function (id) {
+  const user = await User.findOne({ _id: id }).select("followerUser followerCenter")
+    .populate("followerUser", "id firstName lastName avatar")
+    .populate("followerCenter", "id name avatar");
+  if (user) {
+    return user;
+  }
+  const center = await centerModel.findOne({ _id: id }).select("followerUser followerCenter")
+    .populate("followerUser", "id firstName lastName avatar")
+    .populate("followerCenter", "id name avatar");
+  return center;
+}
+
 export const userService = {
   createUser,
   findUserById,
@@ -117,5 +130,6 @@ export const userService = {
   findInfoUserByUserId,
   findAD,
   followUser,
-  getMyFollow
+  getMyFollow,
+  getFollower
 };
