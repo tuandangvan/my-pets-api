@@ -70,8 +70,23 @@ const getFollower = async (req, res, next) => {
     }
 };
 
+const getFollowing = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const user = await userService.getFollowing(id);
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: "Get list following successfully",
+            data: user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const followController = {
     follow,
     getMyFollowCenter,
-    getFollower
+    getFollower,
+    getFollowing
 }
