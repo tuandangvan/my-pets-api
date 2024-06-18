@@ -43,7 +43,7 @@ const getMyFollowCenter = async (req, res, next) => {
                 message: "Get list follow successfully",
                 data: user
             });
-        }else{
+        } else {
             const center = await centerService.getMyFollow(centerId);
             res.status(StatusCodes.OK).json({
                 success: true,
@@ -51,8 +51,34 @@ const getMyFollowCenter = async (req, res, next) => {
                 data: center
             });
         }
+    } catch (error) {
+        next(error);
+    }
+};
 
-        
+const getFollower = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const user = await userService.getFollower(id);
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: "Get list follower successfully",
+            data: user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getFollowing = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const user = await userService.getFollowing(id);
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: "Get list following successfully",
+            data: user
+        });
     } catch (error) {
         next(error);
     }
@@ -60,5 +86,7 @@ const getMyFollowCenter = async (req, res, next) => {
 
 export const followController = {
     follow,
-    getMyFollowCenter
+    getMyFollowCenter,
+    getFollower,
+    getFollowing
 }
