@@ -2,8 +2,6 @@ import mongoose from "mongoose";
 import Pet from "../models/petModel.js";
 import { setEnum } from "../utils/setEnum.js";
 import userModel from "../models/userModel.js";
-import { reduce } from "lodash";
-import moment from "moment-timezone";
 
 const createPet = async function ({ data }) {
   data.gender = await setEnum.setGender(data.gender);
@@ -204,7 +202,6 @@ const updateStatusPaid = async function (id, status) {
 }
 
 const getPetReduce = async function () {
-  // const date = moment().tz("Asia/Singapore");
   const date = new Date();
   date.setHours(date.getHours() + 7);
   const pet = await Pet.find({
