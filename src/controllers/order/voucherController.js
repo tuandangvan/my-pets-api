@@ -84,9 +84,24 @@ const findVoucherCenter = async (req, res, next) => {
   }
 }
 
+const deleteVoucher = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    await voucherService.deleteVoucher(id);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Delete voucher successfully!"
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
+    next(customError);
+  }
+}
+
 export const voucherController = {
   createVoucher,
   getVoucherOfCenter,
   applyVoucher,
-  findVoucherCenter
+  findVoucherCenter,
+  deleteVoucher
 };
