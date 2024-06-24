@@ -98,10 +98,28 @@ const deleteVoucher = async (req, res, next) => {
   }
 }
 
+const updateVoucher = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const data = req.body;
+    await voucherService.updateVoucher(id, data);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Updated voucher successfully!"
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
+    next(customError);
+  }
+}
+
+
+
 export const voucherController = {
   createVoucher,
   getVoucherOfCenter,
   applyVoucher,
   findVoucherCenter,
-  deleteVoucher
+  deleteVoucher,
+  updateVoucher
 };
