@@ -10,7 +10,7 @@ const createVoucher = async (req, res, next) => {
     res.status(StatusCodes.CREATED).json({
       success: true,
       message: "Create voucher successfully!",
-      voucher: voucher.code
+      data: voucher
     });
   } catch (error) {
     const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
