@@ -27,4 +27,11 @@ router.get(
   voucherController.findVoucherCenter
 );
 
+router.delete(
+  "/:id",
+  authencation,
+  authorizationMiddelware.permission(PermissionRoles.onlyCenter),
+  voucherController.deleteVoucher
+);
+
 export const voucherRoute = router;

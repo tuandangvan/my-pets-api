@@ -53,11 +53,15 @@ const findVoucherCenter = async function (centerId, type) {
   return voucher;
 
 }
+const deleteVoucher = async function (id) {
+  return Voucher.findByIdAndDelete(id);
+}
 
 export const voucherService = {
   createVoucher,
   getVoucherOfCenter,
   applyVoucher,
   updateUsedVoucher,
-  findVoucherCenter
+  findVoucherCenter,
+  deleteVoucher
 };
