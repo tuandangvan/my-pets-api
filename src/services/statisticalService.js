@@ -14,16 +14,34 @@ const statisticalYear = async function (year, centerId) {
         {
             $group: {
                 _id: { month: { $month: "$updatedAt" } },
-                total: { $sum: "$totalPayment" }
+                total: { $sum: "$totalPayment" },
+                paid: {
+                    $sum: {
+                        $cond: {
+                            if: { $eq: ["$statusPayment", "PAID"] },
+                            then: "$totalPayment",
+                            else: 0
+                        }
+                    }
+                },
+                pending: {
+                    $sum: {
+                        $cond: {
+                            if: { $eq: ["$statusPayment", "PENDING"] },
+                            then: "$totalPayment",
+                            else: 0
+                        }
+                    }
+                }
             }
         }
     ]);
     // Create a result array for all months
-    let result = Array.from({ length: 12 }, (_, i) => ({ month: i + 1, total: 0 }));
+    let result = Array.from({ length: 12 }, (_, i) => ({ month: i + 1, total: 0, paid: 0, pending: 0 }));
 
     // Fill the result array with the data from the aggregation
     for (let item of data) {
-        result[item._id.month - 1] = { month: item._id.month, total: item.total };
+        result[item._id.month - 1] = { month: item._id.month, total: item.total, paid: item.paid, pending: item.pending };
     }
 
     return result;
@@ -44,17 +62,35 @@ const statisticalYearMonth = async function (year, month, centerId) {
         {
             $group: {
                 _id: { day: { $dayOfMonth: "$updatedAt" } },
-                total: { $sum: "$totalPayment" }
+                total: { $sum: "$totalPayment" },
+                paid: {
+                    $sum: {
+                        $cond: {
+                            if: { $eq: ["$statusPayment", "PAID"] },
+                            then: "$totalPayment",
+                            else: 0
+                        }
+                    }
+                },
+                pending: {
+                    $sum: {
+                        $cond: {
+                            if: { $eq: ["$statusPayment", "PENDING"] },
+                            then: "$totalPayment",
+                            else: 0
+                        }
+                    }
+                }
             }
         }
     ]);
 
     // Create a result array for all days
-    let result = Array.from({length: lastDayOfMonth}, (_, i) => ({day: i+1, total: 0}));
+    let result = Array.from({ length: lastDayOfMonth }, (_, i) => ({ day: i + 1, total: 0, paid: 0, pending: 0 }));
 
     // Fill the result array with the data from the aggregation
-    for(let item of data) {
-        result[item._id.day - 1] = {day: item._id.day, total: item.total};
+    for (let item of data) {
+        result[item._id.day - 1] = { day: item._id.day, total: item.total, paid: item.paid, pending: item.pending };
     }
 
     return result;
