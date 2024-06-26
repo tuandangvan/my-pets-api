@@ -57,11 +57,16 @@ const deleteVoucher = async function (id) {
   return Voucher.findByIdAndDelete(id);
 }
 
+const updateVoucher = async function (id, data) {
+  const voucher = await Voucher.updateOne({ _id: id }, { ...data });
+  return voucher;
+}
 export const voucherService = {
   createVoucher,
   getVoucherOfCenter,
   applyVoucher,
   updateUsedVoucher,
   findVoucherCenter,
-  deleteVoucher
+  deleteVoucher,
+  updateVoucher
 };
