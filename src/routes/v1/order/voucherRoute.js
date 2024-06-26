@@ -35,7 +35,7 @@ router.delete(
 );
 
 router.put(
-  ":/id", authencation,
+  "/:id", authencation,
   authorizationMiddelware.permission(PermissionRoles.onlyCenter),
   voucherController.updateVoucher
 )
