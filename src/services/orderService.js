@@ -156,7 +156,7 @@ const getRevenue = async function (centerId, status) {
 const getOrderStatusPayment = async function (centerId, status, year) {
   const orders = await Order.find({
     "seller.centerId": centerId, statusPayment: status, statusOrder: "COMPLETED",
-    updatedAt: { $gte: new Date(`${year}-01-01`), $lt: new Date(`${year}-12-31`) }
+    dateCompleted: { $gte: new Date(`${year}-01-01`), $lt: new Date(`${year}-12-31`) }
   })
     .populate("buyer", "firstName lastName avatar phoneNumber address")
     .populate("seller.centerId", "name  avatar phoneNumber address")
@@ -171,7 +171,7 @@ const getOrderStatusPaymentYM = async function (centerId, status, year, month) {
   const orders = await Order.find({
     "seller.centerId": centerId, statusPayment: status, statusOrder: "COMPLETED",
     // Sử dụng adjustedMonth để tạo ngày
-    updatedAt: { $gte: new Date(year, adjustedMonth, 1), $lt: new Date(year, adjustedMonth, lastDayOfMonth + 1) }
+    dateCompleted: { $gte: new Date(year, adjustedMonth, 1), $lt: new Date(year, adjustedMonth, lastDayOfMonth + 1) }
   })
     .populate("buyer", "firstName lastName avatar phoneNumber address")
     .populate("seller.centerId", "name  avatar phoneNumber address")

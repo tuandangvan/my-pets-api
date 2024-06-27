@@ -8,12 +8,12 @@ const statisticalYear = async function (year, centerId) {
             $match: {
                 statusOrder: "COMPLETED",
                 "seller.centerId": centerIdObj,
-                updatedAt: { $gte: new Date(`${year}-01-01`), $lt: new Date(`${year}-12-31`) }
+                dateCompleted: { $gte: new Date(`${year}-01-01`), $lt: new Date(`${year}-12-31`) }
             }
         },
         {
             $group: {
-                _id: { month: { $month: "$updatedAt" } },
+                _id: { month: { $month: "$dateCompleted" } },
                 total: { $sum: "$totalPayment" },
                 paid: {
                     $sum: {
@@ -58,12 +58,12 @@ const statisticalYearMonth = async function (year, month, centerId) {
             $match: {
                 statusOrder: "COMPLETED",
                 "seller.centerId": centerIdObj,
-                updatedAt: { $gte: new Date(`${year}-${month}-01`), $lt: new Date(`${year}-${month}-${lastDayOfMonth + 1}`) }
+                dateCompleted: { $gte: new Date(`${year}-${month}-01`), $lt: new Date(`${year}-${month}-${lastDayOfMonth + 1}`) }
             }
         },
         {
             $group: {
-                _id: { day: { $dayOfMonth: "$updatedAt" } },
+                _id: { day: { $dayOfMonth: "$dateCompleted" } },
                 total: { $sum: "$totalPayment" },
                 paid: {
                     $sum: {
