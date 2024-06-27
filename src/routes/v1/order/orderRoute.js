@@ -54,6 +54,7 @@ router.get(
 );
 
 router.get("/payment/center", authencation, authorizationMiddelware.permission(PermissionRoles.onlyCenter), orderController.getOrderStatusPayment);
+router.get("/paymentYM/center", authencation, authorizationMiddelware.permission(PermissionRoles.onlyCenter), orderController.getOrderStatusPaymentYM);
 
 router.put("/:orderId/payment", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), orderController.confirmPayment);
 
