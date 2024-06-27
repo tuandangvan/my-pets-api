@@ -165,11 +165,13 @@ const getOrderStatusPayment = async function (centerId, status, year) {
 }
 
 const getOrderStatusPaymentYM = async function (centerId, status, year, month) {
-  const lastDayOfMonth = new Date(year, month, 0).getDate();
+  // Điều chỉnh tháng để phù hợp với cách JavaScript đếm (0-11)
+  const adjustedMonth = month - 1;
+  const lastDayOfMonth = new Date(year, adjustedMonth + 1, 0).getDate();
   const orders = await Order.find({
     "seller.centerId": centerId, statusPayment: status, statusOrder: "COMPLETED",
-    updatedAt: { $gte: new Date(`${year}-${month}-01`), $lt: new Date(`${year}-${month}-${lastDayOfMonth}`) }
-    // updatedAt: { $gte: new Date(`${year}-${month}-01`), $lt: new Date(`${year}-${month}-${lastDayOfMonth + 1}`) }
+    // Sử dụng adjustedMonth để tạo ngày
+    updatedAt: { $gte: new Date(year, adjustedMonth, 1), $lt: new Date(year, adjustedMonth, lastDayOfMonth + 1) }
   })
     .populate("buyer", "firstName lastName avatar phoneNumber address")
     .populate("seller.centerId", "name  avatar phoneNumber address")
