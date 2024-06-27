@@ -164,6 +164,19 @@ const getOrderStatusPayment = async function (centerId, status, year) {
   return orders;
 }
 
+const getOrderStatusPaymentYM = async function (centerId, status, year, month) {
+  const lastDayOfMonth = new Date(year, month, 0).getDate();
+  const orders = await Order.find({
+    "seller.centerId": centerId, statusPayment: status, statusOrder: "COMPLETED",
+    updatedAt: { $gte: new Date(`${year}-${month}-01`), $lt: new Date(`${year}-${month}-${lastDayOfMonth}`) }
+    // updatedAt: { $gte: new Date(`${year}-${month}-01`), $lt: new Date(`${year}-${month}-${lastDayOfMonth + 1}`) }
+  })
+    .populate("buyer", "firstName lastName avatar phoneNumber address")
+    .populate("seller.centerId", "name  avatar phoneNumber address")
+    .populate("petId");
+  return orders;
+}
+
 const confirmPayment = async function (orderId) {
   const orders = await Order.updateOne({ _id: orderId }, { statusPayment: "PAID", datePaid: new Date() });
   return orders;
@@ -262,5 +275,6 @@ export const orderService = {
   confirmPayment,
   getListBreed,
   getCenterHot,
-  getOrderStatusPayment
+  getOrderStatusPayment,
+  getOrderStatusPaymentYM
 };
