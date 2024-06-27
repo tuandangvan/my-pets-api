@@ -196,6 +196,26 @@ const getRevenue = async (req, res, next) => {
   }
 }
 
+const getOrderStatusPayment = async (req, res, next) => {
+  try {
+    const statusPayment = req.query.statusPayment;
+    const year = req.query.year;
+
+    const getToken = await token.getTokenHeader(req);
+    const decodeToken = verify(getToken, env.JWT_SECRET);
+    const centerId = decodeToken.centerId;
+    const orders = await orderService.getOrderStatusPayment(centerId, statusPayment, year);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: orders
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
+    next(customError);
+  }
+
+}
+
 const confirmPayment = async (req, res, next) => {
   try {
     const orderId = req.params.orderId;
@@ -235,5 +255,6 @@ export const orderController = {
   getPayment,
   getRevenue,
   confirmPayment,
-  getListBreed
+  getListBreed,
+  getOrderStatusPayment
 };

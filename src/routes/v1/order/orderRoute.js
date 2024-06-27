@@ -53,6 +53,8 @@ router.get(
   orderController.getRevenue
 );
 
+router.get("/payment/center", authencation, authorizationMiddelware.permission(PermissionRoles.onlyCenter), orderController.getOrderStatusPayment);
+
 router.put("/:orderId/payment", authencation, authorizationMiddelware.permission(PermissionRoles.User_Center), orderController.confirmPayment);
 
 export const orderRoute = router;
