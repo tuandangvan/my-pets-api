@@ -48,17 +48,19 @@ const statisticalYear = async function (year, centerId) {
 };
 
 const statisticalYearMonth = async function (year, month, centerId) {
-    // Điều chỉnh tháng để phù hợp với cách JavaScript đếm (0-11)
-    const adjustedMonth = month - 1;
-    const lastDayOfMonth = new Date(year, adjustedMonth + 1, 0).getDate();
+    const lastDayOfMonth = new Date(year, month, 0).getDate();
     const centerIdObj = new mongoose.Types.ObjectId(centerId);
-
+    // Adjust month for JavaScript's 0-indexed months if necessary
+    const adjustedMonth = month - 1;
     let data = await Order.aggregate([
         {
             $match: {
                 statusOrder: "COMPLETED",
                 "seller.centerId": centerIdObj,
-                dateCompleted: { $gte: new Date(`${year}-${month}-01`), $lt: new Date(`${year}-${month}-${lastDayOfMonth + 1}`) }
+                dateCompleted: {
+                    $gte: new Date(year, adjustedMonth, 1),
+                    $lt: new Date(year, adjustedMonth, lastDayOfMonth + 1)
+                }
             }
         },
         {
