@@ -145,9 +145,20 @@ const rating = async function (orderId) {
 };
 
 const getRevenue = async function (centerId, status) {
-  const orders = await Order.find({ "seller.centerId": centerId, statusPayment: status })
+  const orders = await Order.find({ "seller.centerId": centerId, statusPayment: status, statusOrder: "COMPLETED" })
     .populate("buyer", "firstName lastName avatar phoneNumber address")
     .populate("seller.userId", "firstName lastName avatar phoneNumber address")
+    .populate("seller.centerId", "name  avatar phoneNumber address")
+    .populate("petId");
+  return orders;
+}
+
+const getOrderStatusPayment = async function (centerId, status, year) {
+  const orders = await Order.find({
+    "seller.centerId": centerId, statusPayment: status, statusOrder: "COMPLETED",
+    updatedAt: { $gte: new Date(`${year}-01-01`), $lt: new Date(`${year}-12-31`) }
+  })
+    .populate("buyer", "firstName lastName avatar phoneNumber address")
     .populate("seller.centerId", "name  avatar phoneNumber address")
     .populate("petId");
   return orders;
@@ -184,7 +195,7 @@ const getListBreed = async function (type) {
     }
     listBreed.push({ breed: breeds[i], sold: sold, view: view });
   }
-  
+
   for (let i = 0; i < listBreed.length; i++) {
     for (let j = 0; j < pet.length; j++) {
       if (listBreed[i].breed === pet[j].breed) {
@@ -250,5 +261,6 @@ export const orderService = {
   getRevenue,
   confirmPayment,
   getListBreed,
-  getCenterHot
+  getCenterHot,
+  getOrderStatusPayment
 };
