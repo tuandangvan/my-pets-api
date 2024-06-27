@@ -48,7 +48,9 @@ const statisticalYear = async function (year, centerId) {
 };
 
 const statisticalYearMonth = async function (year, month, centerId) {
-    const lastDayOfMonth = new Date(year, month, 0).getDate();
+    // Điều chỉnh tháng để phù hợp với cách JavaScript đếm (0-11)
+    const adjustedMonth = month - 1;
+    const lastDayOfMonth = new Date(year, adjustedMonth + 1, 0).getDate();
     const centerIdObj = new mongoose.Types.ObjectId(centerId);
 
     let data = await Order.aggregate([
