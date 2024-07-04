@@ -12,6 +12,14 @@ const createOrder = async function (data) {
   return order.save();
 };
 
+const checkPetId = async function (petId) {
+  const order = await Order.findOne({ petId: petId });
+  if (order) {
+    return true;
+  }
+  return false;
+}
+
 const getOrderBySeller = async function (sellerId, typeSeller, statusOrder) {
   if (typeSeller === "C") {
 
@@ -284,5 +292,6 @@ export const orderService = {
   getListBreed,
   getCenterHot,
   getOrderStatusPayment,
-  getOrderStatusPaymentYM
+  getOrderStatusPaymentYM,
+  checkPetId
 };
