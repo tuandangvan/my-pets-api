@@ -14,14 +14,7 @@ const createOrder = async (req, res, next) => {
     const data = req.body;
     const getToken = await token.getTokenHeader(req);
     const decodeToken = verify(getToken, env.JWT_SECRET);
-    const pet = await orderService.checkPetId(data.petId);
-    if (pet) {
-      res.status(StatusCodes.NOT_FOUND).json({
-        success: false,
-        message: "Pet bought by another user!",
-      });
-      return;
-    }
+    await petService.checkPet(data.petId);
     //check voucher
     const code = req.body.code;
     if (code) {
