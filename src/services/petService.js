@@ -220,7 +220,7 @@ const getPetBreed = async function (breed) {
 
 const updatePriceSale = async function (petId, data) {
 
-  const petFind = await Pet.findOne({ _id: petId, statusPaid: "NOTHING"});
+  const petFind = await Pet.findOne({ _id: petId, statusPaid: "NOTHING" });
   if (!petFind) {
     throw new Error("Pet not found or pet is sold out");
   }
@@ -234,6 +234,13 @@ const updatePriceSale = async function (petId, data) {
       }
     });
   return pet;
+}
+
+const checkPet = async function (petId) {
+  const pet = await Pet.findOne({ _id: petId, statusPaid: "NOTHING" });
+  if (!pet) {
+    throw new Error("Pet not found or pet is sold out");
+  }
 }
 
 
@@ -256,5 +263,6 @@ export const petService = {
   updateStatusPaid,
   getPetReduce,
   getPetBreed,
-  updatePriceSale
+  updatePriceSale,
+  checkPet
 };
