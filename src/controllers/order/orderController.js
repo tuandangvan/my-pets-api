@@ -8,13 +8,19 @@ import { voucherService } from "../../services/voucherService";
 import moment from "moment-timezone";
 import { petService } from "../../services/petService";
 import orderModel from "../../models/orderModel";
-import petModel from "../../models/petModel";
 
 const createOrder = async (req, res, next) => {
   try {
     const data = req.body;
     const getToken = await token.getTokenHeader(req);
     const decodeToken = verify(getToken, env.JWT_SECRET);
+    const pet = await orderService.checkPetId(data.petId);
+    if (pet) {
+      res.status(StatusCodes.NOT_FOUND).json({
+        success: false,
+        message: "Pet bought by another user!",
+      });
+    }
     //check voucher
     const code = req.body.code;
     if (code) {
