@@ -20,6 +20,7 @@ const createOrder = async (req, res, next) => {
         success: false,
         message: "Pet bought by another user!",
       });
+      return;
     }
     //check voucher
     const code = req.body.code;
@@ -31,11 +32,13 @@ const createOrder = async (req, res, next) => {
           success: false,
           message: "Voucher not found!",
         });
+        return;
       } else if (voucher.status != "active") {
         res.status(StatusCodes.NOT_FOUND).json({
           success: false,
           message: "Voucher is not active!",
         });
+        return;
       } else if (
         !currentDate.isBetween(
           moment(voucher.startDate).add(-7, "hours"),
@@ -46,11 +49,13 @@ const createOrder = async (req, res, next) => {
           success: false,
           message: "Voucher is not active or expired!",
         });
+        return;
       } else if (voucher.used == voucher.quantity) {
         res.status(StatusCodes.NOT_FOUND).json({
           success: false,
           message: "Voucher is out of stock!",
         });
+        return;
       } else {
         if (decodeToken.userId != data.buyer) {
           throw new Error("You are not authorized to create order!");
@@ -65,6 +70,7 @@ const createOrder = async (req, res, next) => {
           message: "Create order successfully!",
           orderId: order._id
         });
+        return;
       }
     } else {
       if (decodeToken.userId != data.buyer) {
@@ -78,6 +84,7 @@ const createOrder = async (req, res, next) => {
         message: "Create order successfully!",
         orderId: order._id
       });
+      return;
     }
   } catch (error) {
     const customError = new ApiError(StatusCodes.UNAUTHORIZED, error.message);
