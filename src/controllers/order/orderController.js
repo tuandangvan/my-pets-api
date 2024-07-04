@@ -185,7 +185,9 @@ const getPayment = async (req, res, next) => {
 const getRevenue = async (req, res, next) => {
   try {
     const status = req.query.status;
-    const orders = await orderService.getRevenue(req.params.centerId, status);
+    const start = req.query.start;
+    const end = req.query.end;
+    const orders = await orderService.getRevenue(req.params.centerId, status, start, end);
     res.status(StatusCodes.OK).json({
       success: true,
       data: orders

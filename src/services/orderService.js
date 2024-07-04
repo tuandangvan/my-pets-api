@@ -144,8 +144,14 @@ const rating = async function (orderId) {
   return orders;
 };
 
-const getRevenue = async function (centerId, status) {
-  const orders = await Order.find({ "seller.centerId": centerId, statusPayment: status, statusOrder: "COMPLETED" })
+const getRevenue = async function (centerId, status, start, end) {
+  const startDate = new Date(`${start}T00:00:00.000Z`);
+  const endDate = new Date(`${end}T23:59:59.000Z`);
+
+  const orders = await Order.find({
+    "seller.centerId": centerId, statusPayment: status, statusOrder: "COMPLETED",
+    dateCompleted: { $gte: startDate, $lt: endDate }
+  })
     .populate("buyer", "firstName lastName avatar phoneNumber address")
     .populate("seller.userId", "firstName lastName avatar phoneNumber address")
     .populate("seller.centerId", "name  avatar phoneNumber address")
