@@ -276,6 +276,7 @@ const findPostOfPet = async function (petId) {
   })
     .populate("userId")
     .populate("centerId")
+    .populate("petId")
     .populate("userId.accountId")
     .populate("centerId.accountId")
     .populate("reaction.userId")
