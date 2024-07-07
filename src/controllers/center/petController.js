@@ -163,6 +163,19 @@ const getAllPet = async (req, res, next) => {
   }
 };
 
+const getAllPetFree = async (req, res, next) => {
+  try {
+    const pets = await petService.findAllFree();
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: pets
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
+};
+
 const getAllPetPersonal = async (req, res, next) => {
   try {
     const pets = await petService.findAllPersonal();
@@ -325,5 +338,6 @@ export const petController = {
   getPetCenter,
   getPetReduce,
   getPetBreed,
-  updatePriceSale
+  updatePriceSale,
+  getAllPetFree
 };

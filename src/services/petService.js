@@ -36,7 +36,7 @@ const findAllOfCenter = async function (centerId) {
 };
 
 const findAll = async function (userId) {
-  const pets = await Pet.find({ statusPaid: "NOTHING" })
+  const pets = await Pet.find({ statusPaid: "NOTHING", free: false })
     .sort({ level: -1 })
     .populate("centerId");
 
@@ -52,6 +52,23 @@ const findAll = async function (userId) {
   return pets;
 };
 
+
+const findAllFree = async function (userId) {
+  const pets = await Pet.find({ statusPaid: "NOTHING", free: true })
+    .sort({ level: -1 })
+    .populate("centerId");
+
+  pets.forEach(async (element) => {
+    if (userId) {
+      element.favorites = await userModel.find({
+        _id: userId,
+        favorites: element._id
+      });
+    }
+  });
+
+  return pets;
+};
 const findAllPersonal = async function () {
   const pets = await Pet.find({ statusPaid: "NOTHING" })
     .sort({ level: -1 })
@@ -264,5 +281,6 @@ export const petService = {
   getPetReduce,
   getPetBreed,
   updatePriceSale,
-  checkPet
+  checkPet,
+  findAllFree
 };
