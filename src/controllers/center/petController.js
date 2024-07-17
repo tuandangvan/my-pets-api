@@ -322,6 +322,23 @@ const updatePriceSale = async (req, res, next) => {
 
 }
 
+
+const petInventory = async (req, res, next) => {
+  try {
+    const getToken = await token.getTokenHeader(req);
+    const decodeToken = verify(getToken, env.JWT_SECRET);
+    const pets = await petService.petInventory(decodeToken.centerId, req.query.day);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: pets
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
+
+}
+
 export const petController = {
   createPet,
   getAllPetOfCenter,
@@ -339,5 +356,6 @@ export const petController = {
   getPetReduce,
   getPetBreed,
   updatePriceSale,
-  getAllPetFree
+  getAllPetFree,
+  petInventory
 };
