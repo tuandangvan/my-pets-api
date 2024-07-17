@@ -128,6 +128,7 @@ const changeStatusOrder = async function (order, statusOrder) {
       { _id: order._id },
       { statusOrder, dateCompleted: new Date() }
     );
+    await petService.updateStatusPaid(order.petId, "PAID");
   } else if (statusOrder === "CANCEL") {
     orders = await Order.updateOne(
       { _id: order._id },
@@ -278,6 +279,49 @@ const getCenterHot = async function () {
 
 }
 
+const getListBreedBestSeller = async function (centerId, type) {
+  var breeds = [];
+  if (type == "Dog") {
+    breeds = ["Chó Alaska", "Chó Bắc Kinh", "Chó Beagle", "Chó Becgie",
+      "Chó Chihuahua", "Chó Corgi", "Chó Dachshund", "Chó Golden", "Chó Husky",
+      "Chó Phốc Sóc", "Chó Poodle", "Chó Pug", "Chó Samoyed", "Chó Shiba", "Chó cỏ", "Chó khác"];
+  } else {
+    breeds = ["Mèo Ba Tư", "Mèo Ai Cập", "Mèo Anh lông dài", "Mèo Xiêm",
+      "Mèo Munchkin", "Mèo Ragdoll", "Mèo Mướp", "Mèo Vàng", "Mèo Mun", "Mèo khác"];
+  }
+
+  const orderPet = await Order.find({ statusOrder: "COMPLETED", "seller.centerId": centerId }).populate("petId", "breed view").select("petId");
+  const pet = await petModel.find({ centerId: centerId }).select("breed view");
+
+  var listBreed = [];
+
+  for (let i = 0; i < breeds.length; i++) {
+    var sold = 0;
+    var view = 0;
+    var inventory = 0;
+    for (let j = 0; j < orderPet.length; j++) {
+      if (orderPet[j].petId.breed === breeds[i]) {
+        sold++;
+      }
+    }
+    for (let j = 0; j < pet.length; j++) {
+      if (pet[j].breed === breeds[i] && pet[j].statusPaid === "NOTHING") {
+        inventory += 1;
+      }
+    }
+    listBreed.push({ breed: breeds[i], sold: sold, view: view, inventory: inventory });
+  }
+
+  for (let i = 0; i < listBreed.length; i++) {
+    for (let j = 0; j < pet.length; j++) {
+      if (listBreed[i].breed === pet[j].breed) {
+        listBreed[i].view += pet[j].view;
+      }
+    }
+  }
+  return listBreed;
+}
+
 export const orderService = {
   createOrder,
   getOrderBySeller,
@@ -293,5 +337,6 @@ export const orderService = {
   getCenterHot,
   getOrderStatusPayment,
   getOrderStatusPaymentYM,
-  checkPetId
+  checkPetId,
+  getListBreedBestSeller
 };

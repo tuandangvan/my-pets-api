@@ -8,6 +8,7 @@ import { petService } from "../../services/petService.js";
 import ApiError from "../../utils/ApiError.js";
 import { token } from "../../utils/token.js";
 import { validate } from "../../validate/validate.js";
+import { orderService } from "../../services/orderService.js";
 
 const createPet = async (req, res, next) => {
   try {
@@ -336,7 +337,22 @@ const petInventory = async (req, res, next) => {
     const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
     next(customError);
   }
+}
 
+const getListBreedBestSeller = async (req, res, next) => {
+  try {
+    const type = req.query.type;
+    const getToken = await token.getTokenHeader(req);
+    const decodeToken = verify(getToken, env.JWT_SECRET);
+    const breeds = await orderService.getListBreedBestSeller(decodeToken.centerId, type);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: breeds
+    });
+  } catch (error) {
+    const customError = new ApiError(StatusCodes.BAD_REQUEST, error.message);
+    next(customError);
+  }
 }
 
 export const petController = {
@@ -357,5 +373,6 @@ export const petController = {
   getPetBreed,
   updatePriceSale,
   getAllPetFree,
-  petInventory
+  petInventory,
+  getListBreedBestSeller
 };
