@@ -29,6 +29,6 @@ router.get("/breed/list/pet", petController.getPetBreed);
 router.put("/:petId/price-sale", petController.updatePriceSale);
 
 router.get("/inventory/day", authencation, authorizationMiddelware.permission(PermissionRoles.onlyCenter), petController.petInventory);
-
+router.get('/bestseller/breeds/type', authencation, authorizationMiddelware.permission(PermissionRoles.onlyCenter), petController.getListBreedBestSeller);
 
 export const petRoute = router;
