@@ -260,6 +260,19 @@ const checkPet = async function (petId) {
   }
 }
 
+const petInventory = async function (centerId, day) {
+  const date = new Date();
+  date.setHours(date.getHours() + 7);
+  const dateStart = new Date(date);
+  dateStart.setDate(date.getDate() - day);
+  const pets = await Pet.find({
+    centerId: centerId,
+    statusPaid: "NOTHING",
+    createdAt: { $lte: dateStart}
+  });
+  return pets;
+
+}
 
 
 export const petService = {
@@ -282,5 +295,6 @@ export const petService = {
   getPetBreed,
   updatePriceSale,
   checkPet,
-  findAllFree
+  findAllFree,
+  petInventory
 };
